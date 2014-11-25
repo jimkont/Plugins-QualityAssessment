@@ -13,6 +13,7 @@
 	<!-- TODO 1: fill the DPU artifactId, without special characters, use '_' 
 		instead of whitespaces -->
 	<artifactId>dpu-template</artifactId>
+	<packaging>bundle</packaging>
 
 	<!-- TODO 1.1: fill the DPU (nice) name which will be presented to user, 
 		can start with E-, T- or L- to indicate it is extractor/transformer/loader 
