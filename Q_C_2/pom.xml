@@ -10,15 +10,11 @@
 		<relativePath />
 	</parent>
 	<groupId>eu.unifiedviews.plugins</groupId>
-	<!-- TODO 1: fill the DPU artifactId, without special characters, use '_' instead of whitespaces -->
 	<artifactId>q_c_2</artifactId>
 	<packaging>bundle</packaging>
 
-	<!-- TODO 1.1: fill the DPU (nice) name which will be presented to user, can start with E-, T- or L- to indicate it is extractor/transformer/loader to the user -->
 	<name>T-Q_C_2</name>
-	<!-- TODO 2: specify module version, can be left unchanged. But once in use, don't forget to raise version each time you make a change. -->
 	<version>1.0.0</version>
-	<!-- TODO 3: fill module description, the description will be visible to the user -->
 	<description>Test Data Quality.</description>
 
 	<repositories>
@@ -31,14 +27,11 @@
 
 
 	<properties>
-		<!-- TODO 4: fill the name of root package -->
 		<dpu.package>eu.unifiedviews.plugins.qc2</dpu.package>
-		<!-- TODO 5: fill DPU main class name here -->
 		<dpu.mainClass>QC2</dpu.mainClass>
 	</properties>
 
 	<dependencies>
-		<!-- TODO 7: add dependencies here -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
