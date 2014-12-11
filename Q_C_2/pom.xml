@@ -9,7 +9,6 @@
 		<version>1.0.1</version>
 		<relativePath />
 	</parent>
-	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>q_c_2</artifactId>
 	<packaging>bundle</packaging>
 
