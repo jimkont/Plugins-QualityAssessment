@@ -1,5 +1,8 @@
 *.iws
 *.iml
 .idea
+<<<<<<< .merge_file_SPsIDH
 Q_C_2/target
+=======
+>>>>>>> .merge_file_WiPQMi
 target
