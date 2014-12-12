@@ -45,9 +45,7 @@
 	<http://comsode.disco.unimib.it/resource/dataset/scuole-infanzia-2010-2011/numberOfPupils> "31"^^<http://www.w3.org/2001/XMLSchema#int> ;
 	a <http://schema.org/Preschool> , <http://xmlns.com/foaf/0.1/Organization> ;
 	<http://schema.org/name> "E.PESTALOZZI"@it ;
-	<http://schema.org/location> _:node197h9jcngx13 ;
-	<http://schema.org/address> "Via Mentana, 1"@it ;
-	<http://schema.org/telephone> "06/4941465" .
+	<http://schema.org/location> _:node197h9jcngx13 .
 
 <http://comsode.disco.unimib.it/resource/dataset/scuole-infanzia-2010-2011/7> <http://comsode.disco.unimib.it/resource/dataset/scuole-infanzia-2010-2011/district> "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
 	<http://comsode.disco.unimib.it/resource/dataset/scuole-infanzia-2010-2011/legalStatus> "COMUNALE"@it ;

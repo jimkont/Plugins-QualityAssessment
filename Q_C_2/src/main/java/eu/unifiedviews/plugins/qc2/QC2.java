@@ -76,8 +76,8 @@ public class QC2 extends ConfigurableBase<QC2Config_V1> implements ConfigDialogP
 
                     try {
 
-                        outFile_1 = new File(java.net.URI.create(outFilesData.getBaseFileURIString()+"out_1.csv"));
-                        outFile_2 = new File(java.net.URI.create(outFilesData.getBaseFileURIString()+"out_2.csv"));
+                        outFile_1 = new File(java.net.URI.create(outFilesData.getBaseFileURIString()+"counter_1.csv"));
+                        outFile_2 = new File(java.net.URI.create(outFilesData.getBaseFileURIString()+"counter_2.csv"));
 
                         final Map<String, URI> graphs = getGraphs();
 
@@ -87,8 +87,8 @@ public class QC2 extends ConfigurableBase<QC2Config_V1> implements ConfigDialogP
                             dataset.addDefaultGraph(graph_1);
                         }
 
-                        this.executeQuery(context, inRdfData, outFile_1, query1, dataset);
-                        this.executeQuery(context, inRdfData, outFile_2, query2, dataset);
+                        this.executeQuery(context, outFile_1, query1, dataset);
+                        this.executeQuery(context, outFile_2, query2, dataset);
 
                         results[i] = this.executeMean(context, outFile_1.getAbsolutePath(), outFile_2.getAbsolutePath());
 
@@ -106,24 +106,13 @@ public class QC2 extends ConfigurableBase<QC2Config_V1> implements ConfigDialogP
         }
     }
 
-    private Map<String, URI> getGraphs() throws DataUnitException {
-        final Map<String, URI> graphUris = new HashMap<>();
-        try (RDFDataUnit.Iteration iter = inRdfData.getIteration()) {
-            while (iter.hasNext()) {
-                final RDFDataUnit.Entry entry = iter.next();
-                graphUris.put(entry.getSymbolicName(), entry.getDataGraphURI());
-            }
-        }
-        return graphUris;
-    }
-
-    private void executeQuery (DPUContext context, RDFDataUnit tmpInRdfData, File outFile, String query, DatasetImpl dataset) {
+    private void executeQuery (DPUContext context, File outFile, String query, DatasetImpl dataset) {
 
         RepositoryConnection connection = null;
 
         try (OutputStream outputStream = new FileOutputStream(outFile)) {
 
-            connection = tmpInRdfData.getConnection();
+            connection = inRdfData.getConnection();
 
             final SPARQLResultsCSVWriterFactory writerFactory = new SPARQLResultsCSVWriterFactory();
             final TupleQueryResultWriter resultWriter = writerFactory.getWriter(outputStream);
@@ -160,7 +149,7 @@ public class QC2 extends ConfigurableBase<QC2Config_V1> implements ConfigDialogP
             final String outFileUri = outFilesData.addNewFile(config.getFileName());
             VirtualPathHelpers.setVirtualPath(outFilesData, config.getFileName(), config.getFileName());
 
-            final File outFile = new File(java.net.URI.create(outFileUri));
+            final File outFile = new File(java.net.URI.create((this.config.getPath() == null) ? outFileUri : this.config.getPath() + this.config.getFileName()));
             writer = new CSVWriter(new FileWriter(outFile),';', '"', '\n');
 
             String [] header = {"subject","property","quality"};
@@ -192,38 +181,35 @@ public class QC2 extends ConfigurableBase<QC2Config_V1> implements ConfigDialogP
             csvReader_1 = new CSVReader(new FileReader(path_1));
             csvReader_2 = new CSVReader(new FileReader(path_2));
 
-            String[] row_1 = null;
-            String[] row_2 = null;
-            int x = 0;
-            int y = 0;
-
             double value_1 = 0;
             double value_2 = 0;
 
+            value_1 = Integer.parseInt(csvReader_1.readAll().get(1)[0]);
+            value_2 = Integer.parseInt(csvReader_2.readAll().get(1)[0]);
 
-            while((row_1 = csvReader_1.readNext()) != null) {
-                if (x == 1) {
-                    value_1 = Integer.parseInt(row_1[0]);
-                }
-                x++;
-            }
-
-            while((row_2 = csvReader_2.readNext()) != null) {
-                if (y == 1) {
-                    value_2 = Integer.parseInt(row_2[0]);
-                }
-                y++;
-            }
+            media = value_2/value_1;
 
             csvReader_1.close();
             csvReader_2.close();
-
-            media = value_2/value_1;
 
         } catch (IOException e) {
             context.sendMessage(DPUContext.MessageType.ERROR, "I/0 Failed", "", e);
         }
 
         return media;
+    }
+
+    private Map<String, URI> getGraphs() throws DataUnitException {
+
+        final Map<String, URI> graphUris = new HashMap<>();
+
+        try (RDFDataUnit.Iteration iter = inRdfData.getIteration()) {
+            while (iter.hasNext()) {
+                final RDFDataUnit.Entry entry = iter.next();
+                graphUris.put(entry.getSymbolicName(), entry.getDataGraphURI());
+            }
+        }
+
+        return graphUris;
     }
 }
