@@ -163,26 +163,21 @@ public class QC2 extends ConfigurableBase<QC2Config_V1> implements ConfigDialogP
             final File outFile = new File(java.net.URI.create(outFileUri));
             writer = new CSVWriter(new FileWriter(outFile),';', '"', '\n');
 
+            String [] header = {"subject","property","quality"};
+            writer.writeNext(header);
+
+            for (int z = 0; z < results.length; z++) {
+                String [] record = {subject.get(z), property.get(z), ""+ results[z]};
+                writer.writeNext(record);
+            }
+
+            writer.close();
+
         } catch (DataUnitException e) {
             context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "", e);
         } catch (IOException e) {
             context.sendMessage(DPUContext.MessageType.ERROR, "I/0 Failed", "", e);
         }
-
-        String [] header = {"subject","property","quality"};
-        writer.writeNext(header);
-
-        for (int z = 0; z < results.length; z++) {
-            String [] record = {subject.get(z), property.get(z), ""+ results[z]};
-            writer.writeNext(record);
-        }
-
-        try {
-            writer.close();
-        } catch (IOException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "I/0 Failed", "Error Closing File", e);
-        }
-
     }
 
     private Double executeMean (DPUContext context, String path_1, String path_2) {
