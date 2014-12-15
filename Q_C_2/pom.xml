@@ -14,7 +14,7 @@
 
 	<name>T-Q_C_2</name>
 	<version>1.0.0</version>
-	<description>Test Data Quality.</description>
+	<description>Missing elements from a recommended list of elements, empty elements.</description>
 
 	<repositories>
 		<repository>
