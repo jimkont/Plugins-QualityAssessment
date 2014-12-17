@@ -15,6 +15,8 @@ public class QC2VaadinDialog extends BaseConfigDialog<QC2Config_V1> {
 
     private FormLayout baseFormLayout;
 
+    private FormLayout baseFormLayoutSecond;
+
     private TextField fileName;
 
     public QC2VaadinDialog() {
@@ -41,13 +43,13 @@ public class QC2VaadinDialog extends BaseConfigDialog<QC2Config_V1> {
         this.baseFormLayout = new FormLayout();
         this.baseFormLayout.setSizeUndefined();
 
-        fileName = new TextField();
-        fileName.setWidth("100%");
+        fileName = new TextField("File output name:");
         fileName.setHeight("-1px");
-        fileName.setCaption("File output name:");
         fileName.setRequired(true);
-        mainLayout.addComponent(fileName);
-        mainLayout.setExpandRatio(fileName, 0.8f);
+        this.baseFormLayout.addComponent(fileName);
+
+
+
 
         this.propertiesGridLayout = new GridLayout(2, 2);
         this.propertiesGridLayout.setWidth("100%");
@@ -56,15 +58,20 @@ public class QC2VaadinDialog extends BaseConfigDialog<QC2Config_V1> {
 
         this.addColumnToPropertyMappingsHeading();
 
+
+
         TextField txtSubject = new TextField();
         this.propertiesGridLayout.addComponent(txtSubject);
         txtSubject.setWidth("100%");
 
         TextField txtProperty = new TextField();
         this.propertiesGridLayout.addComponent(txtProperty);
-        txtProperty .setWidth("100%");
+        txtProperty.setWidth("100%");
 
-        this.mainLayout.addComponent(this.propertiesGridLayout);
+        this.mainLayout.addComponent(baseFormLayout);
+        this.mainLayout.addComponent(propertiesGridLayout);
+
+
 
         Button btnAddRow = new Button("Add");
         btnAddRow.addClickListener(new ClickListener() {
@@ -77,7 +84,12 @@ public class QC2VaadinDialog extends BaseConfigDialog<QC2Config_V1> {
             }
         });
 
-        this.mainLayout.addComponent(btnAddRow);
+        this.baseFormLayout = new FormLayout();
+        this.baseFormLayout.setSizeUndefined();
+        this.baseFormLayoutSecond = new FormLayout();
+        this.baseFormLayoutSecond.setSizeUndefined();
+        this.baseFormLayoutSecond.addComponent(btnAddRow);
+        this.mainLayout.addComponent(baseFormLayoutSecond);
     }
 
     private void addColumnToPropertyMapping(String subject, String property) {
