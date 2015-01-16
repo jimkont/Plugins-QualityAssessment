@@ -1,16 +1,16 @@
-# T-Metadata #
+# QC-ACC_1 #
 ----------
 
 ###General###
 
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
-|**Name:**                     |T-Metadata                                              |
-|**Description:**              |Generates metadata on output from input. |
+|**Name:**                     |QC-ACC_1 |
+|**Description:**              |Validate RDF files. |
 |                              |                                                               |
-|**DPU class name:**           |Metadata     | 
-|**Configuration class name:** |MetadataConfig_V1                           |
-|**Dialogue class name:**      |MetadataVaadinDialog | 
+|**DPU class name:**           |QACC1     | 
+|**Configuration class name:** |QACC1Config_V1                           |
+|**Dialogue class name:**      |QACC1VaadinDialog | 
 
 ***
 
@@ -19,32 +19,10 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|**Output graph name:** |self-descriptive  |
-|**COMSODE Dataset ID (will be used as part of the URI)** |self-descriptive  |
-|**Dataset URI:** |self-descriptive  |
-|**Distribution URI:** |self-descriptive  |
-|**Data dump URL:** |self-descriptive  |
-|**Media Type: (list)** |- application/zip<BR>- text/csv<BR>- application/rdf+xml<BR>- text/plain<BR>- application/x-turtle  |
-|**Sparql Endpoint URI:** |self-descriptive  |
-|**Contact Point URL:** |self-descriptive  |
-|**Original language - RDF language tag:** |self-descriptive  |
-|**Title original language:** |self-descriptive  |
-|**Title in English:** |self-descriptive |
-|**Description original language:** |self-descriptive  |
-|**Description in English:** |self-descriptive  |
-|**Dataset is RDF Data Cube (checkbox)** |self-descriptive  |
-|**Modified:(calendar)** |self-descriptive  |
-|**Always use current date instead (checkbox)** |self-descriptive  |
-|**Periodicity: (list)** |- Monthly<BR>- Annual<BR>- Daily-business week<BR>- Daily<BR>- Minutely<BR>- Quarterly<BR>- Half Yearly, semester<BR>- Weekly  |
-|**Available licenses/Selected licenses** |self-descriptive  |
-|**Available example resources/Selected example resources** |self-descriptive  |
-|**Available sources/Selected sources** |self-descriptive  |
-|**Available keywords/Selected keywords** |self-descriptive  |
-|**Available themes/Selected themes** |self-descriptive  |
-|**Available languages/Selected languages** |self-descriptive  |
-|**Available authors/Selected authors** |self-descriptive  |
-|**Available publishers/Selected publishers** |self-descriptive  |
-
+|**Target path:*** |Path and target CSV file name.  |
+|**Host:**|Main domain where RDFAlerts runs.  |
+|**Port:**|Port where RDFAlerts works.  |
+|**Path:**|Path where RDFAlerts is installed.  |
 
 ***
 
@@ -52,8 +30,8 @@
 
 |Name                |Type       |DataUnit                         |Description                        |
 |--------------------|-----------|---------------------------------|-----------------------------------|
-|data |i |RDFDataUnit  |Data to be described.   |
-|metadata|o |RDFDataUnit  |Descriptive data.  | 
+|input  |i |FilesDataUnit  |File with .ttl, .nt, .rdf, ecc. extension.  |
+|output |o |WritableFilesDataUnit  |CSV file containing errors detected.  |
 
 ***
 
@@ -61,7 +39,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|1.3.1              |N/A                                             |                                
+|1.0.0              |Required RDFAlerts install into Tomcat          |                                
 
 
 ***
@@ -71,4 +49,3 @@
 |Author            |Notes                 |
 |------------------|----------------------|
 |N/A               |N/A                   | 
-
