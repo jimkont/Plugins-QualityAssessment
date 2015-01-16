@@ -48,17 +48,12 @@ public class QC2VaadinDialog extends BaseConfigDialog<QC2Config_V1> {
         fileName.setRequired(true);
         this.baseFormLayout.addComponent(fileName);
 
-
-
-
         this.propertiesGridLayout = new GridLayout(2, 2);
         this.propertiesGridLayout.setWidth("100%");
         this.propertiesGridLayout.setColumnExpandRatio(0, 1);
         this.propertiesGridLayout.setColumnExpandRatio(1, 1);
 
         this.addColumnToPropertyMappingsHeading();
-
-
 
         TextField txtSubject = new TextField();
         this.propertiesGridLayout.addComponent(txtSubject);
@@ -70,8 +65,6 @@ public class QC2VaadinDialog extends BaseConfigDialog<QC2Config_V1> {
 
         this.mainLayout.addComponent(baseFormLayout);
         this.mainLayout.addComponent(propertiesGridLayout);
-
-
 
         Button btnAddRow = new Button("Add");
         btnAddRow.addClickListener(new ClickListener() {
