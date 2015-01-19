@@ -5,7 +5,7 @@ import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
-import eu.unifiedviews.dpu.DPU.AsTransformer;
+import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
@@ -26,7 +26,7 @@ import java.util.*;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-@AsQuality
+@DPU.AsQuality
 public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogProvider<C2Config_V1> {
 
     private final Logger LOG = LoggerFactory.getLogger(C2.class);
