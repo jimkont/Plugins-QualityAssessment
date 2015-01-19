@@ -17,7 +17,7 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|**Subject:*** 	                  |Subject linked to the property.         |
+|**Subject:** 	                  |Subject linked to the property.         |
 |**Property:**		          |Property to check.           	   |
 |**FileName:**		          |Path and target CSV file name.  	   |
 |**Path:**			  |Path to use in case of test.            |
