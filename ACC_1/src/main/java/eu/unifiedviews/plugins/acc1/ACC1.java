@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.qacc1;
+package eu.unifiedviews.plugins.acc1;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import eu.unifiedviews.dataunit.DataUnit;
@@ -9,7 +9,6 @@ import eu.unifiedviews.dpu.DPU.AsTransformer;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelper;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
@@ -27,9 +26,9 @@ import java.net.URL;
 import java.util.*;
 
 @AsTransformer
-public class QACC1 extends ConfigurableBase<QACC1Config_V1> implements ConfigDialogProvider<QACC1Config_V1> {
+public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialogProvider<ACC1Config_V1> {
 
-    private final Logger LOG = LoggerFactory.getLogger(QACC1.class);
+    private final Logger LOG = LoggerFactory.getLogger(ACC1.class);
 
     @DataUnit.AsInput(name = "input")
     public FilesDataUnit filesInput;
@@ -37,13 +36,13 @@ public class QACC1 extends ConfigurableBase<QACC1Config_V1> implements ConfigDia
     @DataUnit.AsOutput(name = "output")
     public WritableFilesDataUnit outFilesData;
 
-    public QACC1() {
-        super(QACC1Config_V1.class);
+    public ACC1() {
+        super(ACC1Config_V1.class);
     }
 
     @Override
-    public AbstractConfigDialog<QACC1Config_V1> getConfigurationDialog() {
-        return new QACC1VaadinDialog();
+    public AbstractConfigDialog<ACC1Config_V1> getConfigurationDialog() {
+        return new ACC1VaadinDialog();
     }
 
     @Override

@@ -1,10 +1,10 @@
-package eu.unifiedviews.plugins.qacc1;
+package eu.unifiedviews.plugins.acc1;
 
 import com.vaadin.ui.*;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 
-public class QACC1VaadinDialog extends BaseConfigDialog<QACC1Config_V1> {
+public class ACC1VaadinDialog extends BaseConfigDialog<ACC1Config_V1> {
 
     private VerticalLayout mainLayout;
 
@@ -16,8 +16,8 @@ public class QACC1VaadinDialog extends BaseConfigDialog<QACC1Config_V1> {
     private TextField port;
     private TextField path;
 
-    public QACC1VaadinDialog() {
-        super(QACC1Config_V1.class);
+    public ACC1VaadinDialog() {
+        super(ACC1Config_V1.class);
 
         buildMainLayout();
 
@@ -76,7 +76,7 @@ public class QACC1VaadinDialog extends BaseConfigDialog<QACC1Config_V1> {
     }
 
     @Override
-    protected void setConfiguration(QACC1Config_V1 config) throws DPUConfigException {
+    protected void setConfiguration(ACC1Config_V1 config) throws DPUConfigException {
 
         fileName.setValue(config.getFileName());
 
@@ -87,9 +87,9 @@ public class QACC1VaadinDialog extends BaseConfigDialog<QACC1Config_V1> {
     }
 
     @Override
-    protected QACC1Config_V1 getConfiguration() throws DPUConfigException {
+    protected ACC1Config_V1 getConfiguration() throws DPUConfigException {
 
-        QACC1Config_V1 config = new QACC1Config_V1();
+        ACC1Config_V1 config = new ACC1Config_V1();
 
         config.setFileName(fileName.getValue());
 

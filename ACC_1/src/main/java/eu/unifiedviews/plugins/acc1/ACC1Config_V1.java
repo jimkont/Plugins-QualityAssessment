@@ -1,6 +1,6 @@
-package eu.unifiedviews.plugins.qacc1;
+package eu.unifiedviews.plugins.acc1;
 
-public class QACC1Config_V1 {
+public class ACC1Config_V1 {
 
     private String path = null; // Only for test purpose
     private String fileName = "Result.csv";
@@ -12,7 +12,7 @@ public class QACC1Config_V1 {
     private int width;
     private int height;
 
-    public QACC1Config_V1() {
+    public ACC1Config_V1() {
         width = 500;
         height = 500;
     }

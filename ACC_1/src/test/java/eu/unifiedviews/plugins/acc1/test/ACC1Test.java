@@ -1,11 +1,11 @@
-package eu.unifiedviews.plugins.qacc1.test;
+package eu.unifiedviews.plugins.acc1.test;
 
-import eu.unifiedviews.plugins.qacc1.QACC1;
-import eu.unifiedviews.plugins.qacc1.QACC1Config_V1;
+import eu.unifiedviews.plugins.acc1.ACC1;
+import eu.unifiedviews.plugins.acc1.ACC1Config_V1;
 import org.junit.Test;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 
-public class QACC1Test {
+public class ACC1Test {
 
     @Test
     public void executeTestCase() throws Exception {
@@ -13,13 +13,13 @@ public class QACC1Test {
         TestEnvironment env = new TestEnvironment();
 
         // Instances of Main & Config classes
-        QACC1 dpu = new QACC1();
-        QACC1Config_V1 config = new QACC1Config_V1();
+        ACC1 dpu = new ACC1();
+        ACC1Config_V1 config = new ACC1Config_V1();
 
         // Set the Path where the result will be saved
-        config.setPath("file:/Users/AndreAga/Documents/Sviluppo/UnifiedViews/Portale/backend/finalFiles/");
+        //config.setPath("file:/Users/AndreAga/Documents/Sviluppo/UnifiedViews/Portale/backend/finalFiles/");
         // Set the Name of the result file
-        config.setFileName("ResultTest.csv");
+        //config.setFileName("ResultTest.csv");
 
         dpu.configureDirectly(config);
 
