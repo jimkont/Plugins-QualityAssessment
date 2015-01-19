@@ -1,11 +1,11 @@
-# ACC_1 #
+# Q-ACC_1 #
 ----------
 
 ###General###
 
 |                               |                                                               |
 |------------------------------|---------------------------------------------------------------|
-|**Name:**                     |ACC_1 							       |
+|**Name:**                     |Q-ACC_1 							       |
 |**Description:**              |Validate RDF files. 					       |
 |**DPU class name:**           |ACC1     						       | 
 |**Configuration class name:** |ACC1Config_V1                           		       |
@@ -17,7 +17,7 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|**Target path:*** 	          |Path and target CSV file name.          |
+|**Target path:** 	          |Path and target CSV file name.          |
 |**Host:**		          |Main domain where RDFAlerts runs.  	   |
 |**Port:**		          |Port where RDFAlerts works.  	   |
 |**Path:**			  |Path where RDFAlerts is installed.      |
