@@ -9,12 +9,12 @@
 		<version>1.1.0</version>
 		<relativePath />
 	</parent>
-	<artifactId>acc_1</artifactId>
-	<packaging>bundle</packaging>
-
+	
+	<artifactId>uv-q-acc_1</artifactId>
 	<name>Q-ACC_1</name>
 	<version>1.0.0</version>
 	<description>Detecting syntax errors. Check the correctness of the literals, detection of ill-typed literals which do not abide by the lexical syntax for their respective datatype that can occur if a value is (i) malformed or (ii) is a member of an incompatible datatype.</description>
+	<packaging>bundle</packaging>
 
 	<repositories>
 		<repository>
@@ -25,7 +25,7 @@
 	</repositories>
 
 	<properties>
-		<dpu.package>eu.unifiedviews.plugins.acc1</dpu.package>
+		<dpu.package>eu.unifiedviews.plugins.quality.acc1</dpu.package>
 		<dpu.mainClass>ACC1</dpu.mainClass>
 	</properties>
 

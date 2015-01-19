@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.acc1;
+package eu.unifiedviews.plugins.quality.acc1;
 
 import com.vaadin.ui.*;
 import eu.unifiedviews.dpu.config.DPUConfigException;

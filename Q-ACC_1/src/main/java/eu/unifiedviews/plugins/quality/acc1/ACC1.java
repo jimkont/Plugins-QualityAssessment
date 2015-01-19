@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.acc1;
+package eu.unifiedviews.plugins.quality.acc1;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import eu.unifiedviews.dataunit.DataUnit;
@@ -48,7 +48,9 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
     @Override
     public void execute(DPUContext context) throws DPUException {
 
+        // Set the virtual path to the input file
         VirtualPathHelpers.create(filesInput);
+        
         final Iterator<FilesDataUnit.Entry> filesIteration;
 
         try {
@@ -60,13 +62,18 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
 
         if (filesIteration.hasNext()) {
 
+            // Get the input file given to the DPU
             FilesDataUnit.Entry file = filesIteration.next();
 
             try {
 
+                // Set the name (with extention) of the destination file for the conversion
                 String outputUri = outFilesData.getBaseFileURIString()+"input.nt";
 
-                this.executeConv(context, file.getFileURIString().substring(5), outputUri.substring(5));
+                // Convert the RDF file to the N-X format
+                this.rdfToNx(context, file.getFileURIString().substring(5), outputUri.substring(5));
+                
+                // Get the JSON of the POST Request
                 String json = this.executeRequest(context, config.getV_host(), config.getV_port(), config.getV_path(), outputUri.substring(5));
 
                 JSONParser jsonPrs = new JSONParser();
@@ -79,7 +86,8 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
                     // Get the Results from the JSON object
                     JSONArray v_results = (JSONArray) jsonObj.get("results");
 
-                    this.executeCSV(context, v_results);
+                    // Create the output File
+                    this.createCSV(context, v_results);
                 }
 
             } catch (Exception ex) {
@@ -88,38 +96,41 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
         }
     }
 
-    private void executeConv(DPUContext context, String source, String destination) {
+    private void rdfToNx (DPUContext context, String source, String destination) {
 
         final File inFile;
         final File outFile;
 
         try {
 
+            // Get the 
             inFile = new File(source);
             outFile = new File(java.net.URI.create("file:"+ destination));
-
             InputStream in = new FileInputStream(inFile);
             OutputStream out = new FileOutputStream(outFile);
 
+            // Define the Source Format and the Destination Format in relation to the file extension
             RDFFormat sourceFormat = RDFParserRegistry.getInstance().getFileFormatForFileName(source, RDFFormat.RDFXML);
             RDFFormat destinationFormat = RDFParserRegistry.getInstance().getFileFormatForFileName(destination, RDFFormat.RDFXML);
 
+            // Define Parser and Writer for the conversion
             RDFParser parser = RDFParserRegistry.getInstance().get(sourceFormat).getParser();
             RDFWriter writer = RDFWriterRegistry.getInstance().get(destinationFormat).getWriter(out);
 
+            // Configure the Parser to avoid some type of errors (Every BasicParserSettings is exclused)
             parser.getParserConfig().addNonFatalError(BasicParserSettings.VERIFY_DATATYPE_VALUES);
             parser.getParserConfig().addNonFatalError(BasicParserSettings.VERIFY_LANGUAGE_TAGS);
             parser.getParserConfig().addNonFatalError(BasicParserSettings.VERIFY_RELATIVE_URIS);
-
             parser.getParserConfig().addNonFatalError(BasicParserSettings.FAIL_ON_UNKNOWN_DATATYPES);
             parser.getParserConfig().addNonFatalError(BasicParserSettings.FAIL_ON_UNKNOWN_LANGUAGES);
-
             parser.getParserConfig().addNonFatalError(BasicParserSettings.NORMALIZE_DATATYPE_VALUES);
             parser.getParserConfig().addNonFatalError(BasicParserSettings.NORMALIZE_LANGUAGE_TAGS);
-
+            
             parser.setRDFHandler(writer);
+            
+            // Parse (and Convert) the RDF File
             parser.parse(in, "unknown:namespace");
-
+            
             out.flush();
 
             in.close();
@@ -139,11 +150,13 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
         // Content to Validate (N-X Input)
         String content = "";
 
+        // Get the file with the N-X Input
         File file = new File(f_path);
         FileInputStream contentFile = null;
 
         try {
 
+            // Put the file contenct in to the variable
             contentFile = new FileInputStream(file);
 
             StringBuilder builder = new StringBuilder();
@@ -169,58 +182,69 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
 
         // Create Url with Encoded Content
         String encodedContent = java.net.URLEncoder.encode(content,"UTF-8");
+        
+        // Create Url 
         String url = v_host + ":"+ v_port +"/"+ v_path +"/alerts";
-
         URL obj = new URL(url);
         HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
 
+        // Create the Request
         connection.setRequestMethod("POST");
         connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-
+        connection.setDoOutput(true);
         String parameters = "fulldata="+ encodedContent +"&format=json";
 
-        connection.setDoOutput(true);
-
+        // Execute the Query
         DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
         wr.writeBytes(parameters);
         wr.flush();
         wr.close();
-
+        
+        // Get the Response
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
         String inputLine;
         StringBuffer response = new StringBuffer();
 
+        // Write the Response in to the file
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
         }
 
         in.close();
 
+        // Return the Decoded requested Content
         return java.net.URLDecoder.decode(response.toString(),"UTF-8");
     }
 
-    private void executeCSV (DPUContext context, JSONArray results) {
+    private void createCSV (DPUContext context, JSONArray results) {
 
         CSVWriter writer = null;
 
         try {
 
+            // Add new file to the output variable
             final String outFileUri = outFilesData.addNewFile(config.getFileName());
+
+            // Set a Virtual Path to the file specified in the configuration
             VirtualPathHelpers.setVirtualPath(outFilesData, config.getFileName(), config.getFileName());
 
+            // Create the output file in the working directory (or test directory specified in the test file)
             final File outFile = new File(java.net.URI.create((this.config.getPath() == null) ? outFileUri : this.config.getPath() + this.config.getFileName()));
             writer = new CSVWriter(new FileWriter(outFile, false));
 
+            // Write the CSV Header
             String [] header = {"type","code","message"};
             writer.writeNext(header);
 
             Iterator i = results.iterator();
 
+            // Write the CSV Content, every iteration is a error/warning found
             while (i.hasNext()) {
 
                 JSONObject innerObj = (JSONObject) i.next();
 
+                // Get Type, Code and Message of the error
                 String type = innerObj.get("type").toString();
                 int code = Integer.parseInt(innerObj.get("code").toString());
                 String msg = innerObj.get("msg").toString();

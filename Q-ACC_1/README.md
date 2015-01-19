@@ -3,13 +3,13 @@
 
 ###General###
 
-|                               |                                                               |
+|                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
-|**Name:**                     |Q-ACC_1 							       |
-|**Description:**              |Validate RDF files. 					       |
-|**DPU class name:**           |ACC1     						       | 
-|**Configuration class name:** |ACC1Config_V1                           		       |
-|**Dialogue class name:**      |ACC1VaadinDialog 					       |
+|**Name:**                     |Q-ACC_1 		                     					       |
+|**Description:**              |Validate RDF files.                  					       |
+|**DPU class name:**           |ACC1     						                               |
+|**Configuration class name:** |ACC1Config_V1                           		               |
+|**Dialogue class name:**      |ACC1VaadinDialog 					                           |
 
 
 ###Configuration parameters###
@@ -17,10 +17,10 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|**Target path:** 	          |Path and target CSV file name.          |
-|**Host:**		          |Main domain where RDFAlerts runs.  	   |
-|**Port:**		          |Port where RDFAlerts works.  	   |
-|**Path:**			  |Path where RDFAlerts is installed.      |
+|**Target path:** 	              |Path and target CSV file name.          |
+|**Host:**		                  |Main domain where RDFAlerts runs.  	   |
+|**Port:**		                  |Port where RDFAlerts works.  	       |
+|**Path:**			              |Path where RDFAlerts is installed.      |
 
 ***
 
@@ -28,8 +28,8 @@
 
 |Name                |Type       |DataUnit                         |Description                          |
 |--------------------|-----------|---------------------------------|-------------------------------------|
-|input  	     |i 	 |FilesDataUnit  		   |File with .ttl, .nt, .rdf, ecc. extension.  |
-|output 	     |o 	 |WritableFilesDataUnit            |CSV file containing errors detected. |
+|input  	         |i      	 |FilesDataUnit  		           |File with .ttl, .nt, .rdf, ecc. extension.  |
+|output 	         |o 	     |WritableFilesDataUnit            |CSV file containing errors detected. |
 
 ***
 

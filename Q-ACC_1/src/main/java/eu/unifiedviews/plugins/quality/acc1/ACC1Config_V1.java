@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.acc1;
+package eu.unifiedviews.plugins.quality.acc1;
 
 public class ACC1Config_V1 {
 

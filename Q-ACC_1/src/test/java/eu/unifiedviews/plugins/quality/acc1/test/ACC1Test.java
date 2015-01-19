@@ -1,7 +1,7 @@
-package eu.unifiedviews.plugins.acc1.test;
+package eu.unifiedviews.plugins.quality.acc1.test;
 
-import eu.unifiedviews.plugins.acc1.ACC1;
-import eu.unifiedviews.plugins.acc1.ACC1Config_V1;
+import eu.unifiedviews.plugins.quality.acc1.ACC1;
+import eu.unifiedviews.plugins.quality.acc1.ACC1Config_V1;
 import org.junit.Test;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 
@@ -16,9 +16,9 @@ public class ACC1Test {
         ACC1 dpu = new ACC1();
         ACC1Config_V1 config = new ACC1Config_V1();
 
-        // Set the Path where the result will be saved
+        // Set the Path where the result will be saved (UNCOMMENT IT)
         //config.setPath("file:/Users/AndreAga/Documents/Sviluppo/UnifiedViews/Portale/backend/finalFiles/");
-        // Set the Name of the result file
+        // Set the Name of the result file (UNCOMMENT IT)
         //config.setFileName("ResultTest.csv");
 
         dpu.configureDirectly(config);
