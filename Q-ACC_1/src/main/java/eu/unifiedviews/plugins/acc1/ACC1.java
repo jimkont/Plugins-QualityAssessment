@@ -5,7 +5,7 @@ import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
-import eu.unifiedviews.dpu.DPU.AsTransformer;
+import eu.unifiedviews.dpu.DPU.AsQuality;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
@@ -25,7 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 
-@AsTransformer
+@AsQuality
 public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialogProvider<ACC1Config_V1> {
 
     private final Logger LOG = LoggerFactory.getLogger(ACC1.class);
