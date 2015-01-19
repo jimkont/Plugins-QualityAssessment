@@ -1,9 +1,9 @@
-package eu.unifiedviews.plugins.c2.test;
+package eu.unifiedviews.plugins.quality.c2.test;
 
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
-import eu.unifiedviews.plugins.c2.C2;
-import eu.unifiedviews.plugins.c2.C2Config_V1;
+import eu.unifiedviews.plugins.quality.c2.C2;
+import eu.unifiedviews.plugins.quality.c2.C2Config_V1;
 import org.junit.Test;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.RDFFormat;
@@ -39,16 +39,16 @@ public class C2Test {
         config.setSubject(subject);
         config.setProperty(property);
 
-        // Set the Path where the result will be saved
+        // Set the Path where the result will be saved (UNCOMMENT IT)
         //config.setPath("file:/Users/AndreAga/Documents/Sviluppo/UnifiedViews/Portale/backend/finalFiles/");
-        // Set the Name of the result file
+        // Set the Name of the result file (UNCOMMENT IT)
         //config.setFileName("ResultTest.csv");
 
         dpu.configureDirectly(config);
 
         // Define Input & Output of the DPU
         WritableRDFDataUnit input = env.createRdfInput("input", false);
-        WritableFilesDataUnit output = env.createFilesOutput("output");
+        env.createFilesOutput("output");
 
         // Set the name of the resource used for the test (located in src/test/resource)
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("ScuoleInfanzia.ttl");

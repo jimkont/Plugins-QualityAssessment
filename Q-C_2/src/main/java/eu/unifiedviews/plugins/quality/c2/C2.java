@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.c2;
+package eu.unifiedviews.plugins.quality.c2;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import eu.unifiedviews.dataunit.DataUnit;
@@ -6,7 +6,6 @@ import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPU.AsQuality;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
@@ -24,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.*;
-
 import au.com.bytecode.opencsv.CSVReader;
 
 @DPU.AsQuality
@@ -50,6 +48,7 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
     @Override
     public void execute(DPUContext context) throws DPUException {
 
+        // Get configuration parameters        
         ArrayList<String> subject_ = this.config.getSubject();
         ArrayList<String> property_ = this.config.getProperty();
 
@@ -58,7 +57,8 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
         } else {
 
             Double [] results = new Double[subject_.size()];
-
+            
+            //  It evaluates the completeness, for every subject specified in the DPU Configuration
             for (int i = 0; i < subject_.size(); i++) {
 
                 String key = subject_.get(i);
@@ -66,9 +66,9 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
 
                 String query1 = "";
                 String query2 = "";
-
+                
                 if (key.trim().length() > 0 && value.trim().length() > 0) {
-
+                    
                     query1 = "SELECT (COUNT(?s) AS ?counter) WHERE { ?s a <" + key + "> . }";
                     query2 = "SELECT (COUNT(?o) AS ?counter) WHERE { ?s a <" + key + "> . " +
                             "OPTIONAl { ?s <" + value + "> ?o } . " +
@@ -79,6 +79,7 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
 
                     try {
 
+                        // Create two temp files, used to evaluate the completeness, in the output directory
                         outFile_1 = new File(java.net.URI.create(outFilesData.getBaseFileURIString()+"counter_1.csv"));
                         outFile_2 = new File(java.net.URI.create(outFilesData.getBaseFileURIString()+"counter_2.csv"));
 
@@ -90,22 +91,26 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
                             dataset.addDefaultGraph(graph_1);
                         }
 
+                        // Execute the above two Queries specified above
                         this.executeQuery(context, outFile_1, query1, dataset);
                         this.executeQuery(context, outFile_2, query2, dataset);
 
-                        results[i] = this.executeMean(context, outFile_1.getAbsolutePath(), outFile_2.getAbsolutePath());
+                        // Get the result
+                        results[i] = this.calculateMean(context, outFile_1.getAbsolutePath(), outFile_2.getAbsolutePath());
 
                     } catch (DataUnitException ex) {
                         context.sendMessage(DPUContext.MessageType.ERROR, "Problem with DataUnit.", "", ex);
                         return;
                     }
-
+                    
+                    // Delete the two temp files
                     outFile_1.delete();
                     outFile_2.delete();
                 }
             }
 
-            this.executeCSV(context, subject_, property_, results);
+            // Create the output CSV file with the result
+            this.createCSV(context, subject_, property_, results);
         }
     }
 
@@ -117,10 +122,12 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
 
             connection = inRdfData.getConnection();
 
+            // Prepare the execution of the query
             final SPARQLResultsCSVWriterFactory writerFactory = new SPARQLResultsCSVWriterFactory();
             final TupleQueryResultWriter resultWriter = writerFactory.getWriter(outputStream);
             TupleQuery querySparql = connection.prepareTupleQuery(QueryLanguage.SPARQL, query);
 
+            // Execute the Query
             querySparql.setDataset(dataset);
             querySparql.evaluate(resultWriter);
 
@@ -143,21 +150,27 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
         }
     }
 
-    private void executeCSV (DPUContext context, ArrayList<String> subject, ArrayList<String> property, Double[] results) {
+    private void createCSV (DPUContext context, ArrayList<String> subject, ArrayList<String> property, Double[] results) {
 
         CSVWriter writer = null;
 
         try {
 
+            // Add new file to the output variable
             final String outFileUri = outFilesData.addNewFile(config.getFileName());
+            
+            // Set a Virtual Path to the file specified in the configuration
             VirtualPathHelpers.setVirtualPath(outFilesData, config.getFileName(), config.getFileName());
 
+            // Create the output file in the working directory (or test directory specified in the test file)
             final File outFile = new File(java.net.URI.create((this.config.getPath() == null) ? outFileUri : this.config.getPath() + this.config.getFileName()));
             writer = new CSVWriter(new FileWriter(outFile),';', '"', '\n');
 
+            // Write the CSV Header
             String [] header = {"subject","property","quality"};
             writer.writeNext(header);
 
+            // Write the CSV Content, every iteration is a property evaluated
             for (int z = 0; z < results.length; z++) {
                 String [] record = {subject.get(z), property.get(z), ""+ results[z]};
                 writer.writeNext(record);
@@ -172,25 +185,28 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
         }
     }
 
-    private Double executeMean (DPUContext context, String path_1, String path_2) {
+    private Double calculateMean (DPUContext context, String path_1, String path_2) {
 
         CSVReader csvReader_1 = null;
         CSVReader csvReader_2 = null;
 
-        Double media = 0.0;
+        Double mean = 0.0;
 
         try {
 
+            // Get the two temp files created above
             csvReader_1 = new CSVReader(new FileReader(path_1));
             csvReader_2 = new CSVReader(new FileReader(path_2));
 
             double value_1 = 0;
             double value_2 = 0;
 
+            // Get the values from the CSVs
             value_1 = Integer.parseInt(csvReader_1.readAll().get(1)[0]);
             value_2 = Integer.parseInt(csvReader_2.readAll().get(1)[0]);
 
-            media = value_2/value_1;
+            // Calculate the Mean
+            mean = value_2/value_1;
 
             csvReader_1.close();
             csvReader_2.close();
@@ -199,16 +215,18 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
             context.sendMessage(DPUContext.MessageType.ERROR, "I/0 Failed", "", e);
         }
 
-        return media;
+        return mean;
     }
 
     private Map<String, URI> getGraphs() throws DataUnitException {
 
         final Map<String, URI> graphUris = new HashMap<>();
 
+        // Get the input stream
         try (RDFDataUnit.Iteration iter = inRdfData.getIteration()) {
             while (iter.hasNext()) {
                 final RDFDataUnit.Entry entry = iter.next();
+                // Put in the Graph URI the Entry Name and DataGraph URI
                 graphUris.put(entry.getSymbolicName(), entry.getDataGraphURI());
             }
         }

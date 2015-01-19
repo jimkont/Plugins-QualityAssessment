@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.c2;
+package eu.unifiedviews.plugins.quality.c2;
 
 import java.util.ArrayList;
 import com.vaadin.ui.*;

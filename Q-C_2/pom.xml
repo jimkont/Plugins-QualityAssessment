@@ -9,12 +9,12 @@
 		<version>1.1.0</version>
 		<relativePath />
 	</parent>
-	<artifactId>c_2</artifactId>
-	<packaging>bundle</packaging>
 
+	<artifactId>uv-q-c_2</artifactId>
 	<name>Q-C_2</name>
-	<version>1.0.0</version>
 	<description>Missing elements from a recommended list of elements, empty elements.</description>
+	<version>1.0.0</version>
+	<packaging>bundle</packaging>
 
 	<repositories>
 		<repository>
@@ -24,9 +24,8 @@
 		</repository>
 	</repositories>
 
-
 	<properties>
-		<dpu.package>eu.unifiedviews.plugins.c2</dpu.package>
+		<dpu.package>eu.unifiedviews.plugins.quality.c2</dpu.package>
 		<dpu.mainClass>C2</dpu.mainClass>
 	</properties>
 
