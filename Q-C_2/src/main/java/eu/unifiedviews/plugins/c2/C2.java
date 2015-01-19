@@ -26,7 +26,7 @@ import java.util.*;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-@AsTransformer
+@AsQuality
 public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogProvider<C2Config_V1> {
 
     private final Logger LOG = LoggerFactory.getLogger(C2.class);
