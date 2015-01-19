@@ -9,10 +9,10 @@
 		<version>1.0.1</version>
 		<relativePath />
 	</parent>
-	<artifactId>q_c_2</artifactId>
+	<artifactId>c_2</artifactId>
 	<packaging>bundle</packaging>
 
-	<name>T-Q_C_2</name>
+	<name>Q-C_2</name>
 	<version>1.0.0</version>
 	<description>Missing elements from a recommended list of elements, empty elements.</description>
 
@@ -26,8 +26,8 @@
 
 
 	<properties>
-		<dpu.package>eu.unifiedviews.plugins.qc2</dpu.package>
-		<dpu.mainClass>QC2</dpu.mainClass>
+		<dpu.package>eu.unifiedviews.plugins.c2</dpu.package>
+		<dpu.mainClass>C2</dpu.mainClass>
 	</properties>
 
 	<dependencies>

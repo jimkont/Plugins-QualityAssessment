@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.qc2;
+package eu.unifiedviews.plugins.c2;
 
 import java.util.ArrayList;
 import com.vaadin.ui.*;
@@ -7,7 +7,7 @@ import com.vaadin.ui.Button.ClickListener;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 
-public class QC2VaadinDialog extends BaseConfigDialog<QC2Config_V1> {
+public class C2VaadinDialog extends BaseConfigDialog<C2Config_V1> {
 
     private VerticalLayout mainLayout;
 
@@ -19,8 +19,8 @@ public class QC2VaadinDialog extends BaseConfigDialog<QC2Config_V1> {
 
     private TextField fileName;
 
-    public QC2VaadinDialog() {
-        super(QC2Config_V1.class);
+    public C2VaadinDialog() {
+        super(C2Config_V1.class);
 
         buildMainLayout();
         Panel panel = new Panel();
@@ -115,7 +115,7 @@ public class QC2VaadinDialog extends BaseConfigDialog<QC2Config_V1> {
     }
 
     @Override
-    protected void setConfiguration(QC2Config_V1 config) throws DPUConfigException {
+    protected void setConfiguration(C2Config_V1 config) throws DPUConfigException {
 
         ArrayList<String> subject = config.getSubject();
         ArrayList<String> property = config.getProperty();
@@ -131,9 +131,9 @@ public class QC2VaadinDialog extends BaseConfigDialog<QC2Config_V1> {
     }
 
     @Override
-    protected QC2Config_V1 getConfiguration() throws DPUConfigException {
+    protected C2Config_V1 getConfiguration() throws DPUConfigException {
 
-        QC2Config_V1 config = new QC2Config_V1();
+        C2Config_V1 config = new C2Config_V1();
 
         ArrayList<String> subject = new ArrayList<>();
         ArrayList<String> property = new ArrayList<>();

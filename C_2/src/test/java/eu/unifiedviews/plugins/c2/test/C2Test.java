@@ -1,9 +1,9 @@
-package eu.unifiedviews.plugins.qc2.test;
+package eu.unifiedviews.plugins.c2.test;
 
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
-import eu.unifiedviews.plugins.qc2.QC2;
-import eu.unifiedviews.plugins.qc2.QC2Config_V1;
+import eu.unifiedviews.plugins.c2.C2;
+import eu.unifiedviews.plugins.c2.C2Config_V1;
 import org.junit.Test;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.RDFFormat;
@@ -13,9 +13,9 @@ import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class QC2Test {
+public class C2Test {
 
-    private static final Logger LOG = LoggerFactory.getLogger(QC2Test.class);
+    private static final Logger LOG = LoggerFactory.getLogger(C2Test.class);
 
     @Test
     public void executeTestCase() throws Exception {
@@ -23,8 +23,8 @@ public class QC2Test {
         TestEnvironment env = new TestEnvironment();
 
         // Instances of Main & Config classes
-        QC2 dpu = new QC2();
-        QC2Config_V1 config = new QC2Config_V1();
+        C2 dpu = new C2();
+        C2Config_V1 config = new C2Config_V1();
 
         // Define the config parameters (if necessary)
         ArrayList<String> subject = new ArrayList<>();
@@ -40,9 +40,9 @@ public class QC2Test {
         config.setProperty(property);
 
         // Set the Path where the result will be saved
-        config.setPath("file:/Users/AndreAga/Documents/Sviluppo/UnifiedViews/Portale/backend/finalFiles/");
+        //config.setPath("file:/Users/AndreAga/Documents/Sviluppo/UnifiedViews/Portale/backend/finalFiles/");
         // Set the Name of the result file
-        config.setFileName("ResultTest.csv");
+        //config.setFileName("ResultTest.csv");
 
         dpu.configureDirectly(config);
 

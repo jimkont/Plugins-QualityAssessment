@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.qc2;
+package eu.unifiedviews.plugins.c2;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import eu.unifiedviews.dataunit.DataUnit;
@@ -27,9 +27,9 @@ import java.util.*;
 import au.com.bytecode.opencsv.CSVReader;
 
 @AsTransformer
-public class QC2 extends ConfigurableBase<QC2Config_V1> implements ConfigDialogProvider<QC2Config_V1> {
+public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogProvider<C2Config_V1> {
 
-    private final Logger LOG = LoggerFactory.getLogger(QC2.class);
+    private final Logger LOG = LoggerFactory.getLogger(C2.class);
 
     @DataUnit.AsInput(name = "input")
     public RDFDataUnit inRdfData;
@@ -37,13 +37,13 @@ public class QC2 extends ConfigurableBase<QC2Config_V1> implements ConfigDialogP
     @DataUnit.AsOutput(name = "output")
     public WritableFilesDataUnit outFilesData;
 
-    public QC2() {
-        super(QC2Config_V1.class);
+    public C2() {
+        super(C2Config_V1.class);
     }
 
     @Override
-    public AbstractConfigDialog<QC2Config_V1> getConfigurationDialog() {
-        return new QC2VaadinDialog();
+    public AbstractConfigDialog<C2Config_V1> getConfigurationDialog() {
+        return new C2VaadinDialog();
     }
 
     @Override

@@ -1,8 +1,8 @@
-package eu.unifiedviews.plugins.qc2;
+package eu.unifiedviews.plugins.c2;
 
 import java.util.ArrayList;
 
-public class QC2Config_V1 {
+public class C2Config_V1 {
 
     private ArrayList<String> subject = new ArrayList<>();
     private ArrayList<String> property = new ArrayList<>();
@@ -13,7 +13,7 @@ public class QC2Config_V1 {
     private int width;
     private int height;
 
-    public QC2Config_V1() {
+    public C2Config_V1() {
         width = 500;
         height = 500;
     }
