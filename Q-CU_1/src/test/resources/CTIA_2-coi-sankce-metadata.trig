@@ -1,0 +1,33 @@
+
+<http://data.coi.cz/resource/dataset/sankce/metadata> {
+	<http://data.coi.cz/resource/dataset/sankce> a <http://rdfs.org/ns/void#Dataset> , <http://www.w3.org/ns/dcat#Dataset> ;
+		<http://comsode.eu/ontology/dataset> <http://comsode.eu/resource/dataset/CTIA_2> ;
+		<http://purl.org/dc/terms/description> "Přehled základních informací o všech sankcích, které inspektoři České obchodní inspekce udělili od 1. 1. 2012."@cs , "Basic information about sanctions of CTIA"@en ;
+		<http://purl.org/dc/terms/title> "Sankce ČOI"@cs , "Sanctions of CTIA"@en ;
+		<http://rdfs.org/ns/void#dataDump> <http://data.comsode.eu/dump/ctia-2/CTIA_2-coi-sankce.zip> ;
+		<http://rdfs.org/ns/void#sparqlEndpoint> <http://comsode.eu/sparql> ;
+		<http://purl.org/dc/terms/creator> <http://purl.org/klimek#me> ;
+		<http://purl.org/dc/terms/publisher> <http://www.coi.cz/> ;
+		<http://purl.org/dc/terms/license> <http://www.coi.cz/cz/spotrebitel/open-data-databaze-kontrol-sankci-a-zakazu/open-data-licence> ;
+		<http://rdfs.org/ns/void#exampleResource> <http://data.coi.cz/resource/sanction/76964> ;
+		<http://purl.org/dc/terms/source> <http://www.coi.cz/userdata/files/dokumenty-ke-stazeni/open-data/sankce.csv> ;
+		<http://purl.org/dc/terms/language> <http://id.loc.gov/vocabulary/iso639-1/cs> ;
+		<http://purl.org/dc/terms/modified> "2014-11-06"^^<http://www.w3.org/2001/XMLSchema#date> ;
+		<http://www.w3.org/ns/dcat#distribution> <http://data.coi.cz/resource/dataset/sankce/distribution> ;
+		<http://rdfs.org/ns/void#triples> "362589"^^<http://www.w3.org/2001/XMLSchema#integer> ;
+		<http://rdfs.org/ns/void#entities> "59772"^^<http://www.w3.org/2001/XMLSchema#integer> ;
+		<http://rdfs.org/ns/void#classes> "3"^^<http://www.w3.org/2001/XMLSchema#integer> ;
+		<http://rdfs.org/ns/void#properties> "9"^^<http://www.w3.org/2001/XMLSchema#integer> ;
+		<http://rdfs.org/ns/void#distinctSubjects> "88757"^^<http://www.w3.org/2001/XMLSchema#integer> ;
+		<http://rdfs.org/ns/void#distinctObjects> "94087"^^<http://www.w3.org/2001/XMLSchema#integer> .
+	
+	<http://data.coi.cz/resource/dataset/sankce/distribution> a <http://www.w3.org/ns/dcat#Distribution> ;
+		<http://purl.org/dc/terms/description> "Přehled základních informací o všech sankcích, které inspektoři České obchodní inspekce udělili od 1. 1. 2012."@cs , "Basic information about sanctions of CTIA"@en ;
+		<http://purl.org/dc/terms/title> "Sankce ČOI"@cs , "Sanctions of CTIA"@en ;
+		<http://www.w3.org/ns/dcat#downloadURL> <http://data.comsode.eu/dump/ctia-2/CTIA_2-coi-sankce.zip> ;
+		<http://www.w3.org/ns/dcat#mediaType> "application/zip" ;
+		<http://purl.org/dc/terms/license> <http://www.coi.cz/cz/spotrebitel/open-data-databaze-kontrol-sankci-a-zakazu/open-data-licence> ;
+		<http://purl.org/dc/terms/modified> "2014-11-06"^^<http://www.w3.org/2001/XMLSchema#date> .
+	
+	<http://www.coi.cz/> a <http://xmlns.com/foaf/0.1/Agent> .
+}
