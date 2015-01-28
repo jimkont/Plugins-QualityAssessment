@@ -71,7 +71,7 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
             double startTime = startDate.getTime();
 
             // Final Currency
-            double currency = (currentTime - lastModificationTime) / (currentTime - startTime);
+            double currency = 1 - ((currentTime - lastModificationTime) / (currentTime - startTime));
             
             resultQuery[1] = ""+ currency;
 
