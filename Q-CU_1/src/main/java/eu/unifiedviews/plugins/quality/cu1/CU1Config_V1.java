@@ -3,7 +3,7 @@ package eu.unifiedviews.plugins.quality.cu1;
 public class CU1Config_V1 {
 
     //private String path = null; // Only for test purpose
-    //private String fileName = "Result.csv";  // Only for test purpose
+    //private String fileName = "";  // Only for test purpose
 
     private int width;
     private int height;
