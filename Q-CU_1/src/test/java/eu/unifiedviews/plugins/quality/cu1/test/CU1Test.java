@@ -1,5 +1,7 @@
 package eu.unifiedviews.plugins.quality.cu1.test;
 
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.plugins.quality.cu1.CU1;
 import eu.unifiedviews.plugins.quality.cu1.CU1Config_V1;
@@ -33,7 +35,8 @@ public class CU1Test {
 
         // Define Input & Output of the DPU
         WritableRDFDataUnit input = env.createRdfInput("input", false);
-        env.createFilesOutput("output");
+        //env.createFilesOutput("output");
+        WritableRDFDataUnit output = env.createRdfOutput("output", false);
 
         // Set the name of the resource used for the test (located in src/test/resource)
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("CTIA_2-coi-sankce-metadata.trig");

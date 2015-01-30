@@ -2,8 +2,8 @@ package eu.unifiedviews.plugins.quality.cu1;
 
 public class CU1Config_V1 {
 
-    private String path = null; // Only for test purpose
-    private String fileName = "Result.csv";
+    //private String path = null; // Only for test purpose
+    //private String fileName = "Result.csv";  // Only for test purpose
 
     private int width;
     private int height;
@@ -13,7 +13,7 @@ public class CU1Config_V1 {
         height = 500;
     }
 
-    public String getPath() {
+    /*public String getPath() {
         return path;
     }
 
@@ -27,7 +27,7 @@ public class CU1Config_V1 {
 
     public void setFileName(String targetPath) {
         this.fileName = targetPath;
-    }
+    }*/
 
     public int getWidth() {
         return width;

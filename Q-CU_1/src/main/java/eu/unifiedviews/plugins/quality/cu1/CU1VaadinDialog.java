@@ -10,7 +10,7 @@ public class CU1VaadinDialog extends BaseConfigDialog<CU1Config_V1> {
 
     private FormLayout baseFormLayout;
 
-    private TextField fileName;
+    //private TextField fileName;
 
     public CU1VaadinDialog() {
         super(CU1Config_V1.class);
@@ -37,10 +37,10 @@ public class CU1VaadinDialog extends BaseConfigDialog<CU1Config_V1> {
         this.baseFormLayout = new FormLayout();
         this.baseFormLayout.setSizeUndefined();
 
-        fileName = new TextField("File output name:");
+        /*fileName = new TextField("File output name:");
         fileName.setHeight("-1px");
         fileName.setRequired(true);
-        this.baseFormLayout.addComponent(fileName);
+        this.baseFormLayout.addComponent(fileName);*/
 
         this.mainLayout.addComponent(baseFormLayout);
     }
@@ -48,7 +48,7 @@ public class CU1VaadinDialog extends BaseConfigDialog<CU1Config_V1> {
     @Override
     protected void setConfiguration(CU1Config_V1 config) throws DPUConfigException {
 
-        fileName.setValue(config.getFileName());
+        //fileName.setValue(config.getFileName());
         
     }
 
@@ -57,7 +57,7 @@ public class CU1VaadinDialog extends BaseConfigDialog<CU1Config_V1> {
 
         CU1Config_V1 config = new CU1Config_V1();
 
-        config.setFileName(fileName.getValue());
+        //config.setFileName(fileName.getValue());
 
         return config;
     }

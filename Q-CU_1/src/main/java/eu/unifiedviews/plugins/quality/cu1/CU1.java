@@ -1,10 +1,16 @@
 package eu.unifiedviews.plugins.quality.cu1;
 
 import au.com.bytecode.opencsv.CSVWriter;
+import cz.cuni.mff.xrg.uv.boost.dpu.addon.impl.SimpleRdfConfigurator;
+import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.AddPolicy;
+import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException;
+import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfFactory;
+import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfWrite;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
@@ -12,6 +18,7 @@ import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import org.openrdf.model.URI;
 import org.openrdf.query.*;
 import org.openrdf.query.resultio.TupleQueryResultWriter;
 import org.openrdf.query.resultio.text.csv.SPARQLResultsCSVWriterFactory;
@@ -34,7 +41,13 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
     public RDFDataUnit inRdfData;
 
     @DataUnit.AsOutput(name = "output")
-    public WritableFilesDataUnit outFilesData;
+    public WritableRDFDataUnit outRdfData;
+
+    @SimpleRdfConfigurator.Configure(dataUnitFieldName = "outRdfData")
+    public SimpleRdfWrite rdfMainGraph = null;
+
+    @SimpleRdfConfigurator.Configure(dataUnitFieldName = "outRdfData")
+    public SimpleRdfWrite rdfQualityGraph = null;
 
     public CU1() {
         super(CU1Config_V1.class);
@@ -50,43 +63,43 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
 
         try {
 
-            // Query to extract the last modified date.
+            // Query to extract the subject and the last modified date.
             String query = "SELECT ?s ?o WHERE { ?s <http://purl.org/dc/terms/modified> ?o }";
 
-            // Create a temp file, used to evaluate the currency, in the output directory
-            final File outFile = new File(java.net.URI.create(outFilesData.getBaseFileURIString()+"temp.csv"));
-
             // Execute the Query specified above
-            this.executeQuery(context, outFile, query);
-
-            String[] resultQuery = this.getLastEditDate(context, outFile.getAbsolutePath());
+            String[] resultQuery = this.executeQuery(context, query);
+            //String[] resultQuery = this.getResultQuery(context, fileAbsolutePath);
             
             // Get the required Date
-            Date today = new Date();
+            Date now = new Date();
             Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse("2007-01-01");
             Date lastEdit = new SimpleDateFormat("yyyy-MM-dd").parse(resultQuery[1]);
 
-            double currentTime = today.getTime();
+            double currentTime = now.getTime();
             double lastModificationTime = lastEdit.getTime();
             double startTime = startDate.getTime();
 
             // Final Currency
             double currency = 1 - ((currentTime - lastModificationTime) / (currentTime - startTime));
-            
-            resultQuery[1] = ""+ currency;
 
             // Create the output CSV file with the result
-            this.createCSV(context, resultQuery);
+            //this.createCSV(context, resultQuery);
 
-        } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Problem with DataUnit.", "", ex);
+            this.createOutputGraph(context, "qualityGraph1", resultQuery[0], currency);
+
         }
-        catch (ParseException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Problem during parsing Date.", "", ex);
+        catch (ParseException e) {
+            context.sendMessage(DPUContext.MessageType.ERROR, "Problem during parsing Date.", "", e);
         }
     }
 
-    private void executeQuery (DPUContext context, File outFile, String query) {
+    private String[] executeQuery (DPUContext context, String query) {
+
+        // Set an Array to put the query result
+        String[] result = new String[2];
+
+        // Create a temp file, used to evaluate the currency, in the output directory
+        final File outFile = new File(java.net.URI.create(context.getDpuInstanceDirectory()+"temp.csv"));
 
         RepositoryConnection connection = null;
 
@@ -101,6 +114,14 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
 
             // Execute the Query
             querySparql.evaluate(resultWriter);
+
+            // Get the temp file created above
+            CSVReader csvReader = new CSVReader(new FileReader(outFile.getAbsolutePath()));
+
+            // Get the values from the CSV
+            result = csvReader.readAll().get(1);
+
+            csvReader.close();
 
         } catch (IOException | RepositoryException | QueryEvaluationException | TupleQueryResultHandlerException ex) {
             LOG.warn("IOException", ex);
@@ -119,9 +140,72 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
                 LOG.warn("Close on connection has failed.", ex);
             }
         }
+
+        return result;
     }
 
-    private void createCSV (DPUContext context, String[] result) {
+    private void createOutputGraph(DPUContext context, String namegraph, String resource, double value) {
+
+        try {
+
+            // Set the Date of the DPU execution
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+            Date date = dateFormat.parse(dateFormat.format(new Date()));
+
+            // Set the Main & Quality Graph
+            rdfMainGraph = SimpleRdfFactory.create(outRdfData, context);
+            rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
+            rdfMainGraph.setPolicy(AddPolicy.BUFFERED);
+            rdfQualityGraph.setPolicy(AddPolicy.BUFFERED);
+
+            // Initialization of the Quality Ontology
+            QualityOntology.init(rdfQualityGraph.getValueFactory(), this.toString(), 1);
+
+            // Set the name of the Quality Graph
+            URI graphName = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX + namegraph);
+
+            // Set the name of the two Output Graphs
+            rdfMainGraph.setOutputGraph("root");
+            rdfQualityGraph.setOutputGraph(graphName.toString());
+
+            // Add Subject, Property and Object to the root Graph
+            rdfMainGraph.add(graphName, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_QUALITY_GRAPH);
+            rdfMainGraph.add(graphName, QualityOntology.QB_STRUCTURE, QualityOntology.DAQ_DSD);
+
+            // Create the root Graph
+            if (rdfMainGraph != null) {
+                rdfMainGraph.flushBuffer();
+            }
+
+            // Add Subject, Property and Object to the Quality Graph
+            rdfQualityGraph.add(QualityOntology.EX_TIMELINESS_DIMENSION, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_DIMENSION);
+            rdfQualityGraph.add(QualityOntology.EX_TIMELINESS_DIMENSION, QualityOntology.DAQ_HAS_METRIC, QualityOntology.EX_DPU_NAME);
+            rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_METRIC);
+            rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.DAQ_HAS_OBSERVATION, QualityOntology.EX_OBSERVATIONS[1]);
+            rdfQualityGraph.add(QualityOntology.EX_OBSERVATIONS[1], QualityOntology.RDF_A_PREDICATE, QualityOntology.QB_OBSERVATION);
+            rdfQualityGraph.add(QualityOntology.EX_OBSERVATIONS[1], QualityOntology.DAQ_COMPUTED_ON, rdfQualityGraph.getValueFactory().createURI(resource));
+            rdfQualityGraph.add(QualityOntology.EX_OBSERVATIONS[1], QualityOntology.DC_DATE, rdfQualityGraph.getValueFactory().createLiteral(date));
+            rdfQualityGraph.add(QualityOntology.EX_OBSERVATIONS[1], QualityOntology.DAQ_VALUE, rdfQualityGraph.getValueFactory().createLiteral(value));
+
+            // Create the Quality Graph
+            if (rdfQualityGraph != null) {
+                rdfQualityGraph.flushBuffer();
+            }
+
+        } catch (OperationFailedException e) {
+            context.sendMessage(DPUContext.MessageType.ERROR, "Operation Failed Exception.", "", e);
+        } catch (ParseException e) {
+            context.sendMessage(DPUContext.MessageType.ERROR, "Error during parsing Date.", "", e);
+        }
+    }
+
+    public String toString() {
+        String name = this.getClass().getName();
+        int index = name.lastIndexOf(".");
+        return name.substring(index + 1);
+    }
+
+    /*private void createCSV (DPUContext context, String[] result) {
 
         CSVWriter writer;
 
@@ -141,10 +225,10 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
             String [] header = {"subject","metric","value"};
             writer.writeNext(header);
 
-            // Write the CSV Content, every iteration is a property evaluated   
+            // Write the CSV Content, every iteration is a property evaluated
             String [] record = {result[0], "currency", ""+ result[1]};
             writer.writeNext(record);
-            
+
             writer.close();
 
         } catch (DataUnitException e) {
@@ -152,28 +236,5 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
         } catch (IOException e) {
             context.sendMessage(DPUContext.MessageType.ERROR, "I/0 Failed", "", e);
         }
-    }
-
-    private String[] getLastEditDate (DPUContext context, String path) {
-
-        CSVReader csvReader;
-        
-        String[] result = new String[2];
-
-        try {
-
-            // Get the two temp files created above
-            csvReader = new CSVReader(new FileReader(path));
-
-            // Get the values from the CSV
-            result = csvReader.readAll().get(1);
-
-            csvReader.close();
-
-        } catch (IOException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "I/0 Failed", "", e);
-        }
-
-        return result;
-    }
+    }*/
 }

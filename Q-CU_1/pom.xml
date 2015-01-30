@@ -59,5 +59,36 @@
 			<version>1.4.0</version>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>cz.cuni.mff.xrg.odcs</groupId>
+            <artifactId>module-test</artifactId>
+            <version>1.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cz.cuni.mff.xrg.uv</groupId>
+            <artifactId>boost-dpu</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>cz.cuni.mff.xrg.uv</groupId>
+            <artifactId>utils-dataunit</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>cz.cuni.mff.xrg.uv</groupId>
+            <artifactId>utils-dataunit-rdf</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>cz.cuni.mff.xrg.uv</groupId>
+            <artifactId>service-serialization-xml</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>cz.cuni.mff.xrg.uv</groupId>
+            <artifactId>service-serialization-rdf</artifactId>
+            <version>1.1.2</version>
+        </dependency>
 	</dependencies>
 </project>
