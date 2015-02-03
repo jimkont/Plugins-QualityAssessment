@@ -8,7 +8,7 @@ public class CU1VaadinDialog extends BaseConfigDialog<CU1Config_V1> {
 
     private VerticalLayout mainLayout;
 
-    private TextField fileName;
+    //private TextField fileName;
 
     public CU1VaadinDialog() {
         super(CU1Config_V1.class);
