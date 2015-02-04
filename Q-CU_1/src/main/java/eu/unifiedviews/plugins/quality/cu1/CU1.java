@@ -153,10 +153,8 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
             Date date = dateFormat.parse(dateFormat.format(new Date()));
 
             // Set the Main & Quality Graph
-            rdfMainGraph = SimpleRdfFactory.create(outRdfData, context);
-            rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
-            rdfMainGraph.setPolicy(AddPolicy.BUFFERED);
-            rdfQualityGraph.setPolicy(AddPolicy.BUFFERED);
+             rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
+             rdfQualityGraph.setPolicy(AddPolicy.BUFFERED);
 
             // Initialization of the Quality Ontology
             QualityOntology.init(rdfQualityGraph.getValueFactory(), this.toString(), 1);
@@ -165,17 +163,8 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
             URI graphName = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX + namegraph);
 
             // Set the name of the two Output Graphs
-            rdfMainGraph.setOutputGraph("root");
+
             rdfQualityGraph.setOutputGraph(graphName.toString());
-
-            // Add Subject, Property and Object to the root Graph
-            rdfMainGraph.add(graphName, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_QUALITY_GRAPH);
-            rdfMainGraph.add(graphName, QualityOntology.QB_STRUCTURE, QualityOntology.DAQ_DSD);
-
-            // Create the root Graph
-            if (rdfMainGraph != null) {
-                rdfMainGraph.flushBuffer();
-            }
 
             // Add Subject, Property and Object to the Quality Graph
             rdfQualityGraph.add(QualityOntology.EX_TIMELINESS_DIMENSION, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_DIMENSION);
