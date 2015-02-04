@@ -35,6 +35,9 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
 
     @DataUnit.AsOutput(name = "output")
     public WritableFilesDataUnit outFilesData;
+    
+    @SimpleRdfConfigurator.Configure(dataUnitFieldName = "outRdfData")
+    public SimpleRdfWrite rdfQualityGraph = null;
 
     public C2() {
         super(C2Config_V1.class);
@@ -109,8 +112,8 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
                 }
             }
 
-            // Create the output CSV file with the result
-            this.createCSV(context, subject_, property_, results);
+            // Create the RDF output with the result
+            this.createOutputGraph(context, "qualityGraph1", subject_, property_, results);
         }
     }
 
@@ -149,8 +152,65 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
             }
         }
     }
+   
+    private void createOutputGraph(DPUContext context, String namegraph,  ArrayList<String> subject, ArrayList<String> property, Double[] results) {
 
-    private void createCSV (DPUContext context, ArrayList<String> subject, ArrayList<String> property, Double[] results) {
+        try {
+
+            // Set the Date of the DPU execution
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+            Date date = dateFormat.parse(dateFormat.format(new Date()));
+
+            // Set the Main & Quality Graph
+             rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
+             rdfQualityGraph.setPolicy(AddPolicy.BUFFERED);
+
+            // Initialization of the Quality Ontology
+            QualityOntology.init(rdfQualityGraph.getValueFactory(), this.toString(), 2);
+
+            // Set the name of the Quality Graph
+            URI graphName = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX + namegraph);
+
+            // Set the name of the two Output Graphs
+
+            rdfQualityGraph.setOutputGraph(graphName.toString());
+
+            // Add Subject, Property and Object to the Quality Graph
+            rdfQualityGraph.add(QualityOntology.EX_COMPLETENESS_DIMENSION, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_DIMENSION);
+            rdfQualityGraph.add(QualityOntology.EX_COMPLETENESS_DIMENSION, QualityOntology.DAQ_HAS_METRIC, QualityOntology.EX_DPU_NAME);
+            rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_METRIC);
+            for (int z = 0; z < results.length; z++) {
+            	 rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.DAQ_HAS_OBSERVATION, QualityOntology.EX_OBSERVATIONS[z]);
+            	 rdfQualityGraph.add(QualityOntology.EX_OBSERVATIONS[z], QualityOntology.RDF_A_PREDICATE, QualityOntology.QB_OBSERVATION);
+            	 rdfQualityGraph.add(QualityOntology.EX_OBSERVATIONS[z], QualityOntology.DAQ_COMPUTED_ON, rdfQualityGraph.getValueFactory().createURI(blank_node));
+            	 rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_A_PREDICATE, QualityOntology.RDF_STATEMENT);
+            	 rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_SUBJECT_PREDICATE, rdfQualityGraph.getValueFactory().createURI(subject.get(z)));
+            	 rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_PREDICATE_PREDICATE, rdfQualityGraph.getValueFactory().createURI(property.get(z)));
+                 rdfQualityGraph.add(QualityOntology.EX_OBSERVATIONS[z], QualityOntology.DC_DATE, rdfQualityGraph.getValueFactory().createLiteral(date));
+                 rdfQualityGraph.add(QualityOntology.EX_OBSERVATIONS[z], QualityOntology.DAQ_VALUE, rdfQualityGraph.getValueFactory().createLiteral(results[z]));
+
+            }
+
+           
+            // Create the Quality Graph
+            if (rdfQualityGraph != null) {
+                rdfQualityGraph.flushBuffer();
+            }
+
+        } catch (OperationFailedException e) {
+            context.sendMessage(DPUContext.MessageType.ERROR, "Operation Failed Exception.", "", e);
+        } catch (ParseException e) {
+            context.sendMessage(DPUContext.MessageType.ERROR, "Error during parsing Date.", "", e);
+        }
+    }
+
+    public String toString() {
+        String name = this.getClass().getName();
+        int index = name.lastIndexOf(".");
+        return name.substring(index + 1);
+    }
+    
+   /* private void createCSV (DPUContext context, ArrayList<String> subject, ArrayList<String> property, Double[] results) {
 
         CSVWriter writer = null;
 
@@ -183,7 +243,7 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
         } catch (IOException e) {
             context.sendMessage(DPUContext.MessageType.ERROR, "I/0 Failed", "", e);
         }
-    }
+    }*/
 
     private Double calculateMean (DPUContext context, String path_1, String path_2) {
 
