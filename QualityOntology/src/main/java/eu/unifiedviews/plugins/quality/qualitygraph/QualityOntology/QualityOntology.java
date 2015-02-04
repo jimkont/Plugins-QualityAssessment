@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.quality.cu1;
+package eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
