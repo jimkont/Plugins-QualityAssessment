@@ -49,6 +49,8 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
     @SimpleRdfConfigurator.Configure(dataUnitFieldName = "outRdfData")
     public SimpleRdfWrite rdfQualityGraph = null;
 
+    public static URI[] EX_OBSERVATIONS;
+    
     public CU1() {
         super(CU1Config_V1.class);
     }
@@ -157,8 +159,11 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
              rdfQualityGraph.setPolicy(AddPolicy.BUFFERED);
 
             // Initialization of the Quality Ontology
-            QualityOntology.init(rdfQualityGraph.getValueFactory(), this.toString(), 1);
-
+            QualityOntology.init(rdfQualityGraph.getValueFactory(), this.toString());
+            
+            EX_OBSERVATIONS = new URI[1];
+            EX_OBSERVATIONS[0] = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX +"obs"+ 1);
+            
             // Set the name of the Quality Graph
             URI graphName = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX + namegraph);
 
@@ -170,11 +175,12 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
             rdfQualityGraph.add(QualityOntology.EX_TIMELINESS_DIMENSION, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_DIMENSION);
             rdfQualityGraph.add(QualityOntology.EX_TIMELINESS_DIMENSION, QualityOntology.DAQ_HAS_METRIC, QualityOntology.EX_DPU_NAME);
             rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_METRIC);
-            rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.DAQ_HAS_OBSERVATION, QualityOntology.EX_OBSERVATIONS[1]);
-            rdfQualityGraph.add(QualityOntology.EX_OBSERVATIONS[1], QualityOntology.RDF_A_PREDICATE, QualityOntology.QB_OBSERVATION);
-            rdfQualityGraph.add(QualityOntology.EX_OBSERVATIONS[1], QualityOntology.DAQ_COMPUTED_ON, rdfQualityGraph.getValueFactory().createURI(resource));
-            rdfQualityGraph.add(QualityOntology.EX_OBSERVATIONS[1], QualityOntology.DC_DATE, rdfQualityGraph.getValueFactory().createLiteral(date));
-            rdfQualityGraph.add(QualityOntology.EX_OBSERVATIONS[1], QualityOntology.DAQ_VALUE, rdfQualityGraph.getValueFactory().createLiteral(value));
+            
+            rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.DAQ_HAS_OBSERVATION, EX_OBSERVATIONS);
+            rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.RDF_A_PREDICATE, QualityOntology.QB_OBSERVATION);
+            rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DAQ_COMPUTED_ON, rdfQualityGraph.getValueFactory().createURI(resource));
+            rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DC_DATE, rdfQualityGraph.getValueFactory().createLiteral(date));
+            rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DAQ_VALUE, rdfQualityGraph.getValueFactory().createLiteral(value));
 
             // Create the Quality Graph
             if (rdfQualityGraph != null) {
@@ -187,7 +193,7 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
             context.sendMessage(DPUContext.MessageType.ERROR, "Error during parsing Date.", "", e);
         }
     }
-
+  
     public String toString() {
         String name = this.getClass().getName();
         int index = name.lastIndexOf(".");

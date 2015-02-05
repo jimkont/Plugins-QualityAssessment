@@ -40,9 +40,9 @@ public class QualityOntology {
     public static URI EX_COMPLETENESS_DIMENSION;
     public static URI EX_ACCURACY_DIMENSION;
     public static URI EX_CONSISTENCY_DIMENSION;
-    //public static URI[] EX_OBSERVATIONS;
+    
 
-    public static void init(ValueFactory valueFactory, String nameDPU, int observationsNumber) {
+    public static void init(ValueFactory valueFactory, String nameDPU) {
 
         RDF_A_PREDICATE = valueFactory.createURI(RDF +"type");
         RDF_SUBJECT_PREDICATE = valueFactory.createURI(RDF +"Statement");
