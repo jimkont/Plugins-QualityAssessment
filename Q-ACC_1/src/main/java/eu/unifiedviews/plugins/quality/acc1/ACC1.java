@@ -13,6 +13,7 @@ import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,9 +21,11 @@ import org.openrdf.rio.*;
 import org.openrdf.rio.helpers.BasicParserSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @AsQuality
@@ -33,8 +36,10 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
     @DataUnit.AsInput(name = "input")
     public FilesDataUnit filesInput;
 
-    @DataUnit.AsOutput(name = "output")
-    public WritableFilesDataUnit outFilesData;
+    //@DataUnit.AsOutput(name = "output")
+    //public WritableFilesDataUnit outFilesData;
+    @SimpleRdfConfigurator.Configure(dataUnitFieldName = "outRdfData")
+    public SimpleRdfWrite rdfQualityGraph = null;
 
     public ACC1() {
         super(ACC1Config_V1.class);
@@ -87,7 +92,8 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
                     JSONArray v_results = (JSONArray) jsonObj.get("results");
 
                     // Create the output File
-                    this.createCSV(context, v_results);
+                    //this.createCSV(context, v_results); 
+                    this.createOutputGraph(context, v_results);
                 }
 
             } catch (Exception ex) {
@@ -217,7 +223,85 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
         return java.net.URLDecoder.decode(response.toString(),"UTF-8");
     }
 
-    private void createCSV (DPUContext context, JSONArray results) {
+    private void createOutputGraph(DPUContext context, JSONArray results) {
+
+        try {
+
+            // Set the Date of the DPU execution
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+            Date date = dateFormat.parse(dateFormat.format(new Date()));
+
+            // Set the Main & Quality Graph
+             rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
+             rdfQualityGraph.setPolicy(AddPolicy.BUFFERED);
+
+            // Initialization of the Quality Ontology
+            QualityOntology.init(rdfQualityGraph.getValueFactory(), this.toString());
+            
+            EX_OBSERVATIONS = new URI[1];
+            EX_OBSERVATIONS[0] = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX +"obs"+ 1);
+            
+            // Set the name of the Quality Graph
+            URI graphName = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX + namegraph);
+
+            // Set the name of the two Output Graphs
+
+            rdfQualityGraph.setOutputGraph(graphName.toString());
+
+            // Add Subject, Property and Object to the Quality Graph
+            rdfQualityGraph.add(QualityOntology.EX_ACCURACY_DIMENSION, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_DIMENSION);
+            rdfQualityGraph.add(QualityOntology.EX_ACCURACY_DIMENSION, QualityOntology.DAQ_HAS_METRIC, QualityOntology.EX_DPU_NAME);
+            rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_METRIC);
+
+            Iterator i = results.iterator();
+            int z=0;
+            // Write the CSV Content, every iteration is a error/warning found
+            while (i.hasNext()) {
+            	
+            	EX_OBSERVATIONS[z] = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX +"obs"+ z+1);
+            	rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.DAQ_HAS_OBSERVATION, EX_OBSERVATIONS[z]);
+            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.RDF_A_PREDICATE, QualityOntology.QB_OBSERVATION);
+            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DC_DATE, rdfQualityGraph.getValueFactory().createLiteral(date));
+            	
+                JSONObject innerObj = (JSONObject) i.next();
+
+                // Get Type, Code and Message of the error
+                String type = innerObj.get("type").toString();
+                int code = Integer.parseInt(innerObj.get("code").toString());
+                String msg = innerObj.get("msg").toString();
+                msg = msg.replaceAll("&lt;", "<");
+                msg = msg.replaceAll("&gt;", ">");
+                msg = msg.replaceAll("&quot;", "'");
+                rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DAQ_HAS_SEVERITY, rdfQualityGraph.getValueFactory().createURI(type));
+                rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DCTERMS_PROBLEMDESCRIPTION, rdfQualityGraph.getValueFactory().createURI(msg));
+                
+            	/*rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DAQ_COMPUTED_ON, rdfQualityGraph.getValueFactory().createURI(blank_node));
+            	rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_A_PREDICATE, QualityOntology.RDF_STATEMENT);
+            	rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_SUBJECT_PREDICATE, rdfQualityGraph.getValueFactory().createURI(subject.get(z)));
+            	rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_PREDICATE_PREDICATE, rdfQualityGraph.getValueFactory().createURI(property.get(z)));*/
+                
+                z=+1;
+            }
+
+            // Create the Quality Graph
+            if (rdfQualityGraph != null) {
+                rdfQualityGraph.flushBuffer();
+            }
+
+        } catch (OperationFailedException e) {
+            context.sendMessage(DPUContext.MessageType.ERROR, "Operation Failed Exception.", "", e);
+        } catch (ParseException e) {
+            context.sendMessage(DPUContext.MessageType.ERROR, "Error during parsing Date.", "", e);
+        }
+    }
+  
+    public String toString() {
+        String name = this.getClass().getName();
+        int index = name.lastIndexOf(".");
+        return name.substring(index + 1);
+    }
+    
+    /*private void createCSV (DPUContext context, JSONArray results) {
 
         CSVWriter writer = null;
 
@@ -263,5 +347,5 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
         } catch (IOException e) {
             context.sendMessage(DPUContext.MessageType.ERROR, "I/0 Failed", "", e);
         }
-    }
+    }*/
 }
