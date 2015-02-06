@@ -82,9 +82,13 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
                 if (key.trim().length() > 0 && value.trim().length() > 0) {
                     
                     query1 = "SELECT (COUNT(?s) AS ?counter) WHERE { ?s a <" + key + "> . }";
-                    query2 = "SELECT (COUNT(?o) AS ?counter) WHERE { ?s a <" + key + "> . " +
-                            "OPTIONAl { ?s <" + value + "> ?o } . " +
-                            "OPTIONAL { ?s ?p ?blank . ?blank <" + value + "> ?o } }";
+                    query2 = "SELECT (COUNT(?o) AS ?counter) WHERE { ?s a <" + key + "> . "
+                            //"OPTIONAl {"
+                            + "?s <" + value + "> ?o "
+                            //+ "}"
+                            + ". "
+                            //+ "OPTIONAL { ?s ?p ?blank . ?blank <" + value + "> ?o }"
+                            + " }";
 
                     final File outFile_1;
                     final File outFile_2;
