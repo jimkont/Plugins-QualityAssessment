@@ -22,8 +22,17 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import au.com.bytecode.opencsv.CSVReader;
+import cz.cuni.mff.xrg.uv.boost.dpu.addon.impl.SimpleRdfConfigurator;
+import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.AddPolicy;
+import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException;
+import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfFactory;
+import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfWrite;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
 
 @DPU.AsQuality
 public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogProvider<C2Config_V1> {
@@ -35,10 +44,10 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
 
     @DataUnit.AsOutput(name = "output")
     public WritableFilesDataUnit outFilesData;
-    
-    @SimpleRdfConfigurator.Configure(dataUnitFieldName = "outRdfData")
-    public SimpleRdfWrite rdfQualityGraph = null;
 
+    @DataUnit.AsOutput(name = "outputRdf")
+    public WritableRDFDataUnit outRdfData;
+    
     public C2() {
         super(C2Config_V1.class);
     }
@@ -162,8 +171,8 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
             Date date = dateFormat.parse(dateFormat.format(new Date()));
 
             // Set the Main & Quality Graph
-             rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
-             rdfQualityGraph.setPolicy(AddPolicy.BUFFERED);
+             SimpleRdfWrite rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
+             rdfQualityGraph.setPolicy(AddPolicy.IMMEDIATE);
 
             // Initialization of the Quality Ontology
             QualityOntology.init(rdfQualityGraph.getValueFactory(), this.toString());
@@ -183,16 +192,32 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
             rdfQualityGraph.add(QualityOntology.EX_COMPLETENESS_DIMENSION, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_DIMENSION);
             rdfQualityGraph.add(QualityOntology.EX_COMPLETENESS_DIMENSION, QualityOntology.DAQ_HAS_METRIC, QualityOntology.EX_DPU_NAME);
             rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_METRIC);
+
             for (int z = 0; z < results.length; z++) {
-            	EX_OBSERVATIONS[z] = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX +"obs"+ z+1);
+            	EX_OBSERVATIONS[z] = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX + "obs" + z+1);
             	rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.DAQ_HAS_OBSERVATION, EX_OBSERVATIONS[z]);
             	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.RDF_A_PREDICATE, QualityOntology.QB_OBSERVATION);
-            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DAQ_COMPUTED_ON, rdfQualityGraph.getValueFactory().createURI(blank_node));
-            	rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_A_PREDICATE, QualityOntology.RDF_STATEMENT);
-            	rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_SUBJECT_PREDICATE, rdfQualityGraph.getValueFactory().createURI(subject.get(z)));
-            	rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_PREDICATE_PREDICATE, rdfQualityGraph.getValueFactory().createURI(property.get(z)));
-            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DC_DATE, rdfQualityGraph.getValueFactory().createLiteral(date));
-            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DAQ_VALUE, rdfQualityGraph.getValueFactory().createLiteral(results[z]));
+
+                // Some temporary string
+                String blank_node = EX_OBSERVATIONS[z].stringValue() + "/blank_node";
+
+            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DAQ_COMPUTED_ON,
+                        rdfQualityGraph.getValueFactory().createURI(blank_node));
+
+            	rdfQualityGraph.add(rdfQualityGraph.getValueFactory().createURI(blank_node),
+                        QualityOntology.RDF_A_PREDICATE, QualityOntology.RDF_STATEMENT);
+
+            	rdfQualityGraph.add(rdfQualityGraph.getValueFactory().createURI(blank_node),
+                        QualityOntology.RDF_SUBJECT_PREDICATE, rdfQualityGraph.getValueFactory().createURI(subject.get(z)));
+
+            	rdfQualityGraph.add(rdfQualityGraph.getValueFactory().createURI(blank_node),
+                        QualityOntology.RDF_PREDICATE_PREDICATE, rdfQualityGraph.getValueFactory().createURI(property.get(z)));
+
+            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DC_DATE,
+                        rdfQualityGraph.getValueFactory().createLiteral(date));
+
+            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DAQ_VALUE,
+                        rdfQualityGraph.getValueFactory().createLiteral(results[z]));
 
             }
 
