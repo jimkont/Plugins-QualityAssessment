@@ -1,7 +1,6 @@
 package eu.unifiedviews.plugins.quality.cu1;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import cz.cuni.mff.xrg.uv.boost.dpu.addon.impl.SimpleRdfConfigurator;
 import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.AddPolicy;
 import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException;
 import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfFactory;
@@ -32,6 +31,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
+
 @DPU.AsQuality
 public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogProvider<CU1Config_V1> {
 
@@ -42,12 +43,6 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
 
     @DataUnit.AsOutput(name = "output")
     public WritableRDFDataUnit outRdfData;
-
-    @SimpleRdfConfigurator.Configure(dataUnitFieldName = "outRdfData")
-    public SimpleRdfWrite rdfMainGraph = null;
-
-    @SimpleRdfConfigurator.Configure(dataUnitFieldName = "outRdfData")
-    public SimpleRdfWrite rdfQualityGraph = null;
 
     public static URI[] EX_OBSERVATIONS;
     
@@ -155,14 +150,13 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
             Date date = dateFormat.parse(dateFormat.format(new Date()));
 
             // Set the Main & Quality Graph
-             rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
-             rdfQualityGraph.setPolicy(AddPolicy.BUFFERED);
+            SimpleRdfWrite rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
+            rdfQualityGraph.setPolicy(AddPolicy.BUFFERED);
 
             // Initialization of the Quality Ontology
             QualityOntology.init(rdfQualityGraph.getValueFactory(), this.toString());
             
-            EX_OBSERVATIONS = new URI[1];
-            EX_OBSERVATIONS[0] = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX +"obs"+ 1);
+            URI EX_OBSERVATIONS = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX +"obs"+ 1);
             
             // Set the name of the Quality Graph
             URI graphName = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX + namegraph);
