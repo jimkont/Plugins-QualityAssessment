@@ -25,8 +25,17 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import org.openrdf.model.URI;
+import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.AddPolicy;
+import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException;
+import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfFactory;
+import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfWrite;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
 
 @AsQuality
 public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialogProvider<ACC1Config_V1> {
@@ -38,8 +47,9 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
 
     //@DataUnit.AsOutput(name = "output")
     //public WritableFilesDataUnit outFilesData;
-    @SimpleRdfConfigurator.Configure(dataUnitFieldName = "outRdfData")
-    public SimpleRdfWrite rdfQualityGraph = null;
+
+    @DataUnit.AsOutput(name = "output")
+    public WritableRDFDataUnit outRdfData;
 
     public ACC1() {
         super(ACC1Config_V1.class);
@@ -73,7 +83,7 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
             try {
 
                 // Set the name (with extention) of the destination file for the conversion
-                String outputUri = outFilesData.getBaseFileURIString()+"input.nt";
+                String outputUri = context.getWorkingDir().toString() +"input.nt";
 
                 // Convert the RDF file to the N-X format
                 this.rdfToNx(context, file.getFileURIString().substring(5), outputUri.substring(5));
@@ -232,17 +242,14 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
             Date date = dateFormat.parse(dateFormat.format(new Date()));
 
             // Set the Main & Quality Graph
-             rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
+             SimpleRdfWrite rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
              rdfQualityGraph.setPolicy(AddPolicy.BUFFERED);
 
             // Initialization of the Quality Ontology
             QualityOntology.init(rdfQualityGraph.getValueFactory(), this.toString());
             
-            EX_OBSERVATIONS = new URI[1];
-            EX_OBSERVATIONS[0] = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX +"obs"+ 1);
-            
             // Set the name of the Quality Graph
-            URI graphName = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX + namegraph);
+            URI graphName = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX + "QualityGraph");
 
             // Set the name of the two Output Graphs
 
@@ -258,10 +265,10 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
             // Write the CSV Content, every iteration is a error/warning found
             while (i.hasNext()) {
             	
-            	EX_OBSERVATIONS[z] = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX +"obs"+ z+1);
-            	rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.DAQ_HAS_OBSERVATION, EX_OBSERVATIONS[z]);
-            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.RDF_A_PREDICATE, QualityOntology.QB_OBSERVATION);
-            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DC_DATE, rdfQualityGraph.getValueFactory().createLiteral(date));
+            	URI EX_OBSERVATIONS = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX +"obs"+ z+1);
+            	rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.DAQ_HAS_OBSERVATION, EX_OBSERVATIONS);
+            	rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.RDF_A_PREDICATE, QualityOntology.QB_OBSERVATION);
+            	rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DC_DATE, rdfQualityGraph.getValueFactory().createLiteral(date));
             	
                 JSONObject innerObj = (JSONObject) i.next();
 
@@ -272,10 +279,10 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
                 msg = msg.replaceAll("&lt;", "<");
                 msg = msg.replaceAll("&gt;", ">");
                 msg = msg.replaceAll("&quot;", "'");
-                rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DAQ_HAS_SEVERITY, rdfQualityGraph.getValueFactory().createURI(type));
-                rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DCTERMS_PROBLEMDESCRIPTION, rdfQualityGraph.getValueFactory().createURI(msg));
+                rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DAQ_HAS_SEVERITY, rdfQualityGraph.getValueFactory().createURI(type));
+                rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DCTERMS_PROBLEMDESCRIPTION, rdfQualityGraph.getValueFactory().createURI(msg));
                 
-            	/*rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DAQ_COMPUTED_ON, rdfQualityGraph.getValueFactory().createURI(blank_node));
+            	/*rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DAQ_COMPUTED_ON, rdfQualityGraph.getValueFactory().createURI(blank_node));
             	rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_A_PREDICATE, QualityOntology.RDF_STATEMENT);
             	rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_SUBJECT_PREDICATE, rdfQualityGraph.getValueFactory().createURI(subject.get(z)));
             	rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_PREDICATE_PREDICATE, rdfQualityGraph.getValueFactory().createURI(property.get(z)));*/
