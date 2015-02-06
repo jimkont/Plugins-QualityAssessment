@@ -45,7 +45,7 @@ public class QualityOntology {
     public static void init(ValueFactory valueFactory, String nameDPU) {
 
         RDF_A_PREDICATE = valueFactory.createURI(RDF +"type");
-        RDF_SUBJECT_PREDICATE = valueFactory.createURI(RDF +"Statement");
+        RDF_STATEMENT = valueFactory.createURI(RDF +"Statement");
         RDF_SUBJECT_PREDICATE = valueFactory.createURI(RDF +"subject");
         RDF_PREDICATE_PREDICATE = valueFactory.createURI(RDF +"predicate");
         RDF_OBJECT_PREDICATE = valueFactory.createURI(RDF +"object");
