@@ -49,6 +49,7 @@ public class C2Test {
         // Define Input & Output of the DPU
         WritableRDFDataUnit input = env.createRdfInput("input", false);
         env.createFilesOutput("output");
+        env.createRdfOutput("outputRdf", false);
 
         // Set the name of the resource used for the test (located in src/test/resource)
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("ScuoleInfanzia.ttl");
