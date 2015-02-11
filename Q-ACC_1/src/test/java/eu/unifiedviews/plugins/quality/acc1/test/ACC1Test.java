@@ -25,7 +25,7 @@ public class ACC1Test {
 
         // Define Input & Output of the DPU
         env.createFilesInputFromResource("input", "input.nt");
-        env.createFilesOutput("output");
+        env.createRdfOutput("output", false);
 
         try {
 
