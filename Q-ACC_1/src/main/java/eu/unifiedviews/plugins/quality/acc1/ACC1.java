@@ -1,10 +1,8 @@
 package eu.unifiedviews.plugins.quality.acc1;
 
-import au.com.bytecode.opencsv.CSVWriter;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU.AsQuality;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
@@ -83,10 +81,10 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
             try {
 
                 // Set the name (with extention) of the destination file for the conversion
-                String outputUri = context.getWorkingDir().toString() +"input.nt";
+                String outputUri = (new File(context.getWorkingDir().toString() +"input.nt")).toURI().toString();
 
                 // Convert the RDF file to the N-X format
-                this.rdfToNx(context, file.getFileURIString().substring(5), outputUri.substring(5));
+                this.rdfToNx(context, file.getFileURIString(), outputUri);
                 
                 // Get the JSON of the POST Request
                 String json = this.executeRequest(context, config.getV_host(), config.getV_port(), config.getV_path(), outputUri.substring(5));
@@ -112,16 +110,20 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
         }
     }
 
-    private void rdfToNx (DPUContext context, String source, String destination) {
+    private void rdfToNx (DPUContext context, String sourceUri, String destinationUri) {
 
         final File inFile;
         final File outFile;
 
+        // Get paths as non URI. This can be also done by conversion into File and then back to string.
+        final String source = sourceUri.substring(5);
+        final String destination = destinationUri.substring(5);
+
         try {
 
             // Get the 
-            inFile = new File(source);
-            outFile = new File(java.net.URI.create("file:"+ destination));
+            inFile = new File(java.net.URI.create(sourceUri));
+            outFile = new File(java.net.URI.create(destinationUri));
             InputStream in = new FileInputStream(inFile);
             OutputStream out = new FileOutputStream(outFile);
 
