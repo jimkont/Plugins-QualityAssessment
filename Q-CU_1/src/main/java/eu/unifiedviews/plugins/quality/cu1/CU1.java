@@ -1,42 +1,39 @@
 package eu.unifiedviews.plugins.quality.cu1;
 
-import au.com.bytecode.opencsv.CSVWriter;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.AddPolicy;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfFactory;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfWrite;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
-import org.openrdf.model.URI;
-import org.openrdf.query.*;
-import org.openrdf.query.resultio.TupleQueryResultWriter;
-import org.openrdf.query.resultio.text.csv.SPARQLResultsCSVWriterFactory;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.io.*;
-import au.com.bytecode.opencsv.CSVReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
+import org.openrdf.model.Resource;
+import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.model.vocabulary.DC;
+import org.openrdf.model.vocabulary.RDF;
+import cz.cuni.mff.xrg.uv.boost.dpu.advanced.AbstractDpu;
+import cz.cuni.mff.xrg.uv.boost.dpu.config.ConfigHistory;
+import cz.cuni.mff.xrg.uv.boost.dpu.initialization.AutoInitializer;
+import cz.cuni.mff.xrg.uv.boost.extensions.FaultTolerance;
+import cz.cuni.mff.xrg.uv.boost.rdf.EntityBuilder;
+import cz.cuni.mff.xrg.uv.boost.rdf.simple.WritableSimpleRdf;
+import cz.cuni.mff.xrg.uv.boost.rdf.sparql.SparqlUtils;
+import cz.cuni.mff.xrg.uv.utils.dataunit.DataUnitUtils;
+import cz.cuni.mff.xrg.uv.utils.dataunit.rdf.RdfDataUnitUtils;
 import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
 
 @DPU.AsQuality
-public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogProvider<CU1Config_V1> {
+public class CU1 extends AbstractDpu<CU1Config_V1> {
 
-    private final Logger LOG = LoggerFactory.getLogger(CU1.class);
+    private static final String QUERY = "SELECT ?s ?o WHERE { ?s <http://purl.org/dc/terms/modified> ?o }";
+
+    public static final String CURRENCY_GRAPH_SYMBOLIC_NAME = "currencyQualityGraph";
 
     @DataUnit.AsInput(name = "input")
     public RDFDataUnit inRdfData;
@@ -44,186 +41,138 @@ public class CU1 extends ConfigurableBase<CU1Config_V1> implements ConfigDialogP
     @DataUnit.AsOutput(name = "output")
     public WritableRDFDataUnit outRdfData;
 
-    public static URI[] EX_OBSERVATIONS;
-    
+    @AutoInitializer.Init(param = "outRdfData")
+    public WritableSimpleRdf report;
+
+    @AutoInitializer.Init
+    public FaultTolerance faultTolerance;
+
     public CU1() {
-        super(CU1Config_V1.class);
+        super(CU1VaadinDialog.class, ConfigHistory.noHistory(CU1Config_V1.class));
     }
 
     @Override
-    public AbstractConfigDialog<CU1Config_V1> getConfigurationDialog() {
-        return new CU1VaadinDialog();
-    }
+    protected void innerExecute() throws DPUException, DataUnitException {
+        // Prepare SPARQL query.
+        final SparqlUtils.SparqlSelectObject query = faultTolerance.execute(
+                new FaultTolerance.ActionReturn<SparqlUtils.SparqlSelectObject>() {
 
-    @Override
-    public void execute(DPUContext context) throws DPUException {
+                    @Override
+                    public SparqlUtils.SparqlSelectObject action() throws Exception {
+                        return SparqlUtils.createSelect(QUERY,
+                                DataUnitUtils.getEntries(inRdfData, RDFDataUnit.Entry.class));
+                    }
 
-        try {
+                });
+        // Execute query and get result.
+        final SparqlUtils.QueryResultCollector result = new SparqlUtils.QueryResultCollector();
+        faultTolerance.execute(inRdfData, new FaultTolerance.ConnectionAction() {
 
-            // Query to extract the subject and the last modified date.
-            String query = "SELECT ?s ?o WHERE { ?s <http://purl.org/dc/terms/modified> ?o }";
-
-            // Execute the Query specified above
-            String[] resultQuery = this.executeQuery(context, query);
-            //String[] resultQuery = this.getResultQuery(context, fileAbsolutePath);
-            
-            // Get the required Date
-            Date now = new Date();
-            Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse("2007-01-01");
-            Date lastEdit = new SimpleDateFormat("yyyy-MM-dd").parse(resultQuery[1]);
-
-            double currentTime = now.getTime();
-            double lastModificationTime = lastEdit.getTime();
-            double startTime = startDate.getTime();
-
-            // Final Currency
-            double currency = 1 - ((currentTime - lastModificationTime) / (currentTime - startTime));
-
-            // Create the output CSV file with the result
-            //this.createCSV(context, resultQuery);
-
-            this.createOutputGraph(context, "qualityGraph1", resultQuery[0], currency);
-
-        }
-        catch (ParseException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Problem during parsing Date.", "", e);
-        }
-    }
-
-    private String[] executeQuery (DPUContext context, String query) {
-
-        // Set an Array to put the query result
-        String[] result = new String[2];
-
-        // Create a temp file, used to evaluate the currency, in the output directory
-        final File outFile = new File(java.net.URI.create(context.getDpuInstanceDirectory()+"temp.csv"));
-
-        RepositoryConnection connection = null;
-
-        try (OutputStream outputStream = new FileOutputStream(outFile)) {
-
-            connection = inRdfData.getConnection();
-
-            // Prepare the execution of the query
-            final SPARQLResultsCSVWriterFactory writerFactory = new SPARQLResultsCSVWriterFactory();
-            final TupleQueryResultWriter resultWriter = writerFactory.getWriter(outputStream);
-            TupleQuery querySparql = connection.prepareTupleQuery(QueryLanguage.SPARQL, query);
-
-            // Execute the Query
-            querySparql.evaluate(resultWriter);
-
-            // Get the temp file created above
-            CSVReader csvReader = new CSVReader(new FileReader(outFile.getAbsolutePath()));
-
-            // Get the values from the CSV
-            result = csvReader.readAll().get(1);
-
-            csvReader.close();
-
-        } catch (IOException | RepositoryException | QueryEvaluationException | TupleQueryResultHandlerException ex) {
-            LOG.warn("IOException", ex);
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "", ex);
-        } catch (MalformedQueryException ex) {
-            LOG.warn("MalformedQueryException", ex);
-            context.sendMessage(DPUContext.MessageType.ERROR, "Invalid query.", "", ex);
-        } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed.", "Problem with DataUnit.", ex);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (RepositoryException ex) {
-                LOG.warn("Close on connection has failed.", ex);
+            @Override
+            public void action(RepositoryConnection connection) throws Exception {
+                result.prepare();
+                SparqlUtils.execute(connection, ctx, query, result);
             }
+        });
+        // Check result size.
+        if (result.getResults().isEmpty()) {
+            throw new DPUException(ctx.tr("dpu.error.emmpty.result"));
         }
 
-        return result;
-    }
-
-    private void createOutputGraph(DPUContext context, String namegraph, String resource, double value) {
-
+        // Prepare variables.
+        final Date now = new Date();
+        final Date startDate;
         try {
-
-            // Set the Date of the DPU execution
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
-            Date date = dateFormat.parse(dateFormat.format(new Date()));
-
-            // Set the Main & Quality Graph
-            SimpleRdfWrite rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
-            rdfQualityGraph.setPolicy(AddPolicy.BUFFERED);
-
-            // Initialization of the Quality Ontology
-            QualityOntology.init(rdfQualityGraph.getValueFactory(), this.toString());
-            
-            URI EX_OBSERVATIONS = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX +"obs"+ 1);
-            
-            // Set the name of the Quality Graph
-            URI graphName = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX + namegraph);
-
-            // Set the name of the two Output Graphs
-
-            rdfQualityGraph.setOutputGraph(graphName.toString());
-
-            // Add Subject, Property and Object to the Quality Graph
-            rdfQualityGraph.add(QualityOntology.EX_TIMELINESS_DIMENSION, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_DIMENSION);
-            rdfQualityGraph.add(QualityOntology.EX_TIMELINESS_DIMENSION, QualityOntology.DAQ_HAS_METRIC, QualityOntology.EX_DPU_NAME);
-            rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_METRIC);
-            
-            rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.DAQ_HAS_OBSERVATION, EX_OBSERVATIONS);
-            rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.RDF_A_PREDICATE, QualityOntology.QB_OBSERVATION);
-            rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DAQ_COMPUTED_ON, rdfQualityGraph.getValueFactory().createURI(resource));
-            rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DC_DATE, rdfQualityGraph.getValueFactory().createLiteral(date));
-            rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DAQ_VALUE, rdfQualityGraph.getValueFactory().createLiteral(value));
-
-            // Create the Quality Graph
-            if (rdfQualityGraph != null) {
-                rdfQualityGraph.flushBuffer();
-            }
-
-        } catch (OperationFailedException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Operation Failed Exception.", "", e);
-        } catch (ParseException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Error during parsing Date.", "", e);
+            startDate = new SimpleDateFormat("yyyy-MM-dd").parse("2007-01-01");
+        } catch (ParseException ex) {
+            throw new DPUException(ctx.tr("dpu.error.date.parse.failed"), ex);
         }
+        final double currentTime = now.getTime();
+        final double startTime = startDate.getTime();
+        final ValueFactory valueFactory = report.getValueFactory();
+        // Set output.
+        report.setOutput(RdfDataUnitUtils.addGraph(outRdfData, CURRENCY_GRAPH_SYMBOLIC_NAME));
+
+        // EX_TIMELINESS_DIMENSION entity.
+        final EntityBuilder dpuEntity = new EntityBuilder(
+                QualityOntology.EX_TIMELINESS_DIMENSION, valueFactory);
+        dpuEntity.property(RDF.PREDICATE, QualityOntology.DAQ_METRIC);
+
+        // EX_DPU_NAME entity.
+        final EntityBuilder reportEntity = new EntityBuilder(
+                CU1Vocabulary.EX_DPU_NAME, valueFactory);
+        reportEntity.property(RDF.PREDICATE, QualityOntology.DAQ_DIMENSION)
+                .property(QualityOntology.DAQ_HAS_METRIC, dpuEntity);
+
+        // EX_OBSERVATIONS entity.
+        for (int index = 0; index < result.getResults().size(); ++index) {
+            final Map<String, Value> observation = result.getResults().get(index);
+            final EntityBuilder observationEntity = createObservation(valueFactory, currentTime, startTime,
+                    observation.get("o"), observation.get("s"), index);
+            // Add binding from EX_TIMELINESS_DIMENSION
+            dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity);
+            // Add observation entity to outpu.
+            report.add(observationEntity.asStatements());
+        }
+
+        // Add entities to output.
+        report.add(dpuEntity.asStatements());
+        report.add(reportEntity.asStatements());
     }
-  
-    public String toString() {
-        String name = this.getClass().getName();
-        int index = name.lastIndexOf(".");
-        return name.substring(index + 1);
-    }
 
-    /*private void createCSV (DPUContext context, String[] result) {
-
-        CSVWriter writer;
-
+    /**
+     * Creates observation for entity.
+     *
+     * @param valueFactory
+     * @param currentTime
+     * @param startTime
+     * @param lastEdit
+     * @param subject
+     * @param observationIndex
+     * @return
+     * @throws DPUException
+     */
+    private EntityBuilder createObservation(ValueFactory valueFactory, double currentTime, double startTime,
+            Value lastEdit, Value subject, int observationIndex) throws DPUException {
+        final EntityBuilder observationEntity = new EntityBuilder(
+                valueFactory.createURI(String.format(CU1Vocabulary.EX_OBSERVATIONS, observationIndex)),
+                valueFactory);
+        // Prepare variables.
+        final Date lastEditDate;
         try {
-
-            // Add new file to the output variable
-            final String outFileUri = outFilesData.addNewFile(config.getFileName());
-
-            // Set a Virtual Path to the file specified in the configuration
-            VirtualPathHelpers.setVirtualPath(outFilesData, config.getFileName(), config.getFileName());
-
-            // Create the output file in the working directory (or test directory specified in the test file)
-            final File outFile = new File(java.net.URI.create((this.config.getPath() == null) ? outFileUri : this.config.getPath() + this.config.getFileName()));
-            writer = new CSVWriter(new FileWriter(outFile),';', '"', '\n');
-
-            // Write the CSV Header
-            String [] header = {"subject","metric","value"};
-            writer.writeNext(header);
-
-            // Write the CSV Content, every iteration is a property evaluated
-            String [] record = {result[0], "currency", ""+ result[1]};
-            writer.writeNext(record);
-
-            writer.close();
-
-        } catch (DataUnitException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "", e);
-        } catch (IOException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "I/0 Failed", "", e);
+            lastEditDate = new SimpleDateFormat("yyyy-MM-dd").parse(lastEdit.stringValue());
+        } catch (ParseException ex) {
+            throw new DPUException(ctx.tr("dpu.error.date.parse.failed"), ex);
         }
-    }*/
+        double lastModificationTime = lastEditDate.getTime();
+        double currency = 1 - ((currentTime - lastModificationTime) / (currentTime - startTime));
+        // Add triple about report.
+        fillReport(valueFactory, observationEntity, (Resource) subject, currency);
+        // And return entity.
+        return observationEntity;
+    }
+
+    /**
+     * Create a report about currency.
+     *
+     * @param resource
+     * @param value
+     */
+    private void fillReport(ValueFactory valueFactory, EntityBuilder observationEntity, Resource resource,
+            double value) throws DPUException {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+        final Date date;
+        try {
+            // TODO Can we use date = new Date() instead?
+            date = dateFormat.parse(dateFormat.format(new Date()));
+        } catch (ParseException ex) {
+            throw new DPUException(ctx.tr("dpu.error.date.parse.failed"), ex);
+        }
+        observationEntity
+                .property(RDF.PREDICATE, QualityOntology.QB_OBSERVATION)
+                .property(QualityOntology.DAQ_COMPUTED_ON, resource)
+                .property(DC.DATE, valueFactory.createLiteral(date))
+                .property(QualityOntology.DAQ_VALUE, valueFactory.createLiteral(value));
+    }
+
 }

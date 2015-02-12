@@ -1,30 +1,22 @@
 package eu.unifiedviews.plugins.quality.cu1;
 
 import com.vaadin.ui.*;
-import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 
-public class CU1VaadinDialog extends BaseConfigDialog<CU1Config_V1> {
+import cz.cuni.mff.xrg.uv.boost.dpu.vaadin.AbstractDialog;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+
+public class CU1VaadinDialog extends AbstractDialog<CU1Config_V1> {
 
     private VerticalLayout mainLayout;
 
     //private TextField fileName;
 
     public CU1VaadinDialog() {
-        super(CU1Config_V1.class);
-
-        buildMainLayout();
-        Panel panel = new Panel();
-        panel.setSizeFull();
-        panel.setContent(mainLayout);
-        setCompositionRoot(panel);
+        super(CU1.class);
     }
 
-    private void buildMainLayout() {
-
-        this.setWidth("100%");
-        this.setHeight("100%");
-
+    @Override
+    protected void buildDialogLayout() {
         this.mainLayout = new VerticalLayout();
         this.mainLayout.setImmediate(false);
         this.mainLayout.setWidth("100%");
@@ -40,6 +32,11 @@ public class CU1VaadinDialog extends BaseConfigDialog<CU1Config_V1> {
         //baseFormLayout.addComponent(fileName);
 
         //this.mainLayout.addComponent(baseFormLayout);
+
+        Panel panel = new Panel();
+        panel.setSizeFull();
+        panel.setContent(mainLayout);
+        setCompositionRoot(panel);
     }
 
     @Override
@@ -51,7 +48,6 @@ public class CU1VaadinDialog extends BaseConfigDialog<CU1Config_V1> {
 
     @Override
     protected CU1Config_V1 getConfiguration() throws DPUConfigException {
-
         CU1Config_V1 config = new CU1Config_V1();
 
         //config.setFileName(fileName.getValue());

@@ -1,95 +1,58 @@
 <?xml version="1.0"?>
 <project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>eu.unifiedviews.plugins</groupId>
-		<artifactId>dpu-base-pom</artifactId>
-		<version>1.1.0</version>
-		<relativePath />
-	</parent>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cz.cuni.mff.xrg.uv</groupId>
+        <artifactId>unifiedviews-dpu-base</artifactId>
+        <version>2.0.0</version>
+    </parent>
+    <artifactId>uv-q-cu1</artifactId>
+    <name>Q-CU1-U</name>
+    <description></description>
+    <version>1.0.0</version>
+    <packaging>bundle</packaging>
 
-	<artifactId>uv-q-cu1</artifactId>
-	<name>Q-CU1</name>
-	<description>Out-of-date data.</description>
-	<version>1.0.0</version>
-	<packaging>bundle</packaging>
+    <properties>
+        <dpu.package>eu.unifiedviews.plugins.quality.cu1</dpu.package>
+        <dpu.mainClass>CU1</dpu.mainClass>
+    </properties>
 
-	<repositories>
-		<repository>
-			<id>maven.eea.sk</id>
-			<name>maven.eea.sk-public</name>
-			<url>http://maven.eea.sk/artifactory/public/</url>
-		</repository>
-	</repositories>
-
-	<properties>
-		<dpu.package>eu.unifiedviews.plugins.quality.cu1</dpu.package>
-		<dpu.mainClass>CU1</dpu.mainClass>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-queryresultio-text</artifactId>
-			<version>${sesame.version}</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>2.3</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
+    <dependencies>
         <dependency>
-            <groupId>cz.cuni.mff.xrg.odcs</groupId>
-            <artifactId>module-test</artifactId>
-            <version>1.4.0</version>
-            <scope>test</scope>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
         </dependency>
+        <!-- Compile library, use compile if UK libs are not as OSGI bundles on target instance.
+            If they are presented then scope can be changed to 'provided'. -->
         <dependency>
             <groupId>cz.cuni.mff.xrg.uv</groupId>
             <artifactId>boost-dpu</artifactId>
-            <version>1.1.5</version>
+            <version>[${uk.version.min},${uk.version.max})</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cz.cuni.mff.xrg.uv</groupId>
+            <artifactId>utils-dialog</artifactId>
+            <version>[${uk.version.min},${uk.version.max})</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>cz.cuni.mff.xrg.uv</groupId>
             <artifactId>utils-dataunit</artifactId>
-            <version>1.1.1</version>
+            <version>[${uk.version.min},${uk.version.max})</version>
+            <scope>compile</scope>
         </dependency>
+        <!-- Project with ontology definition. -->
         <dependency>
-            <groupId>cz.cuni.mff.xrg.uv</groupId>
-            <artifactId>utils-dataunit-rdf</artifactId>
-            <version>1.1.1</version>
+            <groupId>eu.unifiedviews.plugins.quality.qualitygraph</groupId>
+            <artifactId>uv-q-qualityOntology</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>cz.cuni.mff.xrg.uv</groupId>
-            <artifactId>service-serialization-xml</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>cz.cuni.mff.xrg.uv</groupId>
-            <artifactId>service-serialization-rdf</artifactId>
-            <version>1.1.2</version>
-        </dependency>
-        <dependency>
-        	<groupId>
-        		eu.unifiedviews.plugins.quality.qualitygraph
-        	</groupId>
-        	<artifactId>uv-q-qualityOntology</artifactId>
-        	<version>0.0.1-SNAPSHOT</version>
-        </dependency>
-	</dependencies>
+        <!-- Testing. -->
+    </dependencies>
 </project>
