@@ -17,7 +17,6 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|**FileName:**		              |CSV output filename.  	               |
 |**Path:**			              |Path to use in case of test.            |
 
 ***
@@ -27,7 +26,7 @@
 |Name                |Type       |DataUnit                         |Description                          |
 |--------------------|-----------|---------------------------------|-------------------------------------|
 |input  	         |i 	     |RDFDataUnit    		           |RDF matadata graph (metadata.trig / metadata.ttl). |
-|output 	         |o 	     |WritableFilesDataUnit            |CSV file containing the currency of the dataset. |
+|output 	         |o 	     |WritableRDFDataUnit              |RDF Quality graph. |
 
 ***
 
