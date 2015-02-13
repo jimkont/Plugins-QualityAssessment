@@ -50,7 +50,7 @@
         <dependency>
             <groupId>eu.unifiedviews.plugins.quality.qualitygraph</groupId>
             <artifactId>uv-q-qualityOntology</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <!-- Testing. -->
