@@ -24,7 +24,7 @@ public class ACC1Test {
         dpu.configureDirectly(config);
 
         // Define Input & Output of the DPU
-        env.createFilesInputFromResource("input", "input.nt");
+        env.createFilesInputFromResource("input", "it-x12.ttl");
         env.createRdfOutput("output", false);
 
         try {
