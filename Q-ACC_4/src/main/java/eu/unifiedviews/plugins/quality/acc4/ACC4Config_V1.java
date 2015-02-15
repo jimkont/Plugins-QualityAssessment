@@ -2,8 +2,8 @@ package eu.unifiedviews.plugins.quality.acc4;
 
 public class ACC4Config_V1 {
 
-    private String classuri;
-    private String property;
+    private String classuri = "";
+    private String property = "";
     private int lowerBound;
     private int upperBound;
 
