@@ -25,10 +25,10 @@
 
 ### Inputs and outputs ###
 
-|Name              |Type     |DataUnit                     |Description                          |
-|------------------|---------|-----------------------------|-------------------------------------|
-|input  	       |i 	     |RDFDataUnit 		           |RDF graph.			                     |
-|output 	       |o 	     |TODO                         |TODO                                 |
+|Name              |Type     |DataUnit                     |Description          |
+|------------------|---------|-----------------------------|---------------------|
+|input  	       |i 	     |RDFDataUnit 		           |RDF graph.			 |
+|output 	       |o 	     |WritableRDFDataUnit 	       |RDF Quality graph.   |
 
 ***
 
