@@ -61,7 +61,7 @@ public class ACC4Test {
             connection = input.getConnection();
             //connection.add(inputStream, "", RDFFormat.TURTLE); // Set the format of the resource
 
-            env.run(dpu);
+            //env.run(dpu);
 
         } finally {
             if (connection != null) {

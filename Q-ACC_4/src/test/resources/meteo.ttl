@@ -1,32 +1,32 @@
-<http://comsode.disco.unimib.it/resource/dataset/meteo/1> a <http://unifiedviews.eu/ontology/Meteo> ;
+<http://comsode.disco.unimib.it/resource/dataset/meteo/1> rdf:type <http://unifiedviews.eu/ontology/Meteo> ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/date> "01/01/2013"@it ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/minTemperature> "4.2" ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/minTemperatureValue> _:node19c8o4dd1x5 ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/maxTemperature> "-2.5" ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/maxTemperatureValue> _:node19c8o4dd1x6 .
 
-<http://comsode.disco.unimib.it/resource/dataset/meteo/2> a <http://unifiedviews.eu/ontology/Meteo> ; 
+<http://comsode.disco.unimib.it/resource/dataset/meteo/2> rdf:type <http://unifiedviews.eu/ontology/Meteo> ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/date> "02/01/2013"@it ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/minTemperature> "9.5" ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/minTemperatureValue> _:node19c8o4dd1x7 ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/maxTemperature> "2.6" ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/maxTemperatureValue> _:node19c8o4dd1x8 .
 
-<http://comsode.disco.unimib.it/resource/dataset/meteo/3> a <http://unifiedviews.eu/ontology/Meteo> ; 
+<http://comsode.disco.unimib.it/resource/dataset/meteo/3> rdf:type <http://unifiedviews.eu/ontology/Meteo> ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/date> "03/01/2013"@it ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/minTemperature> "14.5" ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/minTemperatureValue> _:node19c8o4dd1x9 ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/maxTemperature> "2.8" ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/maxTemperatureValue> _:node19c8o4dd1x10 .
 
-<http://comsode.disco.unimib.it/resource/dataset/meteo/4> a <http://unifiedviews.eu/ontology/Meteo> ;
+<http://comsode.disco.unimib.it/resource/dataset/meteo/4> rdf:type <http://unifiedviews.eu/ontology/Meteo> ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/date> "04/01/2013"@it ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/minTemperature> "9.2" ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/minTemperatureValue> _:node19c8o4dd1x15 ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/maxTemperature> "0.0" ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/maxTemperatureValue> _:node19c8o4dd1x16 .
 
-<http://comsode.disco.unimib.it/resource/dataset/meteo/5> a <http://unifiedviews.eu/ontology/Meteo> ;
+<http://comsode.disco.unimib.it/resource/dataset/meteo/5> rdf:type <http://unifiedviews.eu/ontology/Meteo> ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/date> "05/01/2013"@it ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/minTemperature> "9.9" ;
 	<http://comsode.disco.unimib.it/resource/dataset/meteo/minTemperatureValue> _:node19c8o4dd1x19 ;

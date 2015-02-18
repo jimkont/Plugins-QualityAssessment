@@ -48,8 +48,6 @@ import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntol
 @DPU.AsQuality
 public class ACC4 extends AbstractDpu<ACC4Config_V1> {
 
-    //private final Logger LOG = LoggerFactory.getLogger(ACC4.class);
-
     public static final String ACCURACY_GRAPH_SYMBOLIC_NAME = "accuracyQualityGraph";
 
     @DataUnit.AsInput(name = "input")
@@ -72,19 +70,13 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
     protected void innerExecute() throws DPUException, DataUnitException {
 
         // Get configuration parameters
-        String classUri = "http://unifiedviews.eu/ontology/Meteo";
-        String propertyUri = "http://comsode.disco.unimib.it/resource/dataset/meteo/minTemperature";
-        int lowerBound = 0;
-        int upperBound = 2;
+        String classUri = config.getClassUri();
+        String propertyUri = config.getProperty();
+        int lowerBound = config.getLowerBound();
+        int upperBound = config.getUpperBound();
 
-        final String query1 = "SELECT (COUNT(?s) as ?counter ) WHERE { ?s ?p ?o . }";
-
-        final String query2 = "SELECT (COUNT(?s) as ?counter ) " +
-                "WHERE { " +
-                "?s rdf:type <"+ classUri +"> . " +
-                "?s <"+ propertyUri +"> ?o . " +
-                "FILTER (?o > "+ lowerBound +" && ?o < "+ upperBound +") " +
-                "}";
+        final String query1 = "SELECT (COUNT(?s) as ?counter ) WHERE { ?s rdf:type <"+ classUri +"> . }";
+        final String query2 = "SELECT (COUNT(?s) as ?counter ) WHERE { ?s rdf:type <"+ classUri +"> . ?s <"+ propertyUri +"> ?o . FILTER (?o > "+ lowerBound +" && ?o < "+ upperBound +") . }";
 
         // Prepare SPARQL query 1.
         final SparqlUtils.SparqlSelectObject query_1 = faultTolerance.execute(
@@ -97,6 +89,7 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
                     }
 
                 });
+
         // Execute query 1 and get result.
         final SparqlUtils.QueryResultCollector result_1 = new SparqlUtils.QueryResultCollector();
         faultTolerance.execute(inRdfData, new FaultTolerance.ConnectionAction() {
@@ -119,6 +112,7 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
                     }
 
                 });
+
         // Execute query 2 and get result.
         final SparqlUtils.QueryResultCollector result_2 = new SparqlUtils.QueryResultCollector();
         faultTolerance.execute(inRdfData, new FaultTolerance.ConnectionAction() {
@@ -142,33 +136,34 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
         }
 
         final ValueFactory valueFactory = report.getValueFactory();
+
         // Set output.
         report.setOutput(RdfDataUnitUtils.addGraph(outRdfData, ACCURACY_GRAPH_SYMBOLIC_NAME));
 
         // EX_TIMELINESS_DIMENSION entity.
-        final EntityBuilder dpuEntity = new EntityBuilder(QualityOntology.EX_ACCURACY_DIMENSION, valueFactory);
-        //dpuEntity.property(RDF.PREDICATE, QualityOntology.DAQ_METRIC);
+        final EntityBuilder dpuEntity = new EntityBuilder(
+                QualityOntology.EX_ACCURACY_DIMENSION, valueFactory);
+        dpuEntity.property(RDF.PREDICATE, QualityOntology.DAQ_METRIC);
 
         // EX_DPU_NAME entity.
-        final EntityBuilder reportEntity = new EntityBuilder(ACC4Vocabulary.EX_DPU_NAME, valueFactory);
-//        reportEntity.property(RDF.PREDICATE, QualityOntology.DAQ_DIMENSION)
-  //              .property(QualityOntology.DAQ_HAS_METRIC, dpuEntity);
+        final EntityBuilder reportEntity = new EntityBuilder(
+                ACC4Vocabulary.EX_DPU_NAME, valueFactory);
+        reportEntity.property(RDF.PREDICATE, QualityOntology.DAQ_DIMENSION)
+                .property(QualityOntology.DAQ_HAS_METRIC, dpuEntity);
 
         // EX_OBSERVATIONS entity.
-        //for (int index = 0; index < result.getResults().size(); ++index) {
-            //final Map<String, Value> observation = result.getResults().get(index);
-            final EntityBuilder observationEntity = createObservation(valueFactory, result_1.getResults().get(0), result_2.getResults().get(0), classUri, 0);
-            //currentTime, startTime,
-            //        observation.get("o"), observation.get("s"), index);
-            // Add binding from EX_TIMELINESS_DIMENSION
-            dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity);
-            // Add observation entity to outpu.
-            report.add(observationEntity.asStatements());
-        //}
+        final EntityBuilder observationEntity = createObservation(valueFactory, result_1.getResults().get(0), result_2.getResults().get(0), classUri, 1);
+        // Add binding from EX_ACCURACY_DIMENSION
+        dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity);
+
+        // Add observation entity to output.
+        report.add(observationEntity.asStatements());
 
         // Add entities to output.
         report.add(dpuEntity.asStatements());
         report.add(reportEntity.asStatements());
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //if ((classUri == null) || (propertyUri == null) || (lowerBound == 0)) {
         //   LOG.warn("No subject or property has been specified.");
@@ -254,11 +249,12 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
         final EntityBuilder observationEntity = new EntityBuilder(
                 valueFactory.createURI(String.format(ACC4Vocabulary.EX_OBSERVATIONS, observationIndex)),
                 valueFactory);
-        // Prepare variables.
-        Value x = result_2.get("counter");
-        Value y = result_1.get("counter");
 
-        double accuracy = Double.parseDouble(x.stringValue()) / Double.parseDouble(y.stringValue());
+        // Prepare variables.
+        Value x = result_1.get("counter");
+        Value y = result_2.get("counter");
+
+        double accuracy = Double.parseDouble(y.stringValue()) / Double.parseDouble(x.stringValue());
 
         Resource sub = new Resource() {
             @Override
@@ -266,14 +262,7 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
                 return subject;
             }
         };
-        //final Date lastEditDate;
-        //try {
-        //    lastEditDate = new SimpleDateFormat("yyyy-MM-dd").parse(lastEdit.stringValue());
-        //} catch (ParseException ex) {
-        //    throw new DPUException(ctx.tr("dpu.error.date.parse.failed"), ex);
-        //}
-        //double lastModificationTime = lastEditDate.getTime();
-        //double currency = 1 - ((currentTime - lastModificationTime) / (currentTime - startTime));
+
         // Add triple about report.
         fillReport(valueFactory, observationEntity, sub, accuracy);
         // And return entity.

@@ -17,7 +17,6 @@
     <properties>
         <dpu.package>eu.unifiedviews.plugins.quality.acc4</dpu.package>
         <dpu.mainClass>ACC4</dpu.mainClass>
-        <vaadin.version>7.3.7</vaadin.version>
     </properties>
 
     <dependencies>
