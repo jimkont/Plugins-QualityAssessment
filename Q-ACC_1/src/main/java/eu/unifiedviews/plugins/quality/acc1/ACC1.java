@@ -281,7 +281,7 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
                 msg = msg.replaceAll("&lt;", "<");
                 msg = msg.replaceAll("&gt;", ">");
                 msg = msg.replaceAll("&quot;", "'");
-                rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DAQ_HAS_SEVERITY, rdfQualityGraph.getValueFactory().createURI(type));
+                rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DAQ_HAS_SEVERITY, rdfQualityGraph.getValueFactory().createLiteral(type));
                 rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DCTERMS_PROBLEMDESCRIPTION, rdfQualityGraph.getValueFactory().createURI(msg));
                 
             	/*rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DAQ_COMPUTED_ON, rdfQualityGraph.getValueFactory().createURI(blank_node));
