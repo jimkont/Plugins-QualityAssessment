@@ -72,15 +72,12 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
     protected void innerExecute() throws DPUException, DataUnitException {
 
         // Get configuration parameters
-        String classUri = this.config.getClassUri();
-        String propertyUri = this.config.getProperty();
-        int lowerBound = this.config.getLowerBound();
-        int upperBound = this.config.getUpperBound();
+        String classUri = "http://unifiedviews.eu/ontology/Meteo";
+        String propertyUri = "http://comsode.disco.unimib.it/resource/dataset/meteo/minTemperature";
+        int lowerBound = 0;
+        int upperBound = 2;
 
-        final String query1 = "SELECT (COUNT(?s) as ?counter ) " +
-                "WHERE { " +
-                "?s rdf:type <"+ classUri +"> . " +
-                "}";
+        final String query1 = "SELECT (COUNT(?s) as ?counter ) WHERE { ?s ?p ?o . }";
 
         final String query2 = "SELECT (COUNT(?s) as ?counter ) " +
                 "WHERE { " +
@@ -136,6 +133,12 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
         // Check result size.
         if (result_1.getResults().isEmpty() || result_2.getResults().isEmpty()) {
             throw new DPUException(ctx.tr("dpu.error.emmpty.result"));
+        } else {
+            Value x = result_2.getResults().get(0).get("counter");
+            Value y = result_1.getResults().get(0).get("counter");
+
+            //double accuracy = Double.parseDouble(x.stringValue()) / Double.parseDouble(y.stringValue());
+            System.out.println(x.stringValue() + " "+y.stringValue());
         }
 
         final ValueFactory valueFactory = report.getValueFactory();
@@ -143,20 +146,18 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
         report.setOutput(RdfDataUnitUtils.addGraph(outRdfData, ACCURACY_GRAPH_SYMBOLIC_NAME));
 
         // EX_TIMELINESS_DIMENSION entity.
-        final EntityBuilder dpuEntity = new EntityBuilder(
-                QualityOntology.EX_ACCURACY_DIMENSION, valueFactory);
-        dpuEntity.property(RDF.PREDICATE, QualityOntology.DAQ_METRIC);
+        final EntityBuilder dpuEntity = new EntityBuilder(QualityOntology.EX_ACCURACY_DIMENSION, valueFactory);
+        //dpuEntity.property(RDF.PREDICATE, QualityOntology.DAQ_METRIC);
 
         // EX_DPU_NAME entity.
-        final EntityBuilder reportEntity = new EntityBuilder(
-                ACC4Vocabulary.EX_DPU_NAME, valueFactory);
-        reportEntity.property(RDF.PREDICATE, QualityOntology.DAQ_DIMENSION)
-                .property(QualityOntology.DAQ_HAS_METRIC, dpuEntity);
+        final EntityBuilder reportEntity = new EntityBuilder(ACC4Vocabulary.EX_DPU_NAME, valueFactory);
+//        reportEntity.property(RDF.PREDICATE, QualityOntology.DAQ_DIMENSION)
+  //              .property(QualityOntology.DAQ_HAS_METRIC, dpuEntity);
 
         // EX_OBSERVATIONS entity.
         //for (int index = 0; index < result.getResults().size(); ++index) {
             //final Map<String, Value> observation = result.getResults().get(index);
-            final EntityBuilder observationEntity = createObservation(valueFactory, result_1.getResults().get(0), result_2.getResults().get(0), classUri, 1);
+            final EntityBuilder observationEntity = createObservation(valueFactory, result_1.getResults().get(0), result_2.getResults().get(0), classUri, 0);
             //currentTime, startTime,
             //        observation.get("o"), observation.get("s"), index);
             // Add binding from EX_TIMELINESS_DIMENSION

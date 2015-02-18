@@ -15,8 +15,9 @@
     <packaging>bundle</packaging>
 
     <properties>
-        <dpu.package>eu.unifiedviews.plugins.quality.cu1</dpu.package>
-        <dpu.mainClass>CU1</dpu.mainClass>
+        <dpu.package>eu.unifiedviews.plugins.quality.acc4</dpu.package>
+        <dpu.mainClass>ACC4</dpu.mainClass>
+        <vaadin.version>7.3.7</vaadin.version>
     </properties>
 
     <dependencies>
@@ -63,7 +64,7 @@
         <dependency>
             <groupId>cz.cuni.mff.xrg.odcs</groupId>
             <artifactId>module-test</artifactId>
-            <version>1.4.0</version>
+            <version>1.5.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
