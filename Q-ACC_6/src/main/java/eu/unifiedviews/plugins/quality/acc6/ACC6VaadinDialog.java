@@ -2,16 +2,17 @@ package eu.unifiedviews.plugins.quality.acc6;
 
 import java.util.ArrayList;
 
-import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.shared.ui.combobox.FilteringMode;
+
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
 import eu.unifiedviews.helpers.dpu.localization.Messages;
 
-public class ACC6VaadinDialog extends BaseConfigDialog<ACC6Config_V1> implements InitializableConfigDialog {
+import cz.cuni.mff.xrg.uv.boost.dpu.vaadin.AbstractDialog;
+
+public class ACC6VaadinDialog extends AbstractDialog<ACC6Config_V1> {
 
     private VerticalLayout mainLayout;
 
@@ -24,11 +25,11 @@ public class ACC6VaadinDialog extends BaseConfigDialog<ACC6Config_V1> implements
     private Messages messages;
     
     public ACC6VaadinDialog() {
-        super(ACC6Config_V1.class);
+        super(ACC6.class);
     }
     
     @Override
-    public void initialize() {
+    public void buildDialogLayout() {
 
         this.messages = new Messages(getContext().getLocale(), this.getClass().getClassLoader());
         
@@ -44,7 +45,7 @@ public class ACC6VaadinDialog extends BaseConfigDialog<ACC6Config_V1> implements
         FormLayout baseFormLayout = new FormLayout();
         baseFormLayout.setSizeUndefined();
 
-        fileName = new TextField(messages.getString("ACC6VaadinDialog.file.output"));
+        fileName = new TextField(messages.getString("dpu.ACC6VaadinDialog.file.output"));
         fileName.setHeight("-1px");
         fileName.setRequired(true);
         baseFormLayout.addComponent(fileName);
@@ -128,20 +129,19 @@ public class ACC6VaadinDialog extends BaseConfigDialog<ACC6Config_V1> implements
     }
 
     private void addColumnToPropertyMappingsHeading() {
-        this.propertiesGridLayout.addComponent(new Label(messages.getString("ACC6VaadinDialog.resource.type")));
-        this.propertiesGridLayout.addComponent(new Label(messages.getString("ACC6VaadinDialog.property")));
-        this.propertiesGridLayout.addComponent(new Label(messages.getString("ACC6VaadinDialog.regular.expression")));
+        this.propertiesGridLayout.addComponent(new Label(messages.getString("dpu.ACC6VaadinDialog.resource.type")));
+        this.propertiesGridLayout.addComponent(new Label(messages.getString("dpu.ACC6VaadinDialog.property")));
+        this.propertiesGridLayout.addComponent(new Label(messages.getString("dpu.ACC6VaadinDialog.regular.expression")));
     }
     
     private void initComboBox(){
-        this.regExp.addItem("[0-9][0-9][0-9][0-9][0-9]");
-        this.regExp.setItemCaption("[0-9][0-9][0-9][0-9][0-9]", "Postal code:");
-        this.regExp.addItem("Email address: ^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
-        this.regExp.addItem("DateTime: ^(?ni:(?=\\d)((?'year'((1[6-9])|([2-9]\\d))\\d\\d)(?'sep'[/.-])(?'month'0?[1-9]|1[012])\\2(?'day'((?<!(\\2((0?[2469])|11)\\2))31)|(?<!\\2(0?2)\\2)(29|30)|((?<=((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|(16|[2468][048]|[3579][26])00)\\2\\3\\2)29)|((0?[1-9])|(1\\d)|(2[0-8])))(?:(?=\\x20\\d)\\x20|$))?((?<time>((0?[1-9]|1[012])(:[0-5]\\d){0,2}(\\x20[AP]M))|([01]\\d|2[0-3])(:[0-5]\\d){1,2}))?)$");
-        this.regExp.addItem("German postal code: \\b((?:0[1-46-9]\\d{3})|(?:[1-357-9]\\d{4})|(?:[4][0-24-9]\\d{3})|(?:[6][013-9]\\d{3}))\\b");
-        this.regExp.addItem("Telephone number (10 digit): ^(\\([2-9]|[2-9])(\\d{2}|\\d{2}\\))(-|.|\\s)?\\d{3}(-|.|\\s)?\\d{4}$");
-        this.regExp.addItem("Italian mobile phone number: ^([+]39)?((38[{8,9}|0])|(34[{7-9}|0])|(36[6|8|0])|(33[{3-9}|0])|(32[{8,9}]))([\\d]{7})$");
-        this.regExp.addItem("Currency: ^(?!\\u00a2)");
+        this.regExp.addItem(/*"Postal code:"*/"[0-9][0-9][0-9][0-9][0-9]");
+        this.regExp.addItem(/*"Email address: */"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
+        this.regExp.addItem(/*"DateTime: */"^(?ni:(?=\\d)((?'year'((1[6-9])|([2-9]\\d))\\d\\d)(?'sep'[/.-])(?'month'0?[1-9]|1[012])\\2(?'day'((?<!(\\2((0?[2469])|11)\\2))31)|(?<!\\2(0?2)\\2)(29|30)|((?<=((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|(16|[2468][048]|[3579][26])00)\\2\\3\\2)29)|((0?[1-9])|(1\\d)|(2[0-8])))(?:(?=\\x20\\d)\\x20|$))?((?<time>((0?[1-9]|1[012])(:[0-5]\\d){0,2}(\\x20[AP]M))|([01]\\d|2[0-3])(:[0-5]\\d){1,2}))?)$");
+        this.regExp.addItem(/*"German postal code: */"\\b((?:0[1-46-9]\\d{3})|(?:[1-357-9]\\d{4})|(?:[4][0-24-9]\\d{3})|(?:[6][013-9]\\d{3}))\\b");
+        this.regExp.addItem(/*"Telephone number (10 digit):*/"^(\\([2-9]|[2-9])(\\d{2}|\\d{2}\\))(-|.|\\s)?\\d{3}(-|.|\\s)?\\d{4}$");
+        this.regExp.addItem(/*"Italian mobile phone number: */"^([+]39)?((38[{8,9}|0])|(34[{7-9}|0])|(36[6|8|0])|(33[{3-9}|0])|(32[{8,9}]))([\\d]{7})$");
+        this.regExp.addItem(/*"Currency: */"^(?!\\u00a2)");
     }
 
     @Override

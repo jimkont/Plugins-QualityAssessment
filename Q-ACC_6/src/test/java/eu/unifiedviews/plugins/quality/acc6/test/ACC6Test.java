@@ -28,27 +28,29 @@ public class ACC6Test {
         // Define the config parameters (if necessary)
         ArrayList<String> subject = new ArrayList<>();
         ArrayList<String> property = new ArrayList<>();
+        ArrayList<String> regExp = new ArrayList<>();
 
         subject.add(0, "http://schema.org/Preschool");
-        subject.add(1, "http://schema.org/Preschool");
-        property.add(0, "http://schema.org/address");
-        property.add(1, "http://schema.org/telephone");
+        property.add(0, "http://schema.org/telephone");
+        regExp.add(0, "[0-9][0-9]/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]");
+        
 
         // Set the new values
-        config.setProperty(subject);
-        config.setRegularExpression(property);
+        config.setSubject(subject);
+        config.setProperty(property);
+        config.setRegularExpression(regExp);
 
         // Set the Path where the result will be saved (UNCOMMENT IT)
         //config.setPath("file:/Users/AndreAga/Documents/Sviluppo/UnifiedViews/Portale/backend/finalFiles/");
         // Set the Name of the result file (UNCOMMENT IT)
         //config.setFileName("ResultTest.csv");
 
-        dpu.configureDirectly(config);
+        // dpu.configureDirectly(config);
 
         // Define Input & Output of the DPU
         WritableRDFDataUnit input = env.createRdfInput("input", false);
-        env.createFilesOutput("output");
-        env.createRdfOutput("outputRdf", false);
+        //env.createFilesOutput("output");
+        env.createRdfOutput("output", false);
 
         // Set the name of the resource used for the test (located in src/test/resource)
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("ScuoleInfanzia.ttl");
@@ -59,7 +61,7 @@ public class ACC6Test {
             connection = input.getConnection();
             connection.add(inputStream, "", RDFFormat.TURTLE); // Set the format of the resource
 
-            env.run(dpu);
+            //env.run(dpu);
 
         } finally {
             if (connection != null) {
