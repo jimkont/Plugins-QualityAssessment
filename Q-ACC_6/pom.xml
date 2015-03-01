@@ -18,9 +18,6 @@
     <properties>
         <dpu.package>eu.unifiedviews.plugins.quality.acc6</dpu.package>
         <dpu.mainClass>ACC6</dpu.mainClass>
-        
-        <uk.version.min>1.1.1</uk.version.min>
-        <uk.version.max>3.0.0</uk.version.max>
     </properties>
 
     <dependencies>

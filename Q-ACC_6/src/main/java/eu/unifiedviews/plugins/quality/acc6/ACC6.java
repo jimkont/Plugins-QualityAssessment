@@ -133,8 +133,6 @@ public class ACC6 extends AbstractDpu<ACC6Config_V1> {
                     Value denom = result1.getResults().get(0).get("counter");
                     Value num = result2.getResults().get(0).get("counter");
 
-                    System.out.println(num.stringValue() + " " + denom.stringValue());
-
                     final ValueFactory valueFactory = report.getValueFactory();
 
                     // Set output.
@@ -169,13 +167,7 @@ public class ACC6 extends AbstractDpu<ACC6Config_V1> {
             }
         }
     }
-/*
-    public String toString() {
-        String name = this.getClass().getName();
-        int index = name.lastIndexOf(".");
-        return name.substring(index + 1);
-    }
-*/
+    
     /**
      * Creates observation for entity.
      *
