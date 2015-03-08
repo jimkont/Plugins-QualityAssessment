@@ -17,15 +17,16 @@ import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.DC;
 import org.openrdf.model.vocabulary.RDF;
-import cz.cuni.mff.xrg.uv.boost.dpu.advanced.AbstractDpu;
-import cz.cuni.mff.xrg.uv.boost.dpu.config.ConfigHistory;
-import cz.cuni.mff.xrg.uv.boost.dpu.initialization.AutoInitializer;
-import cz.cuni.mff.xrg.uv.boost.extensions.FaultTolerance;
-import cz.cuni.mff.xrg.uv.boost.rdf.EntityBuilder;
-import cz.cuni.mff.xrg.uv.boost.rdf.simple.WritableSimpleRdf;
-import cz.cuni.mff.xrg.uv.boost.rdf.sparql.SparqlUtils;
-import cz.cuni.mff.xrg.uv.utils.dataunit.DataUnitUtils;
-import cz.cuni.mff.xrg.uv.utils.dataunit.rdf.RdfDataUnitUtils;
+
+import eu.unifiedviews.helpers.dataunit.DataUnitUtils;
+import eu.unifiedviews.helpers.dataunit.rdf.RdfDataUnitUtils;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.rdf.simple.WritableSimpleRdf;
+import eu.unifiedviews.helpers.dpu.rdf.EntityBuilder;
+import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
 
 @DPU.AsQuality
@@ -41,10 +42,10 @@ public class CU1 extends AbstractDpu<CU1Config_V1> {
     @DataUnit.AsOutput(name = "output")
     public WritableRDFDataUnit outRdfData;
 
-    @AutoInitializer.Init(param = "outRdfData")
+    @ExtensionInitializer.Init(param = "outRdfData")
     public WritableSimpleRdf report;
 
-    @AutoInitializer.Init
+    @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
 
     public CU1() {
@@ -52,7 +53,7 @@ public class CU1 extends AbstractDpu<CU1Config_V1> {
     }
 
     @Override
-    protected void innerExecute() throws DPUException, DataUnitException {
+    protected void innerExecute() throws DPUException {
         // Prepare SPARQL query.
         final SparqlUtils.SparqlSelectObject query = faultTolerance.execute(
                 new FaultTolerance.ActionReturn<SparqlUtils.SparqlSelectObject>() {
@@ -91,7 +92,14 @@ public class CU1 extends AbstractDpu<CU1Config_V1> {
         final double startTime = startDate.getTime();
         final ValueFactory valueFactory = report.getValueFactory();
         // Set output.
-        report.setOutput(RdfDataUnitUtils.addGraph(outRdfData, CURRENCY_GRAPH_SYMBOLIC_NAME));
+        final RDFDataUnit.Entry output = faultTolerance.execute(new FaultTolerance.ActionReturn<RDFDataUnit.Entry>() {
+
+            @Override
+            public RDFDataUnit.Entry action() throws Exception {
+                return RdfDataUnitUtils.addGraph(outRdfData, CURRENCY_GRAPH_SYMBOLIC_NAME);
+            }
+        });
+        report.setOutput(output);
 
         // EX_TIMELINESS_DIMENSION entity.
         final EntityBuilder dpuEntity = new EntityBuilder(

@@ -2,8 +2,8 @@ package eu.unifiedviews.plugins.quality.cu1;
 
 import com.vaadin.ui.*;
 
-import cz.cuni.mff.xrg.uv.boost.dpu.vaadin.AbstractDialog;
 import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 public class CU1VaadinDialog extends AbstractDialog<CU1Config_V1> {
 
