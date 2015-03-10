@@ -1,71 +1,66 @@
 package eu.unifiedviews.plugins.quality.c2;
 
-import au.com.bytecode.opencsv.CSVWriter;
-import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
-import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
-import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
-import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
-import org.openrdf.model.URI;
-import org.openrdf.query.*;
-import org.openrdf.query.impl.DatasetImpl;
-import org.openrdf.query.resultio.TupleQueryResultWriter;
-import org.openrdf.query.resultio.text.csv.SPARQLResultsCSVWriterFactory;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import au.com.bytecode.opencsv.CSVReader;
-import cz.cuni.mff.xrg.uv.boost.dpu.addon.impl.SimpleRdfConfigurator;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.AddPolicy;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfFactory;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfWrite;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
+
+import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.model.vocabulary.DC;
+import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.repository.RepositoryConnection;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.DataUnitUtils;
+import eu.unifiedviews.helpers.dataunit.rdf.RdfDataUnitUtils;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.rdf.simple.WritableSimpleRdf;
+import eu.unifiedviews.helpers.dpu.rdf.EntityBuilder;
+import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
 
 @DPU.AsQuality
-public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogProvider<C2Config_V1> {
+public class C2 extends AbstractDpu<C2Config_V1> {
 
-    private final Logger LOG = LoggerFactory.getLogger(C2.class);
+    public static final String COMPLETENESS_GRAPH_SYMBOLIC_NAME = "completenessQualityGraph";
 
     @DataUnit.AsInput(name = "input")
     public RDFDataUnit inRdfData;
 
     @DataUnit.AsOutput(name = "output")
-    public WritableFilesDataUnit outFilesData;
-
-    @DataUnit.AsOutput(name = "outputRdf")
     public WritableRDFDataUnit outRdfData;
+
+    @ExtensionInitializer.Init(param = "outRdfData")
+    public WritableSimpleRdf report;
+
+    @ExtensionInitializer.Init
+    public FaultTolerance faultTolerance;
+
+    private static ValueFactory valueFactory;
     
     public C2() {
-        super(C2Config_V1.class);
+        super(C2VaadinDialog.class, ConfigHistory.noHistory(C2Config_V1.class));
     }
 
     @Override
-    public AbstractConfigDialog<C2Config_V1> getConfigurationDialog() {
-        return new C2VaadinDialog();
-    }
+    protected void innerExecute() throws DPUException {
 
-    @Override
-    public void execute(DPUContext context) throws DPUException {
+        valueFactory = report.getValueFactory();
 
-        // Get configuration parameters        
+        // Get configuration parameters
         ArrayList<String> subject_ = this.config.getSubject();
         ArrayList<String> property_ = this.config.getProperty();
 
         if ((subject_ == null) && (property_ == null)) {
-            LOG.warn("No subject or property has been specified.");
+            throw new DPUException(ctx.tr("dpu.error.nothing.specified"));
         } else {
 
             Double [] results = new Double[subject_.size()];
@@ -75,256 +70,177 @@ public class C2 extends ConfigurableBase<C2Config_V1> implements ConfigDialogPro
 
                 String key = subject_.get(i);
                 String value = property_.get(i);
-
-                String query1 = "";
-                String query2 = "";
                 
                 if (key.trim().length() > 0 && value.trim().length() > 0) {
-                    
-                    query1 = "SELECT (COUNT(?s) AS ?counter) WHERE { ?s a <" + key + "> . }";
-                    query2 = "SELECT (COUNT(?o) AS ?counter) WHERE { ?s a <" + key + "> . "
-                            //"OPTIONAl {"
-                            + "?s <" + value + "> ?o "
-                            //+ "}"
-                            + ". "
-                            //+ "OPTIONAL { ?s ?p ?blank . ?blank <" + value + "> ?o }"
-                            + " }";
 
-                    final File outFile_1;
-                    final File outFile_2;
+                    final String query1 =
+                            "SELECT (COUNT(?s) AS ?counter) " +
+                                    "WHERE { " +
+                                    "?s a <" + key + "> . " +
+                                    "}";
 
-                    try {
+                    final String query2 =
+                            "SELECT (COUNT(?o) AS ?counter) " +
+                                    "WHERE { " +
+                                    "?s a <" + key + "> . " +
+                                    "?s <" + value + "> ?o . " +
+                                    " }";
 
-                        // Create two temp files, used to evaluate the completeness, in the output directory
-                        outFile_1 = new File(java.net.URI.create(outFilesData.getBaseFileURIString()+"counter_1.csv"));
-                        outFile_2 = new File(java.net.URI.create(outFilesData.getBaseFileURIString()+"counter_2.csv"));
+                    // Prepare SPARQL query 1.
+                    final SparqlUtils.SparqlSelectObject query_1 = faultTolerance.execute(
+                            new FaultTolerance.ActionReturn<SparqlUtils.SparqlSelectObject>() {
 
-                        final Map<String, URI> graphs = getGraphs();
+                                @Override
+                                public SparqlUtils.SparqlSelectObject action() throws Exception {
+                                    return SparqlUtils.createSelect(query1,
+                                            DataUnitUtils.getEntries(inRdfData, RDFDataUnit.Entry.class));
+                                }
 
-                        final DatasetImpl dataset = new DatasetImpl();
+                            });
 
-                        for (URI graph_1 : graphs.values()) {
-                            dataset.addDefaultGraph(graph_1);
+                    // Execute query 1 and get result.
+                    final SparqlUtils.QueryResultCollector result_1 = new SparqlUtils.QueryResultCollector();
+                    faultTolerance.execute(inRdfData, new FaultTolerance.ConnectionAction() {
+
+                        @Override
+                        public void action(RepositoryConnection connection) throws Exception {
+                            result_1.prepare();
+                            SparqlUtils.execute(connection, ctx, query_1, result_1);
                         }
+                    });
 
-                        // Execute the above two Queries specified above
-                        this.executeQuery(context, outFile_1, query1, dataset);
-                        this.executeQuery(context, outFile_2, query2, dataset);
+                    // Prepare SPARQL query 2.
+                    final SparqlUtils.SparqlSelectObject query_2 = faultTolerance.execute(
+                            new FaultTolerance.ActionReturn<SparqlUtils.SparqlSelectObject>() {
 
-                        // Get the result
-                        results[i] = this.calculateMean(context, outFile_1.getAbsolutePath(), outFile_2.getAbsolutePath());
+                                @Override
+                                public SparqlUtils.SparqlSelectObject action() throws Exception {
+                                    return SparqlUtils.createSelect(query2,
+                                            DataUnitUtils.getEntries(inRdfData, RDFDataUnit.Entry.class));
+                                }
 
-                    } catch (DataUnitException ex) {
-                        context.sendMessage(DPUContext.MessageType.ERROR, "Problem with DataUnit.", "", ex);
-                        return;
+                            });
+
+                    // Execute query 2 and get result.
+                    final SparqlUtils.QueryResultCollector result_2 = new SparqlUtils.QueryResultCollector();
+                    faultTolerance.execute(inRdfData, new FaultTolerance.ConnectionAction() {
+
+                        @Override
+                        public void action(RepositoryConnection connection) throws Exception {
+                            result_2.prepare();
+                            SparqlUtils.execute(connection, ctx, query_2, result_2);
+                        }
+                    });
+
+                    // Check result size.
+                    if (result_1.getResults().isEmpty() || result_2.getResults().isEmpty()) {
+                        throw new DPUException(ctx.tr("dpu.error.empty.result"));
                     }
-                    
-                    // Delete the two temp files
-                    outFile_1.delete();
-                    outFile_2.delete();
+
+                    // Prepare variables.
+                    Value x = result_1.getResults().get(0).get("counter");
+                    Value y = result_2.getResults().get(0).get("counter");
+
+                    results[i] = Double.parseDouble(y.stringValue()) / Double.parseDouble(x.stringValue());
                 }
             }
 
-            // Create the RDF output with the result
-            this.createOutputGraph(context, "qualityGraph1", subject_, property_, results);
-        }
-    }
+            // Set output.
+            final RDFDataUnit.Entry output = faultTolerance.execute(new FaultTolerance.ActionReturn<RDFDataUnit.Entry>() {
 
-    private void executeQuery (DPUContext context, File outFile, String query, DatasetImpl dataset) {
-
-        RepositoryConnection connection = null;
-
-        try (OutputStream outputStream = new FileOutputStream(outFile)) {
-
-            connection = inRdfData.getConnection();
-
-            // Prepare the execution of the query
-            final SPARQLResultsCSVWriterFactory writerFactory = new SPARQLResultsCSVWriterFactory();
-            final TupleQueryResultWriter resultWriter = writerFactory.getWriter(outputStream);
-            TupleQuery querySparql = connection.prepareTupleQuery(QueryLanguage.SPARQL, query);
-
-            // Execute the Query
-            querySparql.setDataset(dataset);
-            querySparql.evaluate(resultWriter);
-
-        } catch (IOException | RepositoryException | QueryEvaluationException | TupleQueryResultHandlerException ex) {
-            LOG.warn("IOException", ex);
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "", ex);
-        } catch (MalformedQueryException ex) {
-            LOG.warn("MalformedQueryException", ex);
-            context.sendMessage(DPUContext.MessageType.ERROR, "Invalid query.", "", ex);
-        } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed.", "Problem with DataUnit.", ex);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
+                @Override
+                public RDFDataUnit.Entry action() throws Exception {
+                    return RdfDataUnitUtils.addGraph(outRdfData, COMPLETENESS_GRAPH_SYMBOLIC_NAME);
                 }
-            } catch (RepositoryException ex) {
-                LOG.warn("Close on connection has failed.", ex);
+            });
+            report.setOutput(output);
+
+            // EX_COMPLETENESS_DIMENSION entity.
+            final EntityBuilder dpuEntity = new EntityBuilder(QualityOntology.EX_COMPLETENESS_DIMENSION, valueFactory);
+            dpuEntity
+                    .property(RDF.TYPE, QualityOntology.DAQ_METRIC);
+
+            // EX_DPU_NAME entity.
+            final EntityBuilder reportEntity = new EntityBuilder(C2Vocabulary.EX_DPU_NAME, valueFactory);
+            reportEntity
+                    .property(RDF.TYPE, QualityOntology.DAQ_DIMENSION)
+                    .property(QualityOntology.DAQ_HAS_METRIC, dpuEntity);
+
+            // EX_OBSERVATIONS entity.
+            EntityBuilder[] eb = new EntityBuilder[results.length];
+            EntityBuilder[] bn = new EntityBuilder[results.length];
+            Integer[] bn_index = new Integer[results.length];
+
+            for (int index = 0; index < results.length; index++) {
+
+                Random rand = new Random();
+                bn_index[index] =  100000 + rand.nextInt (100000-10000);
+
+                final EntityBuilder observationEntity = createObservation(results[index], index, bn_index[index]);
+                final EntityBuilder observationEntityBNode = createObservationBNode(subject_.get(index), property_.get(index), index, bn_index[index]);
+
+                // Add binding from EX_COMPLETENESS_DIMENSION
+                dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity);
+
+                eb[index] = observationEntity;
+                bn[index] = observationEntityBNode;
+            }
+
+            // Add entities to output graph.
+            report.add(reportEntity.asStatements());
+            report.add(dpuEntity.asStatements());
+            for (int i = 0; i < eb.length; i++) {
+                report.add(eb[i].asStatements());
+            }
+            for (int j = 0; j < bn.length; j++) {
+                report.add(bn[j].asStatements());
             }
         }
     }
-   
-    private void createOutputGraph(DPUContext context, String namegraph,  ArrayList<String> subject, ArrayList<String> property, Double[] results) {
 
+    /**
+     * Creates observation for entity.
+     *
+     * @param value
+     * @param observationIndex
+     * @return EntityBuilder
+     * @throws DPUException
+     */
+    private EntityBuilder createObservation(double value, int observationIndex, int bnode) throws DPUException {
+
+        String obs = String.format(C2Vocabulary.EX_OBSERVATIONS, observationIndex);
+        final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
+
+        // Prepare variables.
+        final SimpleDateFormat reportDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+        final Date reportDate;
         try {
-
-            // Set the Date of the DPU execution
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
-            Date date = dateFormat.parse(dateFormat.format(new Date()));
-
-            // Set the Main & Quality Graph
-             SimpleRdfWrite rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
-             rdfQualityGraph.setPolicy(AddPolicy.IMMEDIATE);
-
-            // Initialization of the Quality Ontology
-            QualityOntology.init(rdfQualityGraph.getValueFactory(), this.toString());
-            
-            // Initialize the observation array
-            URI[] EX_OBSERVATIONS = new URI[results.length];
-            
-
-            // Set the name of the Quality Graph
-            URI graphName = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX + namegraph);
-
-            // Set the name of the two Output Graphs
-
-            rdfQualityGraph.setOutputGraph(graphName.toString());
-
-            // Add Subject, Property and Object to the Quality Graph
-            rdfQualityGraph.add(QualityOntology.EX_COMPLETENESS_DIMENSION, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_DIMENSION);
-            rdfQualityGraph.add(QualityOntology.EX_COMPLETENESS_DIMENSION, QualityOntology.DAQ_HAS_METRIC, QualityOntology.EX_DPU_NAME);
-            rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_METRIC);
-
-            for (int z = 0; z < results.length; z++) {
-            	EX_OBSERVATIONS[z] = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX + "obs" + z+1);
-            	rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.DAQ_HAS_OBSERVATION, EX_OBSERVATIONS[z]);
-            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.RDF_A_PREDICATE, QualityOntology.QB_OBSERVATION);
-
-                // Some temporary string
-                String blank_node = EX_OBSERVATIONS[z].stringValue() + "/blank_node";
-
-            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DAQ_COMPUTED_ON,
-                        rdfQualityGraph.getValueFactory().createURI(blank_node));
-
-            	rdfQualityGraph.add(rdfQualityGraph.getValueFactory().createURI(blank_node),
-                        QualityOntology.RDF_A_PREDICATE, QualityOntology.RDF_STATEMENT);
-
-            	rdfQualityGraph.add(rdfQualityGraph.getValueFactory().createURI(blank_node),
-                        QualityOntology.RDF_SUBJECT_PREDICATE, rdfQualityGraph.getValueFactory().createURI(subject.get(z)));
-
-            	rdfQualityGraph.add(rdfQualityGraph.getValueFactory().createURI(blank_node),
-                        QualityOntology.RDF_PREDICATE_PREDICATE, rdfQualityGraph.getValueFactory().createURI(property.get(z)));
-
-            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DC_DATE,
-                        rdfQualityGraph.getValueFactory().createLiteral(date));
-
-            	rdfQualityGraph.add(EX_OBSERVATIONS[z], QualityOntology.DAQ_VALUE,
-                        rdfQualityGraph.getValueFactory().createLiteral(results[z]));
-
-            }
-
-           
-            // Create the Quality Graph
-            if (rdfQualityGraph != null) {
-                rdfQualityGraph.flushBuffer();
-            }
-
-        } catch (OperationFailedException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Operation Failed Exception.", "", e);
-        } catch (ParseException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Error during parsing Date.", "", e);
+            reportDate = reportDateFormat.parse(reportDateFormat.format(new Date()));
+        } catch (ParseException ex) {
+            throw new DPUException(ctx.tr("dpu.error.date.parse.failed"), ex);
         }
+
+        // Set the observation.
+        observationEntity
+                .property(RDF.TYPE, QualityOntology.QB_OBSERVATION)
+                .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(obs) +"/"+ bnode)
+                .property(DC.DATE, valueFactory.createLiteral(reportDate))
+                .property(QualityOntology.DAQ_VALUE, valueFactory.createLiteral(value));
+
+        return observationEntity;
     }
 
-    public String toString() {
-        String name = this.getClass().getName();
-        int index = name.lastIndexOf(".");
-        return name.substring(index + 1);
-    }
-    
-   /* private void createCSV (DPUContext context, ArrayList<String> subject, ArrayList<String> property, Double[] results) {
+    private EntityBuilder createObservationBNode(String subject, String property, int observationIndex, int bnode) throws DPUException {
 
-        CSVWriter writer = null;
+        String obs = String.format(C2Vocabulary.EX_OBSERVATIONS, observationIndex) +"/"+ bnode;
+        final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
 
-        try {
+        // Set the observation.
+        observationEntity
+                .property(RDF.TYPE, RDF.STATEMENT)
+                .property(RDF.SUBJECT, valueFactory.createLiteral(subject))
+                .property(RDF.PROPERTY, valueFactory.createLiteral(property));
 
-            // Add new file to the output variable
-            final String outFileUri = outFilesData.addNewFile(config.getFileName());
-            
-            // Set a Virtual Path to the file specified in the configuration
-            VirtualPathHelpers.setVirtualPath(outFilesData, config.getFileName(), config.getFileName());
-
-            // Create the output file in the working directory (or test directory specified in the test file)
-            final File outFile = new File(java.net.URI.create((this.config.getPath() == null) ? outFileUri : this.config.getPath() + this.config.getFileName()));
-            writer = new CSVWriter(new FileWriter(outFile),';', '"', '\n');
-
-            // Write the CSV Header
-            String [] header = {"subject","property","quality"};
-            writer.writeNext(header);
-
-            // Write the CSV Content, every iteration is a property evaluated
-            for (int z = 0; z < results.length; z++) {
-                String [] record = {subject.get(z), property.get(z), ""+ results[z]};
-                writer.writeNext(record);
-            }
-
-            writer.close();
-
-        } catch (DataUnitException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "", e);
-        } catch (IOException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "I/0 Failed", "", e);
-        }
-    }*/
-
-    private Double calculateMean (DPUContext context, String path_1, String path_2) {
-
-        CSVReader csvReader_1 = null;
-        CSVReader csvReader_2 = null;
-
-        Double mean = 0.0;
-
-        try {
-
-            // Get the two temp files created above
-            csvReader_1 = new CSVReader(new FileReader(path_1));
-            csvReader_2 = new CSVReader(new FileReader(path_2));
-
-            double value_1 = 0;
-            double value_2 = 0;
-
-            // Get the values from the CSVs
-            value_1 = Integer.parseInt(csvReader_1.readAll().get(1)[0]);
-            value_2 = Integer.parseInt(csvReader_2.readAll().get(1)[0]);
-
-            // Calculate the Mean
-            mean = value_2/value_1;
-
-            csvReader_1.close();
-            csvReader_2.close();
-
-        } catch (IOException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "I/0 Failed", "", e);
-        }
-
-        return mean;
-    }
-
-    private Map<String, URI> getGraphs() throws DataUnitException {
-
-        final Map<String, URI> graphUris = new HashMap<>();
-
-        // Get the input stream
-        try (RDFDataUnit.Iteration iter = inRdfData.getIteration()) {
-            while (iter.hasNext()) {
-                final RDFDataUnit.Entry entry = iter.next();
-                // Put in the Graph URI the Entry Name and DataGraph URI
-                graphUris.put(entry.getSymbolicName(), entry.getDataGraphURI());
-            }
-        }
-
-        return graphUris;
+        return observationEntity;
     }
 }

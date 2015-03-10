@@ -1,52 +1,38 @@
 package eu.unifiedviews.plugins.quality.c2;
 
 import java.util.ArrayList;
+
+import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
-public class C2VaadinDialog extends BaseConfigDialog<C2Config_V1> {
-
-    private VerticalLayout mainLayout;
+public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
 
     private GridLayout propertiesGridLayout;
 
-    private FormLayout baseFormLayout;
-
-    private FormLayout baseFormLayoutSecond;
-
-    private TextField fileName;
-
     public C2VaadinDialog() {
-        super(C2Config_V1.class);
-
-        buildMainLayout();
-        Panel panel = new Panel();
-        panel.setSizeFull();
-        panel.setContent(mainLayout);
-        setCompositionRoot(panel);
+        super(C2.class);
     }
 
-    private void buildMainLayout() {
+    @Override
+    protected void buildDialogLayout() {
 
         this.setWidth("100%");
         this.setHeight("100%");
 
-        this.mainLayout = new VerticalLayout();
-        this.mainLayout.setImmediate(false);
-        this.mainLayout.setWidth("100%");
-        this.mainLayout.setHeight("-1px");
-        this.mainLayout.setMargin(true);
+        VerticalLayout mainLayout = new VerticalLayout();
+        FormLayout baseFormLayout = new FormLayout();
+        FormLayout baseFormLayoutSecond = new FormLayout();
 
-        this.baseFormLayout = new FormLayout();
-        this.baseFormLayout.setSizeUndefined();
+        mainLayout.setImmediate(false);
+        mainLayout.setWidth("100%");
+        mainLayout.setHeight("-1px");
+        mainLayout.setMargin(true);
 
-        fileName = new TextField("File output name:");
-        fileName.setHeight("-1px");
-        fileName.setRequired(true);
-        this.baseFormLayout.addComponent(fileName);
+        baseFormLayout.setSizeUndefined();
 
         this.propertiesGridLayout = new GridLayout(2, 2);
         this.propertiesGridLayout.setWidth("100%");
@@ -63,8 +49,8 @@ public class C2VaadinDialog extends BaseConfigDialog<C2Config_V1> {
         this.propertiesGridLayout.addComponent(txtProperty);
         txtProperty.setWidth("100%");
 
-        this.mainLayout.addComponent(baseFormLayout);
-        this.mainLayout.addComponent(propertiesGridLayout);
+        mainLayout.addComponent(baseFormLayout);
+        mainLayout.addComponent(propertiesGridLayout);
 
         Button btnAddRow = new Button("Add");
         btnAddRow.addClickListener(new ClickListener() {
@@ -77,12 +63,19 @@ public class C2VaadinDialog extends BaseConfigDialog<C2Config_V1> {
             }
         });
 
-        this.baseFormLayout = new FormLayout();
-        this.baseFormLayout.setSizeUndefined();
-        this.baseFormLayoutSecond = new FormLayout();
-        this.baseFormLayoutSecond.setSizeUndefined();
-        this.baseFormLayoutSecond.addComponent(btnAddRow);
-        this.mainLayout.addComponent(baseFormLayoutSecond);
+        baseFormLayout = new FormLayout();
+        baseFormLayout.setSizeUndefined();
+
+        baseFormLayoutSecond.setSizeUndefined();
+        baseFormLayoutSecond.addComponent(btnAddRow);
+
+        mainLayout.addComponent(baseFormLayoutSecond);
+
+        Panel panel = new Panel();
+        panel.setSizeFull();
+        panel.setContent(mainLayout);
+        setCompositionRoot(panel);
+
     }
 
     private void addColumnToPropertyMapping(String subject, String property) {
@@ -110,7 +103,7 @@ public class C2VaadinDialog extends BaseConfigDialog<C2Config_V1> {
     }
 
     private void addColumnToPropertyMappingsHeading() {
-        this.propertiesGridLayout.addComponent(new Label("Subject Type URI:"));
+        this.propertiesGridLayout.addComponent(new Label("Subject URI:"));
         this.propertiesGridLayout.addComponent(new Label("Property URI:"));
     }
 
@@ -119,7 +112,6 @@ public class C2VaadinDialog extends BaseConfigDialog<C2Config_V1> {
 
         ArrayList<String> subject = config.getSubject();
         ArrayList<String> property = config.getProperty();
-        fileName.setValue(config.getFileName());
 
         this.removeAllColumnToPropertyMappings();
 
@@ -138,6 +130,9 @@ public class C2VaadinDialog extends BaseConfigDialog<C2Config_V1> {
         ArrayList<String> subject = new ArrayList<>();
         ArrayList<String> property = new ArrayList<>();
 
+        boolean empty_1 = false;
+        boolean empty_2 = false;
+
         for (int row = 1; row < this.propertiesGridLayout.getRows(); row++) {
 
             String txtSubject = ((TextField) this.propertiesGridLayout.getComponent(0, row)).getValue();
@@ -146,12 +141,19 @@ public class C2VaadinDialog extends BaseConfigDialog<C2Config_V1> {
             if (!txtSubject.isEmpty() && !txtProperty.isEmpty()) {
                 subject.add(row-1, txtSubject);
                 property.add(row-1, txtProperty);
+            } else {
+                if (txtSubject.isEmpty()) empty_1 = true;
+                if (txtProperty.isEmpty()) empty_2 = true;
             }
+        }
+
+        if ((empty_1 || empty_2) && !(empty_1 && empty_2)) {
+            Notification warn = new Notification("Empty Field", "A field is left blank, so it has been removed.", Notification.Type.WARNING_MESSAGE);
+            warn.show(Page.getCurrent());
         }
 
         config.setSubject(subject);
         config.setProperty(property);
-        config.setFileName(fileName.getValue());
 
         return config;
     }

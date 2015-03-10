@@ -6,7 +6,7 @@
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |C_2 							                               |
-|**Description:**              |Checks if the given properties have their own object.          |
+|**Description:**              |Check the missing elements from a specified list of subject/property. |
 |**DPU class name:**           |C2     						                                   |
 |**Configuration class name:** |C2Config_V1                           		                   |
 |**Dialogue class name:**      |C2VaadinDialog 					                               |
@@ -19,8 +19,6 @@
 |---------------------------------|----------------------------------------|
 |**Subject:** 	                  |Subject linked to the property.         |
 |**Property:**		              |Property to check.           	       |
-|**FileName:**		              |CSV output filename.  	               |
-|**Path:**			              |Path to use in case of test.            |
 
 ***
 
@@ -29,7 +27,7 @@
 |Name                |Type       |DataUnit                         |Description                          |
 |--------------------|-----------|---------------------------------|-------------------------------------|
 |input  	         |i 	     |RDFDataUnit    		           |RDF graph.			                 |
-|output 	         |o 	     |WritableFilesDataUnit            |CSV file containing the level of completeness for each property. |
+|output 	         |o 	     |WritableFilesDataUnit            |RDF quality graph containing the level of completeness for each property. |
 
 ***
 

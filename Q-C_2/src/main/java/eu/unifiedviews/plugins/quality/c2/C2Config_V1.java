@@ -7,9 +7,6 @@ public class C2Config_V1 {
     private ArrayList<String> subject = new ArrayList<>();
     private ArrayList<String> property = new ArrayList<>();
 
-    private String path = null; // Only for test purpose
-    private String fileName = "Result.csv";
-
     private int width;
     private int height;
 
@@ -32,22 +29,6 @@ public class C2Config_V1 {
 
     public void setProperty(ArrayList<String> property) {
         this.property = property;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String targetPath) {
-        this.fileName = targetPath;
     }
 
     public int getWidth() {
