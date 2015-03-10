@@ -4,11 +4,8 @@ public class ACC4Config_V1 {
 
     private String classuri = "";
     private String property = "";
-    private int lowerBound;
-    private int upperBound;
-
-    private String path = null; // Only for test purpose
-    private String fileName = "Result.csv"; // Only for test purpose
+    private double lowerBound;
+    private double upperBound;
 
     private int width;
     private int height;
@@ -18,19 +15,19 @@ public class ACC4Config_V1 {
         height = 500;
     }
 
-    public int getLowerBound() {
+    public double getLowerBound() {
         return lowerBound;
     }
 
-    public void setLowerBound(int lowerBound) {
+    public void setLowerBound(double lowerBound) {
         this.lowerBound = lowerBound;
     }
 
-    public int getUpperBound() {
+    public double getUpperBound() {
         return upperBound;
     }
 
-    public void setUpperBound(int upperBound) {
+    public void setUpperBound(double upperBound) {
         this.upperBound = upperBound;
     }
 
@@ -48,22 +45,6 @@ public class ACC4Config_V1 {
 
     public void setProperty(String property) {
         this.property = property;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String targetPath) {
-        this.fileName = targetPath;
     }
 
     public int getWidth() {

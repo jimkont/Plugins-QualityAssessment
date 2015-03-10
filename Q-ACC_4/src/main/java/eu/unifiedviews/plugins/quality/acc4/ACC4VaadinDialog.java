@@ -2,20 +2,10 @@ package eu.unifiedviews.plugins.quality.acc4;
 
 import com.vaadin.ui.*;
 
-import cz.cuni.mff.xrg.uv.boost.dpu.vaadin.AbstractDialog;
 import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 public class ACC4VaadinDialog extends AbstractDialog<ACC4Config_V1> {
-
-    private VerticalLayout mainLayout;
-
-    //private GridLayout propertiesGridLayout;
-
-    private FormLayout baseFormLayout;
-
-    //private FormLayout baseFormLayoutSecond;
-
-    //private TextField fileName;
 
     private TextField classUri;
     private TextField property;
@@ -31,41 +21,39 @@ public class ACC4VaadinDialog extends AbstractDialog<ACC4Config_V1> {
         this.setWidth("100%");
         this.setHeight("100%");
 
-        this.mainLayout = new VerticalLayout();
-        this.mainLayout.setImmediate(false);
-        this.mainLayout.setWidth("100%");
-        this.mainLayout.setHeight("-1px");
-        this.mainLayout.setMargin(true);
+        VerticalLayout mainLayout;
+        FormLayout baseFormLayout;
 
-        this.baseFormLayout = new FormLayout();
-        this.baseFormLayout.setSizeUndefined();
+        mainLayout = new VerticalLayout();
+        mainLayout.setImmediate(false);
+        mainLayout.setWidth("100%");
+        mainLayout.setHeight("-1px");
+        mainLayout.setMargin(true);
 
-        //fileName = new TextField("File output name:");
-        //fileName.setHeight("-1px");
-        //fileName.setRequired(true);
-        //this.baseFormLayout.addComponent(fileName);
+        baseFormLayout = new FormLayout();
+        baseFormLayout.setSizeUndefined();
 
         classUri = new TextField("Class URI:");
         classUri.setHeight("-1px");
         classUri.setRequired(true);
-        this.baseFormLayout.addComponent(classUri);
+        baseFormLayout.addComponent(classUri);
 
-        property = new TextField("Property to Evaluate:");
+        property = new TextField("Property:");
         property.setHeight("-1px");
         property.setRequired(true);
-        this.baseFormLayout.addComponent(property);
+        baseFormLayout.addComponent(property);
 
         lowerBound = new TextField("Lower Bound:");
         lowerBound.setHeight("-1px");
         lowerBound.setRequired(true);
-        this.baseFormLayout.addComponent(lowerBound);
+        baseFormLayout.addComponent(lowerBound);
 
         upperBound = new TextField("Upper Bound:");
         upperBound.setHeight("-1px");
         upperBound.setRequired(true);
-        this.baseFormLayout.addComponent(upperBound);
+        baseFormLayout.addComponent(upperBound);
 
-        this.mainLayout.addComponent(baseFormLayout);
+        mainLayout.addComponent(baseFormLayout);
 
         Panel panel = new Panel();
         panel.setSizeFull();
@@ -75,13 +63,10 @@ public class ACC4VaadinDialog extends AbstractDialog<ACC4Config_V1> {
 
     @Override
     protected void setConfiguration(ACC4Config_V1 config) throws DPUConfigException {
-
-        //fileName.setValue(config.getFileName());
         classUri.setValue(config.getClassUri());
         property.setValue(config.getProperty());
         lowerBound.setValue(config.getLowerBound()+"");
         upperBound.setValue(config.getUpperBound()+"");
-
     }
 
     @Override
@@ -89,11 +74,10 @@ public class ACC4VaadinDialog extends AbstractDialog<ACC4Config_V1> {
 
         ACC4Config_V1 config = new ACC4Config_V1();
 
-        //config.setFileName(fileName.getValue());
         config.setClassUri(classUri.getValue());
         config.setProperty(property.getValue());
-        config.setLowerBound(Integer.parseInt(lowerBound.getValue()));
-        config.setUpperBound(Integer.parseInt(upperBound.getValue()));
+        config.setLowerBound(Double.parseDouble(lowerBound.getValue()));
+        config.setUpperBound(Double.parseDouble(upperBound.getValue()));
 
         return config;
     }
