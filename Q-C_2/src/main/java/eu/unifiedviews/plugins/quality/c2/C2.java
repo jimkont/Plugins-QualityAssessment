@@ -203,6 +203,7 @@ public class C2 extends AbstractDpu<C2Config_V1> {
      *
      * @param value
      * @param observationIndex
+     * @param bnode
      * @return EntityBuilder
      * @throws DPUException
      */
@@ -230,6 +231,16 @@ public class C2 extends AbstractDpu<C2Config_V1> {
         return observationEntity;
     }
 
+    /**
+     * Creates observation for entity.
+     *
+     * @param subject
+     * @param property
+     * @param observationIndex
+     * @param bnode
+     * @return EntityBuilder
+     * @throws DPUException
+     */
     private EntityBuilder createObservationBNode(String subject, String property, int observationIndex, int bnode) throws DPUException {
 
         String obs = String.format(C2Vocabulary.EX_OBSERVATIONS, observationIndex) +"/"+ bnode;
