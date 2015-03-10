@@ -181,6 +181,8 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
     private EntityBuilder createObservation(double value, int observationIndex, int bnode) throws DPUException {
 
         String obs = String.format(ACC4Vocabulary.EX_OBSERVATIONS, observationIndex);
+        String obs_bnode = obs +"/"+ bnode;
+
         final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
 
         // Prepare variables.
@@ -195,7 +197,7 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
         // Set the observation.
         observationEntity
                 .property(RDF.TYPE, QualityOntology.QB_OBSERVATION)
-                .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(obs) +"/"+ bnode)
+                .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(obs_bnode))
                 .property(DC.DATE, valueFactory.createLiteral(reportDate))
                 .property(QualityOntology.DAQ_VALUE, valueFactory.createLiteral(value));
 
