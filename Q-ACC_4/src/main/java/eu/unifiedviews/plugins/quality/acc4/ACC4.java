@@ -3,6 +3,8 @@ package eu.unifiedviews.plugins.quality.acc4;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
+
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.DC;
@@ -150,8 +152,13 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
                 .property(RDF.TYPE, QualityOntology.DAQ_DIMENSION)
                 .property(QualityOntology.DAQ_HAS_METRIC, dpuEntity);
 
+        Random rand = new Random();
+        int bn_index =  100000 + rand.nextInt (100000-10000);
+
         // EX_OBSERVATIONS entity.
-        final EntityBuilder observationEntity = createObservation(classUri, accuracy, 0);
+        final EntityBuilder observationEntity = createObservation(accuracy, 0, bn_index);
+        final EntityBuilder observationEntityBNode = createObservationBNode(classUri, propertyUri, 0, bn_index);
+
         dpuEntity
                 .property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity);
 
@@ -159,22 +166,22 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
         report.add(reportEntity.asStatements());
         report.add(dpuEntity.asStatements());
         report.add(observationEntity.asStatements());
+        report.add(observationEntityBNode.asStatements());
     }
 
     /**
      * Creates observation for entity.
      *
-     * @param subject
      * @param value
      * @param observationIndex
+     * @param bnode
      * @return EntityBuilder
      * @throws DPUException
      */
-    private EntityBuilder createObservation(String subject, double value, int observationIndex) throws DPUException {
+    private EntityBuilder createObservation(double value, int observationIndex, int bnode) throws DPUException {
 
-        final EntityBuilder observationEntity = new EntityBuilder(
-                valueFactory.createURI(String.format(ACC4Vocabulary.EX_OBSERVATIONS, observationIndex)),
-                valueFactory);
+        String obs = String.format(ACC4Vocabulary.EX_OBSERVATIONS, observationIndex);
+        final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
 
         // Prepare variables.
         final SimpleDateFormat reportDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
@@ -188,9 +195,33 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
         // Set the observation.
         observationEntity
                 .property(RDF.TYPE, QualityOntology.QB_OBSERVATION)
-                .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(subject))
+                .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(obs) +"/"+ bnode)
                 .property(DC.DATE, valueFactory.createLiteral(reportDate))
                 .property(QualityOntology.DAQ_VALUE, valueFactory.createLiteral(value));
+
+        return observationEntity;
+    }
+
+    /**
+     * Creates observation for entity.
+     *
+     * @param subject
+     * @param property
+     * @param observationIndex
+     * @param bnode
+     * @return EntityBuilder
+     * @throws DPUException
+     */
+    private EntityBuilder createObservationBNode(String subject, String property, int observationIndex, int bnode) throws DPUException {
+
+        String obs = String.format(ACC4Vocabulary.EX_OBSERVATIONS, observationIndex) +"/"+ bnode;
+        final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
+
+        // Set the observation.
+        observationEntity
+                .property(RDF.TYPE, RDF.STATEMENT)
+                .property(RDF.SUBJECT, valueFactory.createLiteral(subject))
+                .property(RDF.PROPERTY, valueFactory.createLiteral(property));
 
         return observationEntity;
     }
