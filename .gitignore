@@ -21,3 +21,4 @@ QualityOntology/.project
 QualityOntology/.settings/org.eclipse.core.resources.prefs
 QualityOntology/.settings/org.eclipse.jdt.core.prefs
 QualityOntology/.settings/org.eclipse.m2e.core.prefs
+*.ipr
