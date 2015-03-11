@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.DC;
@@ -53,6 +55,8 @@ public class CU1 extends AbstractDpu<CU1Config_V1> {
     @Override
     protected void innerExecute() throws DPUException {
 
+        ContextUtils.sendShortInfo(ctx, "CU1.message");
+
         valueFactory = report.getValueFactory();
 
         // Prepare SPARQL query.
@@ -81,7 +85,7 @@ public class CU1 extends AbstractDpu<CU1Config_V1> {
 
         // Check result size.
         if (result.getResults().isEmpty()) {
-            throw new DPUException(ctx.tr("dpu.error.empty.result"));
+            throw new DPUException(ctx.tr("CU1.error.empty.result"));
         }
 
         final Map<String, Value> observation = result.getResults().get(0);
@@ -94,7 +98,7 @@ public class CU1 extends AbstractDpu<CU1Config_V1> {
             startDate = dpuDateFormat.parse("2007-01-01");
             lastEditDate = dpuDateFormat.parse(observation.get("o").stringValue());
         } catch (ParseException ex) {
-            throw new DPUException(ctx.tr("dpu.error.date.parse.failed"), ex);
+            throw new DPUException(ctx.tr("CU1.error.date.parse.failed"), ex);
         }
         final double currentTime = new Date().getTime();
 
@@ -123,7 +127,7 @@ public class CU1 extends AbstractDpu<CU1Config_V1> {
                 .property(QualityOntology.DAQ_HAS_METRIC, dpuEntity);
 
         // EX_OBSERVATIONS entity.
-        final EntityBuilder observationEntity = createObservation(observation.get("s"), currency, 0);
+        final EntityBuilder observationEntity = createObservation(observation.get("s"), currency, 1);
         dpuEntity
                 .property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity);
 
@@ -154,7 +158,7 @@ public class CU1 extends AbstractDpu<CU1Config_V1> {
         try {
             reportDate = reportDateFormat.parse(reportDateFormat.format(new Date()));
         } catch (ParseException ex) {
-            throw new DPUException(ctx.tr("dpu.error.date.parse.failed"), ex);
+            throw new DPUException(ctx.tr("CU1.error.date.parse.failed"), ex);
         }
 
         // Set the observation.

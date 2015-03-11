@@ -41,7 +41,13 @@ public class QualityOntology {
     public static final URI EX_ACCURACY_DIMENSION;
 
     public static final URI EX_CONSISTENCY_DIMENSION;
+    
+    public static final URI EX_ACCURACY_NOTE;
 
+    public static final URI EX_ACCURACY_WARNING;
+    
+    public static final URI EX_ACCURACY_ERROR;
+    
     static {
         final ValueFactory factory = ValueFactoryImpl.getInstance();
 
@@ -62,6 +68,9 @@ public class QualityOntology {
         EX_COMPLETENESS_DIMENSION = factory.createURI(EX + "completenessDimension");
         EX_ACCURACY_DIMENSION = factory.createURI(EX + "accuracyDimension");
         EX_CONSISTENCY_DIMENSION = factory.createURI(EX + "consistencyDimension");
+        EX_ACCURACY_NOTE = factory.createURI(EX + "Note");
+        EX_ACCURACY_WARNING = factory.createURI(EX + "Warning");
+        EX_ACCURACY_ERROR = factory.createURI(EX + "Error");
     }
 
 }

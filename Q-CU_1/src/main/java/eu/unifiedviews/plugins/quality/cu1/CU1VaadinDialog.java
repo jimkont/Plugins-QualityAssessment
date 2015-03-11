@@ -7,19 +7,17 @@ import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 public class CU1VaadinDialog extends AbstractDialog<CU1Config_V1> {
 
-    private VerticalLayout mainLayout;
-
     public CU1VaadinDialog() {
         super(CU1.class);
     }
 
     @Override
     protected void buildDialogLayout() {
-        this.mainLayout = new VerticalLayout();
-        this.mainLayout.setImmediate(false);
-        this.mainLayout.setWidth("100%");
-        this.mainLayout.setHeight("-1px");
-        this.mainLayout.setMargin(true);
+        final VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setImmediate(false);
+        mainLayout.setWidth("100%");
+        mainLayout.setHeight("-1px");
+        mainLayout.setMargin(true);
 
         Panel panel = new Panel();
         panel.setSizeFull();
