@@ -6,7 +6,7 @@
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |Q-ACC_1 		                     					       |
-|**Description:**              |Validate RDF files.                  					       |
+|**Description:**              |Detecting syntax errors. Check the correctness of the literals, detection of ill-typed literals which do not abide by the lexical syntax for their respective datatype that can occur if a value is (i) malformed or (ii) is a member of an incompatible datatype. |
 |**DPU class name:**           |ACC1     						                               |
 |**Configuration class name:** |ACC1Config_V1                           		               |
 |**Dialogue class name:**      |ACC1VaadinDialog 					                           |
@@ -17,7 +17,6 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|**Target path:** 	              |Path and target CSV file name.          |
 |**Host:**		                  |Main domain where RDFAlerts runs.  	   |
 |**Port:**		                  |Port where RDFAlerts works.  	       |
 |**Path:**			              |Path where RDFAlerts is installed.      |
@@ -28,8 +27,8 @@
 
 |Name                |Type       |DataUnit                         |Description                          |
 |--------------------|-----------|---------------------------------|-------------------------------------|
-|input  	         |i      	 |FilesDataUnit  		           |File with .ttl, .nt, .rdf, ecc. extension.  |
-|output 	         |o 	     |WritableFilesDataUnit            |CSV file containing errors detected. |
+|input  	         |i      	 |RDFDataUnit  		               |RDF graph to evaluate.               |
+|output 	         |o 	     |WritableRDFDataUnit              |RDF Quality graph.                   |
 
 ***
 
