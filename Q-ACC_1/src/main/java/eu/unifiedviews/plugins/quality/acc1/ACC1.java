@@ -1,129 +1,237 @@
 package eu.unifiedviews.plugins.quality.acc1;
 
+import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
+
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
+import org.openrdf.model.URI;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.model.vocabulary.DC;
+import org.openrdf.model.vocabulary.DCTERMS;
+import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.vocabulary.RDFS;
+import org.openrdf.repository.RepositoryConnection;
 import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import eu.unifiedviews.dpu.DPU.AsQuality;
-import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.helpers.dataunit.fileshelper.FilesHelper;
-import eu.unifiedviews.helpers.dataunit.virtualpathhelper.VirtualPathHelpers;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
+import eu.unifiedviews.helpers.dataunit.rdf.RdfDataUnitUtils;
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+import eu.unifiedviews.helpers.dpu.extension.rdf.simple.WritableSimpleRdf;
+import eu.unifiedviews.helpers.dpu.rdf.EntityBuilder;
+import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.*;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.openrdf.rio.*;
 import org.openrdf.rio.helpers.BasicParserSettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+@DPU.AsQuality
+public class ACC1 extends AbstractDpu<ACC1Config_V1> {
 
-import org.openrdf.model.URI;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.AddPolicy;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.OperationFailedException;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfFactory;
-import cz.cuni.mff.xrg.uv.rdf.utils.dataunit.rdf.simple.SimpleRdfWrite;
-import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
-import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
-
-@AsQuality
-public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialogProvider<ACC1Config_V1> {
-
-    private final Logger LOG = LoggerFactory.getLogger(ACC1.class);
+    public static final String ACCURACY_GRAPH_SYMBOLIC_NAME = "accuracyQualityGraph";
 
     @DataUnit.AsInput(name = "input")
-    public FilesDataUnit filesInput;
-
-    //@DataUnit.AsOutput(name = "output")
-    //public WritableFilesDataUnit outFilesData;
+    public RDFDataUnit inRdfData;
 
     @DataUnit.AsOutput(name = "output")
     public WritableRDFDataUnit outRdfData;
 
+    @ExtensionInitializer.Init(param = "outRdfData")
+    public WritableSimpleRdf report;
+
+    @ExtensionInitializer.Init
+    public FaultTolerance faultTolerance;
+
+    private static ValueFactory valueFactory;
+
+    private RDFFormat inputRdfFormat = RDFFormat.TURTLE;
+    private RDFFormat outputRdfFormat = RDFFormat.NTRIPLES;
+
     public ACC1() {
-        super(ACC1Config_V1.class);
+        super(ACC1VaadinDialog.class, ConfigHistory.noHistory(ACC1Config_V1.class));
     }
 
     @Override
-    public AbstractConfigDialog<ACC1Config_V1> getConfigurationDialog() {
-        return new ACC1VaadinDialog();
-    }
+    protected void innerExecute() throws DPUException {
 
-    @Override
-    public void execute(DPUContext context) throws DPUException {
+        valueFactory = report.getValueFactory();
 
-        // Set the virtual path to the input file
-        VirtualPathHelpers.create(filesInput);
-        
-        final Iterator<FilesDataUnit.Entry> filesIteration;
+        final String inputFileName = "inputGraph." + inputRdfFormat.getDefaultFileExtension();
+        final String outputFileName = "outputGraph." + outputRdfFormat.getDefaultFileExtension();
+        final File inFile = new File(java.net.URI.create("file:"+ ctx.getExecMasterContext().getDpuContext().getWorkingDir() + inputFileName));
+        final File outFile = new File(java.net.URI.create("file:"+ ctx.getExecMasterContext().getDpuContext().getWorkingDir() + outputFileName));
+
+        final List<RDFDataUnit.Entry> graphs = FaultToleranceUtils.getEntries(faultTolerance, inRdfData, RDFDataUnit.Entry.class);
+
+        // Save the RDF graph in the input temp file
+        exportGraph(graphs, inFile);
+
+        // Convert the RDF file to the NTriples format
+        rdfToNt(inFile, outFile);
+
+        JSONArray results = new JSONArray();
 
         try {
-            filesIteration = FilesHelper.getFiles(filesInput).iterator();
-        } catch (DataUnitException ex) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "Can't get file iterator.", ex);
-            return;
+
+            // Get the JSON of the POST Request
+            String json = executeRequest(config.getV_host(), config.getV_port(), config.getV_path(), outFile.toURI().toString().substring(5));
+
+            JSONParser jsonPrs = new JSONParser();
+            JSONObject jsonObj = (JSONObject) jsonPrs.parse(json);
+
+            // Get the Final Status of the Request
+            String status = (String) jsonObj.get("status");
+
+            if (status.equals("okay")) {
+
+                // Get the Results from the JSON object
+                results = (JSONArray) jsonObj.get("results");
+
+            } else {
+                throw ContextUtils.dpuException(ctx, "ACC1.error.json");
+            }
+
+        } catch (Exception ex) {
+            throw ContextUtils.dpuException(ctx, ex, "ACC1.error.request");
         }
 
-        if (filesIteration.hasNext()) {
+        ArrayList<String> note = new ArrayList<>();
+        ArrayList<String> warning = new ArrayList<>();
+        ArrayList<String> error = new ArrayList<>();
 
-            // Get the input file given to the DPU
-            FilesDataUnit.Entry file = filesIteration.next();
+        Iterator i = results.iterator();
+        while (i.hasNext()) {
 
-            try {
+            JSONObject innerObj = (JSONObject) i.next();
 
-                // Set the name (with extention) of the destination file for the conversion
-                String outputUri = (new File(context.getWorkingDir().toString() +"input.nt")).toURI().toString();
+            // Get Type, Code and Message of the error
+            String type = innerObj.get("type").toString();
+            //int code = Integer.parseInt(innerObj.get("code").toString());
+            String msg = innerObj.get("msg").toString();
+            msg = msg.replaceAll("&lt;", "<");
+            msg = msg.replaceAll("&gt;", ">");
+            msg = msg.replaceAll("&quot;", "'");
 
-                // Convert the RDF file to the N-X format
-                this.rdfToNx(context, file.getFileURIString(), outputUri);
-                
-                // Get the JSON of the POST Request
-                String json = this.executeRequest(context, config.getV_host(), config.getV_port(), config.getV_path(), outputUri.substring(5));
+            if (type.equals("note")) note.add(msg);
+            if (type.equals("warning")) warning.add(msg);
+            if (type.equals("error")) error.add(msg);
+        }
 
-                JSONParser jsonPrs = new JSONParser();
-                JSONObject jsonObj = (JSONObject) jsonPrs.parse(json);
+        // Set output.
+        final RDFDataUnit.Entry output = faultTolerance.execute(new FaultTolerance.ActionReturn<RDFDataUnit.Entry>() {
 
-                // Get the Final Status of the Request
-                String status = (String) jsonObj.get("status");
+            @Override
+            public RDFDataUnit.Entry action() throws Exception {
+                return RdfDataUnitUtils.addGraph(outRdfData, ACCURACY_GRAPH_SYMBOLIC_NAME);
+            }
+        });
+        report.setOutput(output);
 
-                if (status.equals("okay")) {
-                    // Get the Results from the JSON object
-                    JSONArray v_results = (JSONArray) jsonObj.get("results");
+        // EX_ACCURACY_DIMENSION entity.
+        final EntityBuilder dpuEntity = new EntityBuilder(QualityOntology.EX_ACCURACY_DIMENSION, valueFactory);
+        dpuEntity
+                .property(RDF.TYPE, QualityOntology.DAQ_METRIC);
 
-                    // Create the output File
-                    //this.createCSV(context, v_results); 
-                    this.createOutputGraph(context, v_results);
-                }
+        // EX_DPU_NAME entity.
+        final EntityBuilder reportEntity = new EntityBuilder(ACC1Vocabulary.EX_DPU_NAME, valueFactory);
+        reportEntity
+                .property(RDF.TYPE, QualityOntology.DAQ_DIMENSION)
+                .property(QualityOntology.DAQ_HAS_METRIC, dpuEntity);
 
-            } catch (Exception ex) {
-                context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "", ex);
+        // EX_OBSERVATIONS entity.
+        final EntityBuilder observationEntity_note = createObservation("Note", note, 1);
+        final EntityBuilder observationEntity_warning = createObservation("Warning", warning, 2);
+        final EntityBuilder observationEntity_error = createObservation("Error", error, 3);
+
+        // Add binding from EX_ACCURACY_DIMENSION
+        dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity_note);
+        dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity_warning);
+        dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity_error);
+
+        // Add entities to output graph.
+        report.add(reportEntity.asStatements());
+        report.add(dpuEntity.asStatements());
+        report.add(observationEntity_note.asStatements());
+        report.add(observationEntity_warning.asStatements());
+        report.add(observationEntity_error.asStatements());
+
+        if (note.size() != 0) {
+            for (int x = 0; x < note.size(); x++) {
+                final EntityBuilder observationEntity_note_bnode = createObservationBNode(note.get(x), 1, x+1);
+                report.add(observationEntity_note_bnode.asStatements());
+            }
+
+        }
+
+        if (warning.size() != 0) {
+            for (int y = 0; y < warning.size(); y++) {
+                final EntityBuilder observationEntity_warning_bnode = createObservationBNode(warning.get(y), 2, y+1);
+                report.add(observationEntity_warning_bnode.asStatements());
+            }
+        }
+
+        if (error.size() != 0) {
+            for (int z = 0; z < note.size(); z++) {
+                final EntityBuilder observationEntity_error_bnode = createObservationBNode(error.get(z), 3, z+1);
+                report.add(observationEntity_error_bnode.asStatements());
             }
         }
     }
 
-    private void rdfToNx (DPUContext context, String sourceUri, String destinationUri) {
+    private void exportGraph(final List<RDFDataUnit.Entry> sources, File exportFile) throws DPUException {
 
-        final File inFile;
-        final File outFile;
+        // Prepare inputs.
+        final URI[] sourceUris = faultTolerance.execute(new FaultTolerance.ActionReturn<URI[]>() {
+
+            @Override
+            public URI[] action() throws Exception {
+                return RdfDataUnitUtils.asGraphs(sources);
+            }
+
+        });
+
+        try (FileOutputStream outStream = new FileOutputStream(exportFile);
+             OutputStreamWriter outWriter = new OutputStreamWriter(outStream, Charset.forName("UTF-8"))
+        ) {
+
+            faultTolerance.execute(inRdfData, new FaultTolerance.ConnectionAction() {
+
+                @Override
+                public void action(RepositoryConnection connection) throws Exception {
+                    RDFWriter writer = Rio.createWriter(outputRdfFormat, outWriter);
+                    connection.export(writer, sourceUris);
+                }
+            });
+
+        } catch (IOException ex) {
+        throw ContextUtils.dpuException(ctx, ex, "ACC1.error.output");
+        }
+    }
+
+    private void rdfToNt (File inFile, File outFile) throws DPUException {
 
         // Get paths as non URI. This can be also done by conversion into File and then back to string.
-        final String source = sourceUri.substring(5);
-        final String destination = destinationUri.substring(5);
+        final String source = inFile.getAbsolutePath();
+        final String destination = outFile.getAbsolutePath();
 
         try {
 
-            // Get the 
-            inFile = new File(java.net.URI.create(sourceUri));
-            outFile = new File(java.net.URI.create(destinationUri));
+            // Get the files
             InputStream in = new FileInputStream(inFile);
             OutputStream out = new FileOutputStream(outFile);
 
@@ -135,7 +243,7 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
             RDFParser parser = RDFParserRegistry.getInstance().get(sourceFormat).getParser();
             RDFWriter writer = RDFWriterRegistry.getInstance().get(destinationFormat).getWriter(out);
 
-            // Configure the Parser to avoid some type of errors (Every BasicParserSettings is exclused)
+            // Configure the Parser to avoid some type of errors (Every BasicParserSettings is excluded)
             parser.getParserConfig().addNonFatalError(BasicParserSettings.VERIFY_DATATYPE_VALUES);
             parser.getParserConfig().addNonFatalError(BasicParserSettings.VERIFY_LANGUAGE_TAGS);
             parser.getParserConfig().addNonFatalError(BasicParserSettings.VERIFY_RELATIVE_URIS);
@@ -154,51 +262,39 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
             in.close();
             out.close();
 
-        } catch (IOException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "IO Exeption 1", "Error on File", e);
-        } catch (RDFParseException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "RDFParser Exeption", "", e);
-        } catch (RDFHandlerException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "RDFHandler Exeption", "", e);
+        } catch (IOException ex) {
+            throw ContextUtils.dpuException(ctx, ex, "ACC1.error.file");
+        } catch (RDFParseException ex) {
+            throw ContextUtils.dpuException(ctx, ex, "ACC1.error.parsing");
+        } catch (RDFHandlerException ex) {
+            throw ContextUtils.dpuException(ctx, ex, "ACC1.error.parsing");
         }
     }
 
-    private String executeRequest(DPUContext context, String v_host, int v_port, String v_path, String f_path) throws Exception {
+    private String executeRequest(String v_host, int v_port, String v_path, String f_path) throws Exception {
 
-        // Content to Validate (N-X Input)
+        // Content to Validate (NTriples Input)
         String content = "";
 
-        // Get the file with the N-X Input
+        // Get the file with the NTriples Input
         File file = new File(f_path);
         FileInputStream contentFile = null;
 
-        try {
+        // Put the file content in to the variable
+        contentFile = new FileInputStream(file);
 
-            // Put the file contenct in to the variable
-            contentFile = new FileInputStream(file);
+        StringBuilder builder = new StringBuilder();
+        int line;
 
-            StringBuilder builder = new StringBuilder();
-            int line;
-
-            while ((line = contentFile.read()) != -1){
-                builder.append((char) line);
-            }
-
-            content = builder.toString();
-
-        } catch (IOException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "IO Exeption 2", "Error on File", e);
-        } finally {
-            try {
-                if (contentFile != null) {
-                    contentFile.close();
-                }
-            } catch (IOException e) {
-                context.sendMessage(DPUContext.MessageType.ERROR, "IO Exeption 3", "Error on File", e);
-            }
+        while ((line = contentFile.read()) != -1){
+            builder.append((char) line);
         }
 
-        // Create Url with Encoded Content
+        content = builder.toString();
+
+        if (contentFile != null) contentFile.close();
+
+        // Create encoded Content
         String encodedContent = java.net.URLEncoder.encode(content,"UTF-8");
         
         // Create Url 
@@ -212,7 +308,7 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
         connection.setDoOutput(true);
         String parameters = "fulldata="+ encodedContent +"&format=json";
 
-        // Execute the Query
+        // Execute the Request
         DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
         wr.writeBytes(parameters);
         wr.flush();
@@ -235,126 +331,69 @@ public class ACC1 extends ConfigurableBase<ACC1Config_V1> implements ConfigDialo
         return java.net.URLDecoder.decode(response.toString(),"UTF-8");
     }
 
-    private void createOutputGraph(DPUContext context, JSONArray results) {
+    /**
+     * Creates observation for entity.
+     *
+     * @param values
+     * @param observationIndex
+     * @return EntityBuilder
+     * @throws DPUException
+     */
+    private EntityBuilder createObservation(String type, ArrayList<String> values, int observationIndex) throws DPUException {
 
+        String obs = String.format(ACC1Vocabulary.EX_OBSERVATIONS, observationIndex);
+
+        final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
+
+        // Prepare variables.
+        final SimpleDateFormat reportDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+        final Date reportDate;
         try {
-
-            // Set the Date of the DPU execution
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
-            Date date = dateFormat.parse(dateFormat.format(new Date()));
-
-            // Set the Main & Quality Graph
-             SimpleRdfWrite rdfQualityGraph = SimpleRdfFactory.create(outRdfData, context);
-             rdfQualityGraph.setPolicy(AddPolicy.BUFFERED);
-
-            // Initialization of the Quality Ontology
-            QualityOntology.init(rdfQualityGraph.getValueFactory(), this.toString());
-            
-            // Set the name of the Quality Graph
-            URI graphName = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX + "QualityGraph");
-
-            // Set the name of the two Output Graphs
-
-            rdfQualityGraph.setOutputGraph(graphName.toString());
-
-            // Add Subject, Property and Object to the Quality Graph
-            rdfQualityGraph.add(QualityOntology.EX_ACCURACY_DIMENSION, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_DIMENSION);
-            rdfQualityGraph.add(QualityOntology.EX_ACCURACY_DIMENSION, QualityOntology.DAQ_HAS_METRIC, QualityOntology.EX_DPU_NAME);
-            rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.RDF_A_PREDICATE, QualityOntology.DAQ_METRIC);
-
-            Iterator i = results.iterator();
-            int z=0;
-            // Write the CSV Content, every iteration is a error/warning found
-            while (i.hasNext()) {
-            	
-            	URI EX_OBSERVATIONS = rdfQualityGraph.getValueFactory().createURI(QualityOntology.EX +"obs"+ z+1);
-            	rdfQualityGraph.add(QualityOntology.EX_DPU_NAME, QualityOntology.DAQ_HAS_OBSERVATION, EX_OBSERVATIONS);
-            	rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.RDF_A_PREDICATE, QualityOntology.QB_OBSERVATION);
-            	rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DC_DATE, rdfQualityGraph.getValueFactory().createLiteral(date));
-            	
-                JSONObject innerObj = (JSONObject) i.next();
-
-                // Get Type, Code and Message of the error
-                String type = innerObj.get("type").toString();
-                int code = Integer.parseInt(innerObj.get("code").toString());
-                String msg = innerObj.get("msg").toString();
-                msg = msg.replaceAll("&lt;", "<");
-                msg = msg.replaceAll("&gt;", ">");
-                msg = msg.replaceAll("&quot;", "'");
-                rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DAQ_HAS_SEVERITY, rdfQualityGraph.getValueFactory().createLiteral(type));
-                rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DCTERMS_PROBLEMDESCRIPTION, rdfQualityGraph.getValueFactory().createURI(msg));
-                
-            	/*rdfQualityGraph.add(EX_OBSERVATIONS, QualityOntology.DAQ_COMPUTED_ON, rdfQualityGraph.getValueFactory().createURI(blank_node));
-            	rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_A_PREDICATE, QualityOntology.RDF_STATEMENT);
-            	rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_SUBJECT_PREDICATE, rdfQualityGraph.getValueFactory().createURI(subject.get(z)));
-            	rdfQualityGraph.getValueFactory().createURI(blank_node), QualityOntology.RDF_PREDICATE_PREDICATE, rdfQualityGraph.getValueFactory().createURI(property.get(z)));*/
-                
-                z=+1;
-            }
-
-            // Create the Quality Graph
-            if (rdfQualityGraph != null) {
-                rdfQualityGraph.flushBuffer();
-            }
-
-        } catch (OperationFailedException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Operation Failed Exception.", "", e);
-        } catch (ParseException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "Error during parsing Date.", "", e);
+            reportDate = reportDateFormat.parse(reportDateFormat.format(new Date()));
+        } catch (ParseException ex) {
+        throw new DPUException(ctx.tr("ACC1.error.date.parse.failed"), ex);
         }
-    }
-  
-    public String toString() {
-        String name = this.getClass().getName();
-        int index = name.lastIndexOf(".");
-        return name.substring(index + 1);
-    }
-    
-    /*private void createCSV (DPUContext context, JSONArray results) {
 
-        CSVWriter writer = null;
+        // Set the observation.
+        observationEntity
+                .property(RDF.TYPE, QualityOntology.QB_OBSERVATION)
+                .property(RDF.TYPE, valueFactory.createLiteral(type));
 
-        try {
-
-            // Add new file to the output variable
-            final String outFileUri = outFilesData.addNewFile(config.getFileName());
-
-            // Set a Virtual Path to the file specified in the configuration
-            VirtualPathHelpers.setVirtualPath(outFilesData, config.getFileName(), config.getFileName());
-
-            // Create the output file in the working directory (or test directory specified in the test file)
-            final File outFile = new File(java.net.URI.create((this.config.getPath() == null) ? outFileUri : this.config.getPath() + this.config.getFileName()));
-            writer = new CSVWriter(new FileWriter(outFile, false));
-
-            // Write the CSV Header
-            String [] header = {"type","code","message"};
-            writer.writeNext(header);
-
-            Iterator i = results.iterator();
-
-            // Write the CSV Content, every iteration is a error/warning found
-            while (i.hasNext()) {
-
-                JSONObject innerObj = (JSONObject) i.next();
-
-                // Get Type, Code and Message of the error
-                String type = innerObj.get("type").toString();
-                int code = Integer.parseInt(innerObj.get("code").toString());
-                String msg = innerObj.get("msg").toString();
-                msg = msg.replaceAll("&lt;", "<");
-                msg = msg.replaceAll("&gt;", ">");
-                msg = msg.replaceAll("&quot;", "'");
-
-                String [] record = {type, ""+ code, msg};
-                writer.writeNext(record);
+        if (values.size() != 0) {
+            for (int i = 0; i < values.size(); i++) {
+                String obs_bnode = obs +"/bnode_"+ i;
+                observationEntity
+                        .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(obs_bnode));
             }
-
-            writer.close();
-
-        } catch (DataUnitException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "DPU Failed", "", e);
-        } catch (IOException e) {
-            context.sendMessage(DPUContext.MessageType.ERROR, "I/0 Failed", "", e);
+        } else {
+            observationEntity
+                    .property(RDFS.COMMENT, valueFactory.createLiteral("No "+ type +" found."));
         }
-    }*/
+
+        observationEntity
+                .property(DC.DATE, valueFactory.createLiteral(reportDate));
+
+        return observationEntity;
+    }
+
+    /**
+     * Creates observation for entity.
+     *
+     * @param message
+     * @param observationIndex
+     * @param bnodeIndex
+     * @return EntityBuilder
+     * @throws DPUException
+     */
+    private EntityBuilder createObservationBNode(String message, int observationIndex, int bnodeIndex) throws DPUException {
+
+        String obs = String.format(ACC1Vocabulary.EX_OBSERVATIONS, observationIndex) +"/bnode_"+ bnodeIndex;
+        final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
+
+        // Set the observation.
+        observationEntity
+                .property(DCTERMS.DESCRIPTION, valueFactory.createLiteral(message));
+
+        return observationEntity;
+    }
 }

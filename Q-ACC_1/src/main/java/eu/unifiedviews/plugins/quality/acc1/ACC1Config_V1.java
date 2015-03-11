@@ -6,12 +6,7 @@ public class ACC1Config_V1 {
     private int v_port = 8080;
     private String v_path = "RDFAlerts";
 
-    private int width;
-    private int height;
-
     public ACC1Config_V1() {
-        width = 500;
-        height = 500;
     }
 
     public String getV_host() {
@@ -38,19 +33,4 @@ public class ACC1Config_V1 {
         this.v_path = v_path;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
 }
