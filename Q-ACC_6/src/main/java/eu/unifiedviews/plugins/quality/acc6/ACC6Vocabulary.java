@@ -1,8 +1,9 @@
 package eu.unifiedviews.plugins.quality.acc6;
+
+import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
-import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
 
 public class ACC6Vocabulary {
     public static final String EX_OBSERVATIONS = QualityOntology.EX + "obs%d";

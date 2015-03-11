@@ -5,11 +5,11 @@
 
 |                              |                                                                                               |
 |------------------------------|-----------------------------------------------------------------------------------------------|
-|**Name:**                     |ACC_6 							                                                               |
+|**Name:**                     |Q-ACC_6 							                                                               |
 |**Description:**              |Use of patterns to identify incorrect values such as the postal address, the phone number, etc.|
-|**DPU class name:**           |ACC6     						                                                               |
-|**Configuration class name:** |ACC6Config_V1                           		                                               |
-|**Dialogue class name:**      |ACC6VaadinDialog                                      					                       |
+|**DPU class name:**           |QACC6     						                                                               |
+|**Configuration class name:** |QACC6Config_V1                           		                                               |
+|**Dialogue class name:**      |QACC6VaadinDialog                                      					                       |
 
 
 ###Configuration parameters###

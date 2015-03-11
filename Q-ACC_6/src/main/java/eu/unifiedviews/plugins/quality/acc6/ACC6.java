@@ -1,39 +1,43 @@
 package eu.unifiedviews.plugins.quality.acc6;
 
 import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
-
-import org.openrdf.model.Resource;
+import eu.unifiedviews.helpers.dataunit.DataUnitUtils;
+import eu.unifiedviews.helpers.dataunit.rdf.RdfDataUnitUtils;
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
+import eu.unifiedviews.helpers.dpu.extension.rdf.simple.WritableSimpleRdf;
+import eu.unifiedviews.helpers.dpu.rdf.EntityBuilder;
+import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.DC;
+import org.openrdf.model.vocabulary.DCTERMS;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryConnection;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
+import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
+import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
+
+import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
-import cz.cuni.mff.xrg.uv.boost.dpu.advanced.AbstractDpu;
-import cz.cuni.mff.xrg.uv.boost.extensions.FaultTolerance;
-import cz.cuni.mff.xrg.uv.boost.dpu.initialization.AutoInitializer;
-import cz.cuni.mff.xrg.uv.boost.dpu.config.ConfigHistory;
-import cz.cuni.mff.xrg.uv.boost.rdf.simple.WritableSimpleRdf;
-import cz.cuni.mff.xrg.uv.boost.rdf.sparql.SparqlUtils;
-import cz.cuni.mff.xrg.uv.boost.rdf.EntityBuilder;
-import cz.cuni.mff.xrg.uv.utils.dataunit.DataUnitUtils;
-import cz.cuni.mff.xrg.uv.utils.dataunit.rdf.RdfDataUnitUtils;
-
+/**
+ * Main data processing unit class.
+ *
+ * @author Vincenzo Cutrona
+ */
 @DPU.AsQuality
 public class ACC6 extends AbstractDpu<ACC6Config_V1> {
 
@@ -47,34 +51,48 @@ public class ACC6 extends AbstractDpu<ACC6Config_V1> {
     @DataUnit.AsOutput(name = "output")
     public WritableRDFDataUnit outRdfData;
 
-    @AutoInitializer.Init(param = "outRdfData")
+    @ExtensionInitializer.Init(param = "outRdfData")
     public WritableSimpleRdf report;
 
-    @AutoInitializer.Init
+    @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
-    
+
+    private static ValueFactory valueFactory;
+
     public ACC6() {
         super(ACC6VaadinDialog.class, ConfigHistory.noHistory(ACC6Config_V1.class));
     }
 
     @Override
-    protected void innerExecute() throws DPUException, DataUnitException {
+    protected void innerExecute() throws DPUException {
 
-        // Get configuration parameters        
+        ContextUtils.sendShortInfo(ctx, "ACC6.message");
+
+        valueFactory = report.getValueFactory();
+
+        // Get configuration parameters
         ArrayList<String> _subject = this.config.getSubject();
         ArrayList<String> _property = this.config.getProperty();
         ArrayList<String> _regExp = this.config.getRegularExpression();
+        Map<String, String> _filters = this.config.getFilters();
+
 
         if ((_subject == null) || (_property == null) || _regExp == null) {
             LOG.warn("No subject or property or regular expression has been specified.");
         } else {
-            //  It evaluates the completeness, for every subject specified in the DPU Configuration
+
+            Double[] results = new Double[_subject.size()];
+
+            // It evaluates the accuracy, for every subject specified in the DPU Configuration
             for (int i = 0; i < _subject.size(); ++i) {
 
                 String key = _subject.get(i);
                 String value = _property.get(i);
+                // Replace text (e.g Phone Number) with the real regExp
+                if (_filters.containsKey(_regExp.get(i)))
+                    _regExp.set(i, _filters.get(_regExp.get(i)));
                 String regExp = _regExp.get(i);
-                
+
                 regExp.replace("[", "#x5B");
                 regExp.replace("]", "#x5D");
 
@@ -85,7 +103,7 @@ public class ACC6 extends AbstractDpu<ACC6Config_V1> {
                             + "?s rdf:type <" + key + "> . "
                             + "?s <" + value + "> ?o ."
                             + "FILTER regex(?o, \"" + regExp + "\") }";
-                    
+
                     // Prepare SPARQL queries.
                     final SparqlUtils.SparqlSelectObject query1 = faultTolerance.execute(
                             new FaultTolerance.ActionReturn<SparqlUtils.SparqlSelectObject>() {
@@ -126,104 +144,117 @@ public class ACC6 extends AbstractDpu<ACC6Config_V1> {
 
                     // Check result size.
                     if (result1.getResults().isEmpty() || result2.getResults().isEmpty()) {
-                        throw new DPUException(ctx.tr("dpu.error.empty.result"));
+                        throw new DPUException(ctx.tr("ACC6.error.empty.result"));
                     }
 
                     // Prepare variables.
                     Value denom = result1.getResults().get(0).get("counter");
                     Value num = result2.getResults().get(0).get("counter");
 
-                    final ValueFactory valueFactory = report.getValueFactory();
+                    if (Double.parseDouble(denom.stringValue()) != 0)
+                        results[i] = Double.parseDouble(num.stringValue()) / Double.parseDouble(denom.stringValue());
 
-                    // Set output.
-                    report.setOutput(RdfDataUnitUtils.addGraph(outRdfData, ACCURACY_GRAPH_SYMBOLIC_NAME));
-
-                    // EX_TIMELINESS_DIMENSION entity.
-                    final EntityBuilder dpuEntity = new EntityBuilder(
-                            QualityOntology.EX_ACCURACY_DIMENSION, valueFactory);
-                    dpuEntity.property(RDF.PREDICATE, QualityOntology.DAQ_METRIC);
-                    
-                    // EX_DPU_NAME entity.
-                    final EntityBuilder reportEntity = new EntityBuilder(
-                            ACC6Vocabulary.EX_DPU_NAME, valueFactory);
-                    reportEntity.property(RDF.PREDICATE, QualityOntology.DAQ_DIMENSION)
-                            .property(QualityOntology.DAQ_HAS_METRIC, dpuEntity);
-                    
-                    // EX_OBSERVATIONS entity.
-                    //for (int index = 0; index < result1.getResults().size(); ++index) {
-                        //  final Map<String, Value> observation = result1.getResults().get(index);
-                        final EntityBuilder observationEntity = createObservation(valueFactory,
-                                result1.getResults().get(0), result2.getResults().get(0), key, i);
-                        // Add binding from EX_TIMELINESS_DIMENSION
-                        dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity);
-                        // Add observation entity to output
-                        report.add(observationEntity.asStatements());
-                   // }
-
-                    // Add entities to output.
-                    report.add(dpuEntity.asStatements());
-                    report.add(reportEntity.asStatements());
                 }
+            }
+            // Set output.
+            final RDFDataUnit.Entry output = faultTolerance.execute(new FaultTolerance.ActionReturn<RDFDataUnit.Entry>() {
+                @Override
+                public RDFDataUnit.Entry action() throws Exception {
+                    return RdfDataUnitUtils.addGraph(outRdfData, ACCURACY_GRAPH_SYMBOLIC_NAME);
+                }
+            });
+            report.setOutput(output);
+
+            // EX_ACCURACY_DIMENSION entity.
+            final EntityBuilder dpuEntity = new EntityBuilder(
+                    QualityOntology.EX_ACCURACY_DIMENSION, valueFactory);
+            dpuEntity.property(RDF.TYPE, QualityOntology.DAQ_METRIC);
+
+            // EX_DPU_NAME entity.
+            final EntityBuilder reportEntity = new EntityBuilder(
+                    ACC6Vocabulary.EX_DPU_NAME, valueFactory);
+            reportEntity.property(RDF.TYPE, QualityOntology.DAQ_DIMENSION)
+                    .property(QualityOntology.DAQ_HAS_METRIC, dpuEntity);
+
+            // EX_OBSERVATIONS entity.
+            EntityBuilder[] ent = new EntityBuilder[results.length];
+            EntityBuilder[] bNode = new EntityBuilder[results.length];
+
+            for (int i = 0; i < results.length; ++i) {
+
+                final EntityBuilder observationEntity = createObservation(results[i], i+1);
+                final EntityBuilder observationEntityBNode = createObservationBNode(_subject.get(i), _property.get(i), _regExp.get(i), i+1);
+
+                // Add binding from EX_COMPLETENESS_DIMENSION
+                dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity);
+                ent[i] = observationEntity;
+                bNode[i] = observationEntityBNode;
+            }
+
+            // Add entities to output graph.
+            report.add(reportEntity.asStatements());
+            report.add(dpuEntity.asStatements());
+            for (int i = 0; i < ent.length; ++i) {
+                report.add(ent[i].asStatements());
+            }
+            for (int i = 0; i < bNode.length; ++i) {
+                report.add(bNode[i].asStatements());
             }
         }
     }
-    
+
     /**
      * Creates observation for entity.
      *
-     * @param valueFactory
-     * @param result1
-     * @param result2
-     * @param subject
+     * @param value
      * @param observationIndex
-     * @return
+     * @return EntityBuilder
      * @throws DPUException
      */
-    private EntityBuilder createObservation(ValueFactory valueFactory, Map<String, Value> result1,
-                                            Map<String, Value> result2, final String subject, 
-                                            int observationIndex) throws DPUException {
+    private EntityBuilder createObservation(double value, int observationIndex) throws DPUException {
+
+        String obs = String.format(ACC6Vocabulary.EX_OBSERVATIONS, observationIndex);
+        String obsBNode = obs + "/bnode_" + observationIndex;
+
         final EntityBuilder observationEntity = new EntityBuilder(
-                valueFactory.createURI(String.format(ACC6Vocabulary.EX_OBSERVATIONS, observationIndex)),
-                valueFactory);
+                valueFactory.createURI(obs), valueFactory);
+
         // Prepare variables.
-        Value num = result2.get("counter");
-        Value denom = result1.get("counter");
+        final SimpleDateFormat reportDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+        final Date reportDate;
+        try {
+            reportDate = reportDateFormat.parse(reportDateFormat.format(new Date()));
+        } catch (ParseException ex) {
+            throw new DPUException(ctx.tr("ACC6.error.date.parse.failed"), ex);
+        }
 
-        double accuracy = 0;
-        if (Double.parseDouble(denom.stringValue()) != 0)
-            accuracy = Double.parseDouble(num.stringValue()) / Double.parseDouble(denom.stringValue());
-
-        Resource sub = new Resource() {
-            @Override
-            public String stringValue() {
-                return subject;
-            }
-        };
-
-        // Add triple about report.
-        fillReport(valueFactory, observationEntity, sub, accuracy);
-        // And return entity.
+        // Set the observation.
+        observationEntity
+                .property(RDF.TYPE, QualityOntology.QB_OBSERVATION)
+                .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(obsBNode))
+                .property(DC.DATE, valueFactory.createLiteral(reportDate))
+                .property(QualityOntology.DAQ_VALUE, valueFactory.createLiteral(value));
         return observationEntity;
     }
+
     /**
-     * Create a report about accuracy.
+     * Creates observation for entity.
      *
-     * @param resource
-     * @param value
+     * @param subject
+     * @param property
+     * @param observationIndex
+     * @return EntityBuilder
+     * @throws DPUException
      */
-    private void fillReport(ValueFactory valueFactory, EntityBuilder observationEntity, Resource resource,
-                            double value) throws DPUException {
-        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
-        final Date date;
-        try {
-            date = dateFormat.parse(dateFormat.format(new Date()));
-        } catch (ParseException ex) {
-            throw new DPUException(ctx.tr("dpu.error.date.parse.failed"), ex);
-        }
+    private EntityBuilder createObservationBNode(String subject, String property, String regExp, int observationIndex) throws DPUException {
+        String obs = String.format(ACC6Vocabulary.EX_OBSERVATIONS, observationIndex) + "/bnode_" + observationIndex;
+        final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
+        // Set the observation.
         observationEntity
-                .property(RDF.PREDICATE, QualityOntology.QB_OBSERVATION)
-                .property(QualityOntology.DAQ_COMPUTED_ON, resource)
-                .property(DC.DATE, valueFactory.createLiteral(date))
-                .property(QualityOntology.DAQ_VALUE, valueFactory.createLiteral(value));
+                .property(RDF.TYPE, RDF.STATEMENT)
+                .property(RDF.SUBJECT, valueFactory.createLiteral(subject))
+                .property(RDF.PROPERTY, valueFactory.createLiteral(property))
+                .property(DCTERMS.DESCRIPTION, valueFactory.createLiteral("Used regular expression: " + regExp));
+        return observationEntity;
     }
 }

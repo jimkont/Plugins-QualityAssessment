@@ -1,23 +1,23 @@
-<?xml version="1.0"?>
-<project
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>cz.cuni.mff.xrg.uv</groupId>
-        <artifactId>unifiedviews-dpu-base</artifactId>
-        <version>2.0.0</version>
+        <groupId>eu.unifiedviews</groupId>
+        <artifactId>uv-pom-dpu</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
     </parent>
-
-    <artifactId>uv-q-acc_6</artifactId>
-    <name>Q-ACC_6</name>
-    <description>Use of patterns to identify incorrect values such as the postal address, the phone number, etc.</description>
+    <groupId>eu.unifiedviews.plugins</groupId>
+    <artifactId>Q-ACC_6</artifactId>
     <version>1.0.0</version>
     <packaging>bundle</packaging>
+    <name>QACC6</name>
+    <description>Use of patterns to identify incorrect values such as the postal address, the phone number, etc.</description>
 
     <properties>
         <dpu.package>eu.unifiedviews.plugins.quality.acc6</dpu.package>
         <dpu.mainClass>ACC6</dpu.mainClass>
+        <uv.helpers.version>[2.0.0-SNAPSHOT,3.0.0)</uv.helpers.version>
+        <module-test.version>1.6.0-SNAPSHOT</module-test.version>
     </properties>
 
     <dependencies>
@@ -27,24 +27,17 @@
             <version>2.4</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Compile library, use compile if UK libs are not as OSGI bundles on target instance.
-        If they are presented then scope can be changed to 'provided'. -->
+        <!-- UnifiedViews helpers. -->
         <dependency>
-            <groupId>cz.cuni.mff.xrg.uv</groupId>
-            <artifactId>boost-dpu</artifactId>
-            <version>[${uk.version.min},${uk.version.max})</version>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dataunit-helpers</artifactId>
+            <version>${uv.helpers.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>cz.cuni.mff.xrg.uv</groupId>
-            <artifactId>utils-dialog</artifactId>
-            <version>[${uk.version.min},${uk.version.max})</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>cz.cuni.mff.xrg.uv</groupId>
-            <artifactId>utils-dataunit</artifactId>
-            <version>[${uk.version.min},${uk.version.max})</version>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dpu-helpers</artifactId>
+            <version>${uv.helpers.version}</version>
             <scope>compile</scope>
         </dependency>
         <!-- Project with ontology definition. -->
@@ -64,8 +57,9 @@
         <dependency>
             <groupId>cz.cuni.mff.xrg.odcs</groupId>
             <artifactId>module-test</artifactId>
-                <version>1.6.0-SNAPSHOT</version>
+            <version>${module-test.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
+	
 </project>
