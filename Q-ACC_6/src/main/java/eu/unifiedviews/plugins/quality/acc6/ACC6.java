@@ -151,6 +151,7 @@ public class ACC6 extends AbstractDpu<ACC6Config_V1> {
                     Value denom = result1.getResults().get(0).get("counter");
                     Value num = result2.getResults().get(0).get("counter");
 
+                    results[i] = 0.0;
                     if (Double.parseDouble(denom.stringValue()) != 0)
                         results[i] = Double.parseDouble(num.stringValue()) / Double.parseDouble(denom.stringValue());
 

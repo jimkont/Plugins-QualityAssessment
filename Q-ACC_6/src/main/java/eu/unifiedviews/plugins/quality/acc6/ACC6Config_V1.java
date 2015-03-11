@@ -24,7 +24,6 @@ public class ACC6Config_V1 {
         filters.put("Telephone number (10 digit)", "^(\\([2-9]|[2-9])(\\d{2}|\\d{2}\\))(-|.|\\s)?\\d{3}(-|.|\\s)?\\d{4}$");
         filters.put("Italian mobile phone number", "^([+]39)?((38[{8,9}|0])|(34[{7-9}|0])|(36[6|8|0])|(33[{3-9}|0])|(32[{8,9}]))([\\d]{7})$");
         filters.put("Currency", "^(?!\\u00a2)");
-        filters.put("MyPhone", "[0-9][0-9]/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]");
     }
 
     public ArrayList<String> getSubject() { return subject; }
