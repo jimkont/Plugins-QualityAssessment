@@ -4,8 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 
+import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.DC;
@@ -53,6 +53,8 @@ public class C2 extends AbstractDpu<C2Config_V1> {
     @Override
     protected void innerExecute() throws DPUException {
 
+        ContextUtils.sendShortInfo(ctx, "C2.message");
+
         valueFactory = report.getValueFactory();
 
         // Get configuration parameters
@@ -60,7 +62,7 @@ public class C2 extends AbstractDpu<C2Config_V1> {
         ArrayList<String> property_ = this.config.getProperty();
 
         if ((subject_ == null) && (property_ == null)) {
-            throw new DPUException(ctx.tr("dpu.error.nothing.specified"));
+            throw new DPUException(ctx.tr("C2.error.nothing.specified"));
         } else {
 
             Double [] results = new Double[subject_.size()];
@@ -134,14 +136,16 @@ public class C2 extends AbstractDpu<C2Config_V1> {
 
                     // Check result size.
                     if (result_1.getResults().isEmpty() || result_2.getResults().isEmpty()) {
-                        throw new DPUException(ctx.tr("dpu.error.empty.result"));
+                        throw new DPUException(ctx.tr("C2.error.empty.result"));
                     }
 
                     // Prepare variables.
                     Value x = result_1.getResults().get(0).get("counter");
                     Value y = result_2.getResults().get(0).get("counter");
 
-                    results[i] = Double.parseDouble(y.stringValue()) / Double.parseDouble(x.stringValue());
+                    results[i] = 0.0;
+                    if (Double.parseDouble(x.stringValue()) != 0)
+                        results[i] = Double.parseDouble(y.stringValue()) / Double.parseDouble(x.stringValue());
                 }
             }
 
@@ -169,15 +173,11 @@ public class C2 extends AbstractDpu<C2Config_V1> {
             // EX_OBSERVATIONS entity.
             EntityBuilder[] eb = new EntityBuilder[results.length];
             EntityBuilder[] bn = new EntityBuilder[results.length];
-            Integer[] bn_index = new Integer[results.length];
 
             for (int index = 0; index < results.length; index++) {
 
-                Random rand = new Random();
-                bn_index[index] =  100000 + rand.nextInt (100000-10000);
-
-                final EntityBuilder observationEntity = createObservation(results[index], index, bn_index[index]);
-                final EntityBuilder observationEntityBNode = createObservationBNode(subject_.get(index), property_.get(index), index, bn_index[index]);
+                final EntityBuilder observationEntity = createObservation(results[index], index+1);
+                final EntityBuilder observationEntityBNode = createObservationBNode(subject_.get(index), property_.get(index), index+1);
 
                 // Add binding from EX_COMPLETENESS_DIMENSION
                 dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity);
@@ -203,14 +203,13 @@ public class C2 extends AbstractDpu<C2Config_V1> {
      *
      * @param value
      * @param observationIndex
-     * @param bnode
      * @return EntityBuilder
      * @throws DPUException
      */
-    private EntityBuilder createObservation(double value, int observationIndex, int bnode) throws DPUException {
+    private EntityBuilder createObservation(double value, int observationIndex) throws DPUException {
 
         String obs = String.format(C2Vocabulary.EX_OBSERVATIONS, observationIndex);
-        String obs_bnode = obs +"/"+ bnode;
+        String obs_bnode = obs +"/bnode_"+ observationIndex;
 
         final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
 
@@ -220,7 +219,7 @@ public class C2 extends AbstractDpu<C2Config_V1> {
         try {
             reportDate = reportDateFormat.parse(reportDateFormat.format(new Date()));
         } catch (ParseException ex) {
-            throw new DPUException(ctx.tr("dpu.error.date.parse.failed"), ex);
+            throw new DPUException(ctx.tr("C2.error.date.parse.failed"), ex);
         }
 
         // Set the observation.
@@ -239,13 +238,12 @@ public class C2 extends AbstractDpu<C2Config_V1> {
      * @param subject
      * @param property
      * @param observationIndex
-     * @param bnode
      * @return EntityBuilder
      * @throws DPUException
      */
-    private EntityBuilder createObservationBNode(String subject, String property, int observationIndex, int bnode) throws DPUException {
+    private EntityBuilder createObservationBNode(String subject, String property, int observationIndex) throws DPUException {
 
-        String obs = String.format(C2Vocabulary.EX_OBSERVATIONS, observationIndex) +"/"+ bnode;
+        String obs = String.format(C2Vocabulary.EX_OBSERVATIONS, observationIndex) +"/bnode_"+ observationIndex;
         final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
 
         // Set the observation.
