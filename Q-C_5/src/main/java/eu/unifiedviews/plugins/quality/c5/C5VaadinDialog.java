@@ -9,11 +9,6 @@ import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 import java.util.ArrayList;
 
-/**
- * Vaadin configuration dialog for C5.
- *
- * @author Vincenzo Cutrona
- */
 public class C5VaadinDialog extends AbstractDialog<C5Config_V1> {
 
     private GridLayout propertiesGridLayout;
@@ -148,6 +143,7 @@ public class C5VaadinDialog extends AbstractDialog<C5Config_V1> {
         baseFormLayoutSecond.addComponent(btnRemoveRow);
         baseFormLayoutSecond.addComponent(btnRemoveRows);
         mainLayout.addComponent(baseFormLayoutSecond);
+
         setCompositionRoot(mainLayout);
     }
 

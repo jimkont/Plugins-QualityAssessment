@@ -30,11 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * Main data processing unit class.
- *
- * @author Vincenzo Cutrona
- */
 @DPU.AsQuality
 public class C5 extends AbstractDpu<C5Config_V1> {
 
@@ -81,10 +76,19 @@ public class C5 extends AbstractDpu<C5Config_V1> {
                 String property = _property.get(i);
 
                 if (!subject.trim().isEmpty() && !property.trim().isEmpty()) {
-                    final String q1 = "SELECT (COUNT(?s) AS ?conceptCount) WHERE { ?s rdf:type <" + subject + "> . }";
-                    final String q2 = "SELECT (COUNT(?s) AS ?conceptCount) WHERE { "
-                            + "?s rdf:type <" + subject + ">. "
-                            + "?s <" + property + "> ?label. }";
+
+                    final String q1 =
+                            "SELECT (COUNT(?s) AS ?conceptCount) " +
+                            "WHERE { " +
+                                "?s rdf:type <" + subject + "> . " +
+                            "}";
+
+                    final String q2 =
+                            "SELECT (COUNT(?s) AS ?conceptCount) " +
+                            "WHERE { " +
+                                "?s rdf:type <" + subject + ">. " +
+                                "?s <" + property + "> ?label. " +
+                             "}";
 
                     // Prepare SPARQL queries.
                     final SparqlUtils.SparqlSelectObject query1 = faultTolerance.execute(
@@ -160,8 +164,8 @@ public class C5 extends AbstractDpu<C5Config_V1> {
             EntityBuilder[] ent = new EntityBuilder[results.length];
             EntityBuilder[] bNode = new EntityBuilder[results.length];
             for (int i = 0; i < results.length; ++i) {
-                final EntityBuilder observationEntity = createObservation(results[i], i+1);
-                final EntityBuilder observationEntityBNode = createObservationBNode(_subject.get(i), _property.get(i), i+1);
+                final EntityBuilder observationEntity = createObservation(results[i], (i+1));
+                final EntityBuilder observationEntityBNode = createObservationBNode(_subject.get(i), _property.get(i), (i+1));
 
                 // Add binding from EX_COMPLETENESS_DIMENSION
                 dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity);

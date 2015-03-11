@@ -2,11 +2,6 @@ package eu.unifiedviews.plugins.quality.c5;
 
 import java.util.ArrayList;
 
-/**
- * Configuration class for C5.
- *
- * @author Vincenzo Cutrona
- */
 public class C5Config_V1 {
 
     private ArrayList<String> subject = new ArrayList<>();
