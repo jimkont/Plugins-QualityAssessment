@@ -19,10 +19,7 @@ public class CU1VaadinDialog extends AbstractDialog<CU1Config_V1> {
         mainLayout.setHeight("-1px");
         mainLayout.setMargin(true);
 
-        Panel panel = new Panel();
-        panel.setSizeFull();
-        panel.setContent(mainLayout);
-        setCompositionRoot(panel);
+        setCompositionRoot(mainLayout);
     }
 
     @Override
