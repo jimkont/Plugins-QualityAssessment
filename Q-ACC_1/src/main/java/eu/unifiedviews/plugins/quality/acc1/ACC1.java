@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
 
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
@@ -84,7 +83,7 @@ public class ACC1 extends AbstractDpu<ACC1Config_V1> {
         // Convert the RDF file to the NTriples format
         rdfToNt(inFile, outFile);
 
-        JSONArray results = new JSONArray();
+        JSONArray results;
 
         try {
 
@@ -273,9 +272,6 @@ public class ACC1 extends AbstractDpu<ACC1Config_V1> {
 
     private String executeRequest(String v_host, int v_port, String v_path, String f_path) throws Exception {
 
-        // Content to Validate (NTriples Input)
-        String content = "";
-
         // Get the file with the NTriples Input
         File file = new File(f_path);
         FileInputStream contentFile = null;
@@ -290,7 +286,7 @@ public class ACC1 extends AbstractDpu<ACC1Config_V1> {
             builder.append((char) line);
         }
 
-        content = builder.toString();
+        String content = builder.toString();
 
         if (contentFile != null) contentFile.close();
 
@@ -343,6 +339,16 @@ public class ACC1 extends AbstractDpu<ACC1Config_V1> {
 
         String obs = String.format(ACC1Vocabulary.EX_OBSERVATIONS, observationIndex);
 
+        final URI ERROR;
+
+        if (type.equals("Note")) {
+            ERROR = QualityOntology.EX_ACCURACY_NOTE;
+        } else if (type.equals("Warning")) {
+            ERROR = QualityOntology.EX_ACCURACY_WARNING;
+        } else {
+            ERROR = QualityOntology.EX_ACCURACY_ERROR;
+        }
+
         final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
 
         // Prepare variables.
@@ -357,17 +363,17 @@ public class ACC1 extends AbstractDpu<ACC1Config_V1> {
         // Set the observation.
         observationEntity
                 .property(RDF.TYPE, QualityOntology.QB_OBSERVATION)
-                .property(RDF.TYPE, valueFactory.createLiteral(type));
+                .property(RDF.TYPE, ERROR);
 
         if (values.size() != 0) {
             for (int i = 0; i < values.size(); i++) {
-                String obs_bnode = obs +"/bnode_"+ i;
+                String obs_bnode = obs +"/bnode_"+ (i+1);
                 observationEntity
                         .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(obs_bnode));
             }
         } else {
             observationEntity
-                    .property(RDFS.COMMENT, valueFactory.createLiteral("No "+ type +" found."));
+                    .property(RDFS.COMMENT, valueFactory.createLiteral("No " + type + " found."));
         }
 
         observationEntity
