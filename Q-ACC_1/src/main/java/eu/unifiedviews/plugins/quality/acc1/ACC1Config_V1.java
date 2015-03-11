@@ -6,8 +6,7 @@ public class ACC1Config_V1 {
     private int v_port = 8080;
     private String v_path = "RDFAlerts";
 
-    public ACC1Config_V1() {
-    }
+    public ACC1Config_V1() {}
 
     public String getV_host() {
         return v_host;
