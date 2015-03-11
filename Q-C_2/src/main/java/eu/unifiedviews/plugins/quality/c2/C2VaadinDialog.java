@@ -13,6 +13,12 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
 
     private GridLayout propertiesGridLayout;
 
+    private Notification warn = new Notification(
+            "Empty Field",
+            "A field is left blank, so it will be removed.",
+            Notification.Type.WARNING_MESSAGE
+    );
+
     public C2VaadinDialog() {
         super(C2.class);
     }
@@ -34,19 +40,19 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
 
         baseFormLayout.setSizeUndefined();
 
-        this.propertiesGridLayout = new GridLayout(2, 2);
-        this.propertiesGridLayout.setWidth("100%");
-        this.propertiesGridLayout.setColumnExpandRatio(0, 1);
-        this.propertiesGridLayout.setColumnExpandRatio(1, 1);
+        propertiesGridLayout = new GridLayout(2, 2);
+        propertiesGridLayout.setWidth("100%");
+        propertiesGridLayout.setColumnExpandRatio(0, 1);
+        propertiesGridLayout.setColumnExpandRatio(1, 1);
 
         this.addColumnToPropertyMappingsHeading();
 
         TextField txtSubject = new TextField();
-        this.propertiesGridLayout.addComponent(txtSubject);
+        propertiesGridLayout.addComponent(txtSubject);
         txtSubject.setWidth("100%");
 
         TextField txtProperty = new TextField();
-        this.propertiesGridLayout.addComponent(txtProperty);
+        propertiesGridLayout.addComponent(txtProperty);
         txtProperty.setWidth("100%");
 
         mainLayout.addComponent(baseFormLayout);
@@ -59,6 +65,7 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
 
             @Override
             public void buttonClick(ClickEvent event) {
+                checkValues();
                 addColumnToPropertyMapping("", "");
             }
         });
@@ -81,11 +88,13 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
     private void addColumnToPropertyMapping(String subject, String property) {
 
         TextField txtSubject = new TextField();
-        this.propertiesGridLayout.addComponent(txtSubject);
+        txtSubject.setRequired(true);
+        propertiesGridLayout.addComponent(txtSubject);
         txtSubject.setWidth("100%");
 
         TextField txtProperty = new TextField();
-        this.propertiesGridLayout.addComponent(txtProperty);
+        txtProperty.setRequired(true);
+        propertiesGridLayout.addComponent(txtProperty);
         txtProperty.setWidth("100%");
 
         if (subject != null) {
@@ -98,13 +107,37 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
     }
 
     private void removeAllColumnToPropertyMappings() {
-        this.propertiesGridLayout.removeAllComponents();
+        propertiesGridLayout.removeAllComponents();
         this.addColumnToPropertyMappingsHeading();
     }
 
     private void addColumnToPropertyMappingsHeading() {
-        this.propertiesGridLayout.addComponent(new Label("Subject URI:"));
-        this.propertiesGridLayout.addComponent(new Label("Property URI:"));
+        propertiesGridLayout.addComponent(new Label("Subject URI:"));
+        propertiesGridLayout.addComponent(new Label("Property URI:"));
+    }
+
+    private void checkValues() {
+
+        boolean empty_1 = false;
+        boolean empty_2 = false;
+
+        int row = 1;
+        boolean stop = false;
+
+        while (row < propertiesGridLayout.getRows() && !stop) {
+
+            String txtSubject = ((TextField) propertiesGridLayout.getComponent(0, row)).getValue();
+            String txtProperty = ((TextField) propertiesGridLayout.getComponent(1, row)).getValue();
+
+            if (txtSubject.isEmpty()) empty_1 = true;
+            if (txtProperty.isEmpty()) empty_2 = true;
+
+            if ((empty_1 || empty_2) && !(empty_1 && empty_2)) stop = true;
+
+            row++;
+        }
+
+        if (stop) warn.show(Page.getCurrent());
     }
 
     @Override
@@ -130,8 +163,7 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
         ArrayList<String> subject = new ArrayList<>();
         ArrayList<String> property = new ArrayList<>();
 
-        boolean empty_1 = false;
-        boolean empty_2 = false;
+        checkValues();
 
         for (int row = 1; row < this.propertiesGridLayout.getRows(); row++) {
 
@@ -141,15 +173,7 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
             if (!txtSubject.isEmpty() && !txtProperty.isEmpty()) {
                 subject.add(row-1, txtSubject);
                 property.add(row-1, txtProperty);
-            } else {
-                if (txtSubject.isEmpty()) empty_1 = true;
-                if (txtProperty.isEmpty()) empty_2 = true;
             }
-        }
-
-        if ((empty_1 || empty_2) && !(empty_1 && empty_2)) {
-            Notification warn = new Notification("Empty Field", "A field is left blank, so it has been removed.", Notification.Type.WARNING_MESSAGE);
-            warn.show(Page.getCurrent());
         }
 
         config.setSubject(subject);
