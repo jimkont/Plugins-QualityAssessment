@@ -30,7 +30,7 @@ public class ACC1VaadinDialog extends AbstractDialog<ACC1Config_V1> {
         host = new TextField();
         host.setWidth("100%");
         host.setHeight("-1px");
-        host.setCaption("RDFAlerts host: (without final '/')");
+        host.setCaption(ctx.tr("ACC1.rdf.alerts.host"));
         host.setRequired(true);
         mainLayout.addComponent(host);
         mainLayout.setExpandRatio(host, 0.8f);
@@ -38,7 +38,7 @@ public class ACC1VaadinDialog extends AbstractDialog<ACC1Config_V1> {
         port = new TextField();
         port.setWidth("100%");
         port.setHeight("-1px");
-        port.setCaption("RDFAlerts port:");
+        port.setCaption(ctx.tr("ACC1.rdf.alerts.port"));
         port.setRequired(true);
         mainLayout.addComponent(port);
         mainLayout.setExpandRatio(port, 0.8f);
@@ -46,16 +46,12 @@ public class ACC1VaadinDialog extends AbstractDialog<ACC1Config_V1> {
         path = new TextField();
         path.setWidth("100%");
         path.setHeight("-1px");
-        path.setCaption("RDFAlerts path:");
+        path.setCaption(ctx.tr("ACC1.rdf.alerts.path"));
         path.setRequired(true);
         mainLayout.addComponent(path);
         mainLayout.setExpandRatio(path, 0.8f);
 
-        Panel panel = new Panel();
-        panel.setSizeFull();
-        panel.setContent(mainLayout);
-        setCompositionRoot(panel);
-
+        setCompositionRoot(mainLayout);
     }
 
     @Override
@@ -64,7 +60,6 @@ public class ACC1VaadinDialog extends AbstractDialog<ACC1Config_V1> {
         host.setValue(config.getV_host());
         port.setValue(""+config.getV_port());
         path.setValue(config.getV_path());
-
     }
 
     @Override
