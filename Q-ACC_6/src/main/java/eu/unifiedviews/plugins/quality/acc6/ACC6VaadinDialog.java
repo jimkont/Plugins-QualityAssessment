@@ -9,11 +9,6 @@ import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
 import java.util.ArrayList;
 
-/**
- * Vaadin configuration dialog for ACC6.
- *
- * @author Vincenzo Cutrona
- */
 public class ACC6VaadinDialog extends AbstractDialog<ACC6Config_V1> {
 
     private GridLayout propertiesGridLayout;

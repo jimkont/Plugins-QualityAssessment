@@ -33,11 +33,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
-/**
- * Main data processing unit class.
- *
- * @author Vincenzo Cutrona
- */
 @DPU.AsQuality
 public class ACC6 extends AbstractDpu<ACC6Config_V1> {
 
@@ -98,11 +93,19 @@ public class ACC6 extends AbstractDpu<ACC6Config_V1> {
 
                 if (!key.trim().isEmpty() && !value.trim().isEmpty() && !regExp.trim().isEmpty()) {
 
-                    final String q1 = "SELECT (COUNT(?s) AS ?counter) WHERE { ?s rdf:type <" + key + "> . }";
-                    final String q2 = "SELECT (COUNT(?s) AS ?counter) WHERE { "
-                            + "?s rdf:type <" + key + "> . "
-                            + "?s <" + value + "> ?o ."
-                            + "FILTER regex(?o, \"" + regExp + "\") }";
+                    final String q1 =
+                            "SELECT (COUNT(?s) AS ?counter) " +
+                            "WHERE { " +
+                                "?s rdf:type <" + key + "> . " +
+                            "}";
+
+                    final String q2 =
+                            "SELECT (COUNT(?s) AS ?counter) " +
+                            "WHERE { " +
+                                "?s rdf:type <" + key + "> . " +
+                                "?s <" + value + "> ?o ." +
+                                "FILTER regex(?o, \"" + regExp + "\") " +
+                            "}";
 
                     // Prepare SPARQL queries.
                     final SparqlUtils.SparqlSelectObject query1 = faultTolerance.execute(
@@ -183,8 +186,8 @@ public class ACC6 extends AbstractDpu<ACC6Config_V1> {
 
             for (int i = 0; i < results.length; ++i) {
 
-                final EntityBuilder observationEntity = createObservation(results[i], i+1);
-                final EntityBuilder observationEntityBNode = createObservationBNode(_subject.get(i), _property.get(i), _regExp.get(i), i+1);
+                final EntityBuilder observationEntity = createObservation(results[i], (i+1));
+                final EntityBuilder observationEntityBNode = createObservationBNode(_subject.get(i), _property.get(i), _regExp.get(i), (i+1));
 
                 // Add binding from EX_COMPLETENESS_DIMENSION
                 dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity);
@@ -235,6 +238,7 @@ public class ACC6 extends AbstractDpu<ACC6Config_V1> {
                 .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(obsBNode))
                 .property(DC.DATE, valueFactory.createLiteral(reportDate))
                 .property(QualityOntology.DAQ_VALUE, valueFactory.createLiteral(value));
+
         return observationEntity;
     }
 

@@ -4,11 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Configuration class for ACC6.
- *
- * @author Vincenzo Cutrona
- */
 public class ACC6Config_V1 {
 
     private ArrayList<String> subject = new ArrayList<>();
