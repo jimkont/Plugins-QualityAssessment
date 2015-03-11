@@ -2,9 +2,6 @@ package eu.unifiedviews.plugins.quality.acc1;
 
 public class ACC1Config_V1 {
 
-    private String path = null; // Only for test purpose
-    private String fileName = "Result.csv";
-
     private String v_host = "http://localhost";
     private int v_port = 8080;
     private String v_path = "RDFAlerts";
@@ -15,22 +12,6 @@ public class ACC1Config_V1 {
     public ACC1Config_V1() {
         width = 500;
         height = 500;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String targetPath) {
-        this.fileName = targetPath;
     }
 
     public String getV_host() {

@@ -1,45 +1,31 @@
 package eu.unifiedviews.plugins.quality.acc1;
 
 import com.vaadin.ui.*;
+
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
-public class ACC1VaadinDialog extends BaseConfigDialog<ACC1Config_V1> {
-
-    private VerticalLayout mainLayout;
-
-    private FormLayout baseFormLayout;
-
-    private TextField fileName;
+public class ACC1VaadinDialog extends AbstractDialog<ACC1Config_V1> {
 
     private TextField host;
     private TextField port;
     private TextField path;
 
     public ACC1VaadinDialog() {
-        super(ACC1Config_V1.class);
-
-        buildMainLayout();
-
-        Panel panel = new Panel();
-        panel.setSizeFull();
-        panel.setContent(mainLayout);
-        setCompositionRoot(panel);
+        super(ACC1.class);
     }
 
-    private void buildMainLayout() {
+    @Override
+    protected void buildDialogLayout() {
 
         this.setWidth("100%");
         this.setHeight("100%");
 
-        this.mainLayout = new VerticalLayout();
-        this.mainLayout.setImmediate(false);
-        this.mainLayout.setWidth("100%");
-        this.mainLayout.setHeight("-1px");
-        this.mainLayout.setMargin(true);
-
-        this.baseFormLayout = new FormLayout();
-        this.baseFormLayout.setSizeUndefined();
+        VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setImmediate(false);
+        mainLayout.setWidth("100%");
+        mainLayout.setHeight("-1px");
+        mainLayout.setMargin(true);
 
         host = new TextField();
         host.setWidth("100%");
@@ -65,20 +51,15 @@ public class ACC1VaadinDialog extends BaseConfigDialog<ACC1Config_V1> {
         mainLayout.addComponent(path);
         mainLayout.setExpandRatio(path, 0.8f);
 
-        fileName = new TextField();
-        fileName.setWidth("100%");
-        fileName.setHeight("-1px");
-        fileName.setCaption("File output name:");
-        fileName.setRequired(true);
-        mainLayout.addComponent(fileName);
-        mainLayout.setExpandRatio(fileName, 0.8f);
+        Panel panel = new Panel();
+        panel.setSizeFull();
+        panel.setContent(mainLayout);
+        setCompositionRoot(panel);
 
     }
 
     @Override
     protected void setConfiguration(ACC1Config_V1 config) throws DPUConfigException {
-
-        fileName.setValue(config.getFileName());
 
         host.setValue(config.getV_host());
         port.setValue(""+config.getV_port());
@@ -90,8 +71,6 @@ public class ACC1VaadinDialog extends BaseConfigDialog<ACC1Config_V1> {
     protected ACC1Config_V1 getConfiguration() throws DPUConfigException {
 
         ACC1Config_V1 config = new ACC1Config_V1();
-
-        config.setFileName(fileName.getValue());
 
         config.setV_host(host.getValue());
         config.setV_port(Integer.parseInt(port.getValue()));
