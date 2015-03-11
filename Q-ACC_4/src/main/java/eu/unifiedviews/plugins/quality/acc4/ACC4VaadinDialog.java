@@ -33,32 +33,29 @@ public class ACC4VaadinDialog extends AbstractDialog<ACC4Config_V1> {
         baseFormLayout = new FormLayout();
         baseFormLayout.setSizeUndefined();
 
-        classUri = new TextField("Class URI:");
+        classUri = new TextField(ctx.tr("ACC4.class.uri"));
         classUri.setHeight("-1px");
         classUri.setRequired(true);
         baseFormLayout.addComponent(classUri);
 
-        property = new TextField("Property:");
+        property = new TextField(ctx.tr("ACC4.property"));
         property.setHeight("-1px");
         property.setRequired(true);
         baseFormLayout.addComponent(property);
 
-        lowerBound = new TextField("Lower Bound:");
+        lowerBound = new TextField(ctx.tr("ACC4.lower.bound"));
         lowerBound.setHeight("-1px");
         lowerBound.setRequired(true);
         baseFormLayout.addComponent(lowerBound);
 
-        upperBound = new TextField("Upper Bound:");
+        upperBound = new TextField(ctx.tr("ACC4.upper.bound"));
         upperBound.setHeight("-1px");
         upperBound.setRequired(true);
         baseFormLayout.addComponent(upperBound);
 
         mainLayout.addComponent(baseFormLayout);
 
-        Panel panel = new Panel();
-        panel.setSizeFull();
-        panel.setContent(mainLayout);
-        setCompositionRoot(panel);
+        setCompositionRoot(mainLayout);
     }
 
     @Override

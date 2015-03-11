@@ -7,12 +7,8 @@ public class ACC4Config_V1 {
     private double lowerBound;
     private double upperBound;
 
-    private int width;
-    private int height;
-
     public ACC4Config_V1() {
-        width = 500;
-        height = 500;
+
     }
 
     public double getLowerBound() {
@@ -45,21 +41,5 @@ public class ACC4Config_V1 {
 
     public void setProperty(String property) {
         this.property = property;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
     }
 }
