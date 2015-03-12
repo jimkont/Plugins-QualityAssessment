@@ -66,6 +66,7 @@ public class C5 extends AbstractDpu<C5Config_V1> {
         ArrayList<String> _subject = this.config.getSubject();
         ArrayList<String> _property = this.config.getProperty();
         ArrayList<String> _properties = this.config.getProperties();
+
         if ((_subject == null) || (_property == null)) {
             LOG.warn("No subject or property or regular expression has been specified.");
         } else {
@@ -149,7 +150,7 @@ public class C5 extends AbstractDpu<C5Config_V1> {
             });
             report.setOutput(output);
 
-            // EX_ACCURACY_DIMENSION entity.
+            // EX_COMPLETENESS_DIMENSION entity.
             final EntityBuilder dpuEntity = new EntityBuilder(
                     QualityOntology.EX_COMPLETENESS_DIMENSION, valueFactory);
             dpuEntity.property(RDF.TYPE, QualityOntology.DAQ_METRIC);
@@ -214,6 +215,7 @@ public class C5 extends AbstractDpu<C5Config_V1> {
                 .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(obsBNode))
                 .property(DC.DATE, valueFactory.createLiteral(reportDate))
                 .property(QualityOntology.DAQ_VALUE, valueFactory.createLiteral(value));
+
         return observationEntity;
     }
     /**
@@ -234,6 +236,7 @@ public class C5 extends AbstractDpu<C5Config_V1> {
                 .property(RDF.TYPE, RDF.STATEMENT)
                 .property(RDF.SUBJECT, valueFactory.createLiteral(subject))
                 .property(RDF.PROPERTY, valueFactory.createLiteral(property));
+        
         return observationEntity;
     }
 	
