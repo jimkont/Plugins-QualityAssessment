@@ -65,16 +65,17 @@ public class C5 extends AbstractDpu<C5Config_V1> {
         // Get configuration parameters
         ArrayList<String> _subject = this.config.getSubject();
         ArrayList<String> _property = this.config.getProperty();
-        ArrayList<String> _properties = this.config.getProperties();
+        ArrayList<String> _lang = this.config.getLang();
 
         if ((_subject == null) || (_property == null)) {
-            LOG.warn("No subject or property or regular expression has been specified.");
+            LOG.warn("No subject or property has been specified.");
         } else {
             Double[] results = new Double[_subject.size()];
             // It evaluates the completeness, for every subject specified in the DPU Configuration
             for (int i = 0; i < _subject.size(); ++i) {
                 String subject = _subject.get(i);
                 String property = _property.get(i);
+                String lang = _lang.get(i);
 
                 if (!subject.trim().isEmpty() && !property.trim().isEmpty()) {
 
@@ -83,13 +84,17 @@ public class C5 extends AbstractDpu<C5Config_V1> {
                             "WHERE { " +
                                 "?s rdf:type <" + subject + "> . " +
                             "}";
-
-                    final String q2 =
+                    String tmp =
                             "SELECT (COUNT(?s) AS ?conceptCount) " +
-                            "WHERE { " +
-                                "?s rdf:type <" + subject + ">. " +
-                                "?s <" + property + "> ?label. " +
-                             "}";
+                                    "WHERE { " +
+                                    "?s rdf:type <" + subject + "> . " +
+                                    "?s <" + property + "> ?label . ";
+                    if (lang != null)
+                        tmp = tmp + "FILTER langMatches( lang(?label), \"" + lang + "\" )";
+
+                    tmp = tmp + "}";
+
+                    final String q2 = tmp;
 
                     // Prepare SPARQL queries.
                     final SparqlUtils.SparqlSelectObject query1 = faultTolerance.execute(

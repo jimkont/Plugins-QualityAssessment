@@ -6,7 +6,9 @@ public class C5Config_V1 {
 
     private ArrayList<String> subject = new ArrayList<>();
     private ArrayList<String> property = new ArrayList<>();
+    private ArrayList<String> lang = new ArrayList<>();
     private ArrayList<String> properties = new ArrayList<>();
+    private ArrayList<String> langs = new ArrayList<>();
 
     public C5Config_V1() {
         properties.add("http://www.w3.org/2000/01/rdf-schema#label");
@@ -14,6 +16,11 @@ public class C5Config_V1 {
         properties.add("http://purl.org/dc/elements/1.1/title");
         properties.add("http://purl.org/rss/1.0/title");
         properties.add("http://purl.org/dc/elements/1.1/description");
+        langs.add("EN");
+        langs.add("ES");
+        langs.add("DE");
+        langs.add("IT");
+        langs.add("FR");
     }
 
     public ArrayList<String> getSubject() {
@@ -32,8 +39,18 @@ public class C5Config_V1 {
         this.property = property;
     }
 
+    public ArrayList<String> getLang() {
+        return lang;
+    }
+
+    public void setLang(ArrayList<String> lang) {
+        this.lang = lang;
+    }
+
     public ArrayList<String> getProperties() {
         return properties;
     }
+
+    public ArrayList<String> getLangs() { return langs; }
 
 }
