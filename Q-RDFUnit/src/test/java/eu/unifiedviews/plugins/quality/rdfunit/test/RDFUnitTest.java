@@ -25,7 +25,7 @@ public class RDFUnitTest {
         dpu.configure((new ConfigurationBuilder()).setDpuConfiguration(config).toString());
 
         // Define Input & Output of the DPU
-        env.createRdfInput("input", false);
+        env.createFilesInputFromResource("input","Elezioni.ttl");
         env.createRdfOutput("output", false);
 
         try {

@@ -80,9 +80,7 @@ public class RDFUnitValidation {
         //OutputStream to get the results as string
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-            new RDFStreamWriter(os, "TURTLE").write(testExecutorMonitor.getModel());
-            testExecutorMonitor.getModel();
-            RDFStreamWriter
+            new RDFStreamWriter(os).write(testExecutorMonitor.getModel());
             return os.toString();
         } catch (RDFWriterException e) {
             return null;

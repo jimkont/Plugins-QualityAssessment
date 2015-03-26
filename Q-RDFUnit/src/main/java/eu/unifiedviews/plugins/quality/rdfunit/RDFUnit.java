@@ -2,20 +2,35 @@ package eu.unifiedviews.plugins.quality.rdfunit;
 
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.DataUnitUtils;
+import eu.unifiedviews.helpers.dataunit.rdf.RdfDataUnitUtils;
+import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultToleranceUtils;
 import eu.unifiedviews.helpers.dpu.extension.rdf.simple.WritableSimpleRdf;
 import eu.unifiedviews.helpers.dpu.rdf.EntityBuilder;
+import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
 import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.DC;
 import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.query.*;
+import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.RDFWriter;
+import org.openrdf.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.sail.memory.MemoryStore;
 
 import eu.unifiedviews.helpers.dpu.config.ConfigHistory;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
@@ -23,13 +38,12 @@ import eu.unifiedviews.helpers.dpu.exec.AbstractDpu;
 import eu.unifiedviews.helpers.dpu.extension.ExtensionInitializer;
 import eu.unifiedviews.helpers.dpu.extension.faulttolerance.FaultTolerance;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 @DPU.AsQuality
 public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
@@ -39,15 +53,13 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
     public static final String COMPLETENESS_GRAPH_SYMBOLIC_NAME = "completenessQualityGraph";
 
     @DataUnit.AsInput(name = "input")
-    public RDFDataUnit inRdfData;
+    public FilesDataUnit inFilesData;
 
     @DataUnit.AsOutput(name = "output")
     public WritableRDFDataUnit outRdfData;
 
     @ExtensionInitializer.Init(param = "outRdfData")
     public WritableSimpleRdf report;
-
-    private WritableRDFDataUnit tmp;
 
     @ExtensionInitializer.Init
     public FaultTolerance faultTolerance;
@@ -62,7 +74,6 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
     protected void innerExecute() throws DPUException {
 
         ////////
-        String dataset = "/Users/AndreAga/Documents/Sviluppo/Progetti/UnifiedViews/Datasets/Elezioni.ttl";
         String tempFile = "/Users/AndreAga/Documents/Sviluppo/Progetti/UnifiedViews/ResultFiles/Result_RDFUnit.ttl";
         ////////
 
@@ -71,6 +82,24 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
         valueFactory = report.getValueFactory();
 
         String dpuDir =  ctx.getExecMasterContext().getDpuContext().getDpuInstanceDirectory();
+
+        FilesDataUnit.Iteration filesInput;
+        FilesDataUnit.Entry file;
+        String dataset;
+
+        try {
+
+            filesInput = inFilesData.getIteration();
+            file = filesInput.next();
+            if (file.getFileURIString().substring(0,5).equals("file:")) {
+                dataset = file.getFileURIString().substring(5);
+            } else {
+                dataset = file.getFileURIString();
+            }
+
+        } catch (DataUnitException e) {
+            throw new DPUException(ctx.tr("RDFUnit.error.dataunit"), e);
+        }
 
         RDFUnitValidation dataValidator = new RDFUnitValidation(dpuDir, dataset, ctx);
         String result = dataValidator.validate();
@@ -84,8 +113,99 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
                 fw.close();
             }
         } catch (IOException e) {
-            throw new DPUException(ctx.tr("RDFUnit.error.save"));
+            throw new DPUException(ctx.tr("RDFUnit.error.save"), e);
         }
+
+        File dataDir = new File(dpuDir);
+        Repository repo = new SailRepository(new MemoryStore(dataDir));
+        try {
+            repo.initialize();
+        } catch (RepositoryException e) {
+            throw new DPUException(ctx.tr("RDFUnit.error.repo.open"), e);
+        }
+
+        RepositoryConnection connection = null;
+        try {
+            final URI graphUri = valueFactory.createURI(dataDir.getAbsolutePath());
+
+            connection = repo.getConnection();
+            connection.begin();
+            connection.add(output, "http://localhost/", RDFFormat.TURTLE, graphUri);
+            connection.commit();
+
+            LOG.info("{} triples have been extracted from {}", connection.size(), output.toString());
+
+        } catch (IOException | RepositoryException | RDFParseException e) {
+            LOG.error(ctx.tr("RDFUnit.error.repo.extract"), e);
+        }
+
+        /////////////////////////////////////////
+
+        final String rut = "http://rdfunit.aksw.org/ns/core#";
+        final String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+        final String prov = "http://www.w3.org/ns/prov#";
+
+        String[] testPredicatesSummary = {
+                rut +"source",
+                rut +"testsError",
+                rut +"testsFailed",
+                rut +"testsRun",
+                rut +"testsSuceedded",
+                rut +"testsTimeout",
+                rut +"totalIndividualErrors",
+                prov +"startedAtTime",
+                prov +"endedAtTime",
+                //prov +"used",
+                prov +"wasAssociatedWith",
+                prov +"wasStartedBy"
+        };
+
+        try {
+
+            final String queryTypeTE = "SELECT ?s WHERE { ?s <"+ rdf +"type> <"+ rut +"TestExecution> } ";
+            TupleQuery tupleQueryTypeTE = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryTypeTE);
+            TupleQueryResult resultQueryTypeTE = tupleQueryTypeTE.evaluate();
+
+            BindingSet bs = resultQueryTypeTE.next();
+            Value subject = bs.getValue("s");
+
+            final EntityBuilder dpuTestSummary = new EntityBuilder(valueFactory.createURI(subject.stringValue()), valueFactory);
+            dpuTestSummary
+                    .property(valueFactory.createURI(rdf + "type"), valueFactory.createURI(rut + "TestExecution"))
+                    .property(valueFactory.createURI(rdf + "type"), valueFactory.createURI(rut + "Activity"));
+
+            for (int i = 0; i < testPredicatesSummary.length; i++) {
+
+                String queryString = "SELECT ?o WHERE { ?s <"+ testPredicatesSummary[i] +"> ?o } ";
+                TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+                TupleQueryResult results = tupleQuery.evaluate();
+
+                while (results.hasNext()) {
+                    BindingSet bindingSet = results.next();
+                    Value object = bindingSet.getValue("o");
+
+                    dpuTestSummary.property(valueFactory.createURI(testPredicatesSummary[i]), object);
+                }
+            }
+
+            // Set output.
+            final RDFDataUnit.Entry outputGraph = faultTolerance.execute(new FaultTolerance.ActionReturn<RDFDataUnit.Entry>() {
+                @Override
+                public RDFDataUnit.Entry action() throws Exception {
+                    return RdfDataUnitUtils.addGraph(outRdfData, COMPLETENESS_GRAPH_SYMBOLIC_NAME);
+                }
+            });
+            report.setOutput(outputGraph);
+
+            report.add(dpuTestSummary.asStatements());
+
+        } catch (RepositoryException | QueryEvaluationException | MalformedQueryException e) {
+            throw new DPUException(ctx.tr("RDFUnit.error.sparql"), e);
+        }
+
+        //final File outFile = new File(java.net.URI.create("file:/Users/AndreAga/Documents/Sviluppo/Progetti/UnifiedViews/ResultFiles/Result_RDFUnit_Graph.ttl"));
+        //final List<RDFDataUnit.Entry> graphs = FaultToleranceUtils.getEntries(faultTolerance, outRdfData, RDFDataUnit.Entry.class);
+        //exportGraph(graphs, outFile);
 
         /*
         // Get configuration parameters
@@ -211,6 +331,36 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
             }
         }*/
     }
+
+    /*private void exportGraph(final List<RDFDataUnit.Entry> sources, File exportFile) throws DPUException {
+
+        // Prepare inputs.
+        final URI[] sourceUris = faultTolerance.execute(new FaultTolerance.ActionReturn<URI[]>() {
+
+            @Override
+            public URI[] action() throws Exception {
+                return RdfDataUnitUtils.asGraphs(sources);
+            }
+
+        });
+
+        try (FileOutputStream outStream = new FileOutputStream(exportFile);
+             OutputStreamWriter outWriter = new OutputStreamWriter(outStream, Charset.forName("UTF-8"))
+        ) {
+
+            faultTolerance.execute(outRdfData, new FaultTolerance.ConnectionAction() {
+
+                @Override
+                public void action(RepositoryConnection connection) throws Exception {
+                    RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, outWriter);
+                    connection.export(writer, sourceUris);
+                }
+            });
+
+        } catch (IOException ex) {
+            throw ContextUtils.dpuException(ctx, ex, "ACC1.error.output");
+        }
+    }*/
 
     /**
      * Creates observation for entity.
