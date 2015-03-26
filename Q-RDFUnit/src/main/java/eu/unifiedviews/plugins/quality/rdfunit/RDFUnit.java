@@ -1,5 +1,6 @@
 package eu.unifiedviews.plugins.quality.rdfunit;
 
+import com.opencsv.CSVWriter;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
@@ -42,6 +43,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -50,7 +52,7 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
 
     private static final Logger LOG = LoggerFactory.getLogger(RDFUnit.class);
 
-    public static final String COMPLETENESS_GRAPH_SYMBOLIC_NAME = "completenessQualityGraph";
+    public static final String VALIDITY_GRAPH_SYMBOLIC_NAME = "validityQualityGraph";
 
     @DataUnit.AsInput(name = "input")
     public FilesDataUnit inFilesData;
@@ -73,76 +75,86 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
     @Override
     protected void innerExecute() throws DPUException {
 
-        ////////
-        String tempFile = "/Users/AndreAga/Documents/Sviluppo/Progetti/UnifiedViews/ResultFiles/Result_RDFUnit.ttl";
-        ////////
-
         ContextUtils.sendShortInfo(ctx, "RDFUnit.message");
 
         valueFactory = report.getValueFactory();
 
         String dpuDir =  ctx.getExecMasterContext().getDpuContext().getDpuInstanceDirectory();
+        String tempFile = dpuDir +"Result_RDFUnit.ttl";
+
+        ArrayList<String> prefix = config.getPrefix();
+        ArrayList<String> uri = config.getUri();
+        ArrayList<String> url = config.getUrl();
 
         FilesDataUnit.Iteration filesInput;
         FilesDataUnit.Entry file;
         String dataset;
+        String schema;
 
         try {
 
+            // Getting input file
             filesInput = inFilesData.getIteration();
             file = filesInput.next();
+
             if (file.getFileURIString().substring(0,5).equals("file:")) {
                 dataset = file.getFileURIString().substring(5);
             } else {
                 dataset = file.getFileURIString();
             }
 
-        } catch (DataUnitException e) {
+            // Generate Local Schema with configuration values
+            schema = createCSVSchema(dpuDir, prefix, uri, url);
+
+        } catch (DataUnitException | IOException e) {
             throw new DPUException(ctx.tr("RDFUnit.error.dataunit"), e);
         }
 
-        RDFUnitValidation dataValidator = new RDFUnitValidation(dpuDir, dataset, ctx);
+        // Initialize and Execute the RDFUnit Tool
+        RDFUnitValidation dataValidator = new RDFUnitValidation(dpuDir, dataset, schema, ctx);
         String result = dataValidator.validate();
 
+        // Create a temp file with the result of rdfunit
         File output = new File(tempFile);
         try {
+
+            output.getParentFile().mkdirs();
+
             if (output.createNewFile()) {
                 FileWriter fw = new FileWriter(tempFile);
                 fw.write(result);
                 fw.flush();
                 fw.close();
             }
+
         } catch (IOException e) {
             throw new DPUException(ctx.tr("RDFUnit.error.save"), e);
         }
 
+        // Create a local repository to load the result graph
         File dataDir = new File(dpuDir);
-        Repository repo = new SailRepository(new MemoryStore(dataDir));
+        Repository repository = new SailRepository(new MemoryStore(dataDir));
+        RepositoryConnection connection;
         try {
-            repo.initialize();
-        } catch (RepositoryException e) {
-            throw new DPUException(ctx.tr("RDFUnit.error.repo.open"), e);
-        }
+            repository.initialize();
 
-        RepositoryConnection connection = null;
-        try {
-            final URI graphUri = valueFactory.createURI(dataDir.getAbsolutePath());
-
-            connection = repo.getConnection();
+            connection = repository.getConnection();
             connection.begin();
-            connection.add(output, "http://localhost/", RDFFormat.TURTLE, graphUri);
+            connection.add(output, "http://localhost/", RDFFormat.TURTLE);
             connection.commit();
 
             LOG.info("{} triples have been extracted from {}", connection.size(), output.toString());
 
         } catch (IOException | RepositoryException | RDFParseException e) {
-            LOG.error(ctx.tr("RDFUnit.error.repo.extract"), e);
+            throw new DPUException(ctx.tr("RDFUnit.error.repo.extract"), e);
         }
 
         /////////////////////////////////////////
+        /////////////////////////////////////////
+        /////////////////////////////////////////
 
-        final String rut = "http://rdfunit.aksw.org/ns/core#";
         final String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+        final String rut = "http://rdfunit.aksw.org/ns/core#";
         final String prov = "http://www.w3.org/ns/prov#";
 
         String[] testPredicatesSummary = {
@@ -192,12 +204,16 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
             final RDFDataUnit.Entry outputGraph = faultTolerance.execute(new FaultTolerance.ActionReturn<RDFDataUnit.Entry>() {
                 @Override
                 public RDFDataUnit.Entry action() throws Exception {
-                    return RdfDataUnitUtils.addGraph(outRdfData, COMPLETENESS_GRAPH_SYMBOLIC_NAME);
+                    return RdfDataUnitUtils.addGraph(outRdfData, VALIDITY_GRAPH_SYMBOLIC_NAME);
                 }
             });
-            report.setOutput(outputGraph);
 
+            report.setOutput(outputGraph);
             report.add(dpuTestSummary.asStatements());
+
+            // Close connection and repository
+            connection.close();
+            repository.shutDown();
 
         } catch (RepositoryException | QueryEvaluationException | MalformedQueryException e) {
             throw new DPUException(ctx.tr("RDFUnit.error.sparql"), e);
@@ -332,6 +348,26 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
         }*/
     }
 
+    private String createCSVSchema(String directory, ArrayList<String> _prefix, ArrayList<String> _uri, ArrayList<String> _url) throws IOException {
+
+        // Create a new CSV file with custom ontology configuration
+        File schema = new File(directory +"schema.csv");
+        schema.getParentFile().mkdirs();
+        schema.createNewFile();
+
+        CSVWriter writer = new CSVWriter(new FileWriter(schema), ',', CSVWriter.NO_QUOTE_CHARACTER);
+
+        // Write all custom prefixes
+        for (int i = 0; i < _prefix.size(); i++) {
+            String[] prefix = {_prefix.get(i), _uri.get(i), _url.get(i)};
+            writer.writeNext(prefix);
+        }
+
+        writer.close();
+
+        return schema.getAbsolutePath();
+    }
+
     /*private void exportGraph(final List<RDFDataUnit.Entry> sources, File exportFile) throws DPUException {
 
         // Prepare inputs.
@@ -370,7 +406,7 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
      * @return EntityBuilder
      * @throws DPUException
      */
-    private EntityBuilder createObservation(double value, int observationIndex) throws DPUException {
+    /*private EntityBuilder createObservation(double value, int observationIndex) throws DPUException {
         String obs = String.format(RDFUnitVocabulary.EX_OBSERVATIONS, observationIndex);
         String obsBNode = obs + "/bnode_" + observationIndex;
         final EntityBuilder observationEntity = new EntityBuilder(
@@ -393,7 +429,7 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
                 .property(QualityOntology.DAQ_VALUE, valueFactory.createLiteral(value));
 
         return observationEntity;
-    }
+    }*/
     /**
      * Creates observation for entity.
      *
@@ -403,7 +439,7 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
      * @return EntityBuilder
      * @throws DPUException
      */
-    private EntityBuilder createObservationBNode(String subject, String property, int observationIndex) throws DPUException {
+    /*private EntityBuilder createObservationBNode(String subject, String property, int observationIndex) throws DPUException {
         String obs = String.format(RDFUnitVocabulary.EX_OBSERVATIONS, observationIndex) + "/bnode_" + observationIndex;
         final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
 
@@ -414,6 +450,5 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
                 .property(RDF.PROPERTY, valueFactory.createLiteral(property));
         
         return observationEntity;
-    }
-	
+    }*/
 }

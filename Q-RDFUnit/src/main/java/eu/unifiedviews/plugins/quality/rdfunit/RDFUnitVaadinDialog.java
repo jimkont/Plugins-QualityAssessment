@@ -1,7 +1,6 @@
 package eu.unifiedviews.plugins.quality.rdfunit;
 
 import com.vaadin.server.UserError;
-import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 public class RDFUnitVaadinDialog extends AbstractDialog<RDFUnitConfig_V1> {
 
     private GridLayout propertiesGridLayout;
-    private ComboBox properties;
 
     public RDFUnitVaadinDialog() {
         super(RDFUnit.class);
@@ -20,39 +18,52 @@ public class RDFUnitVaadinDialog extends AbstractDialog<RDFUnitConfig_V1> {
 
     @Override
     public void setConfiguration(RDFUnitConfig_V1 c) throws DPUConfigException {
-        ArrayList<String> subject = c.getSubject();
-        ArrayList<String> property = c.getProperty();
-        if (subject.size() > 0) {
+
+        ArrayList<String> prefix = c.getPrefix();
+        ArrayList<String> uri = c.getUri();
+        ArrayList<String> url = c.getUrl();
+
+        if (prefix.size() > 0) {
             this.removeAllColumnToPropertyMappings();
-            for (int i = 0; i < subject.size(); ++i) {
-                this.addColumnToPropertyMapping(subject.get(i), property.get(i));
+            for (int i = 0; i < prefix.size(); ++i) {
+                this.addColumnToPropertyMapping(prefix.get(i), uri.get(i), url.get(i));
             }
-            this.addColumnToPropertyMapping("", "");
+            this.addColumnToPropertyMapping("", "", "");
         }
     }
 
     @Override
     public RDFUnitConfig_V1 getConfiguration() throws DPUConfigException {
+
         final RDFUnitConfig_V1 c = new RDFUnitConfig_V1();
 
-        ArrayList<String> subject = new ArrayList<>();
-        ArrayList<String> property = new ArrayList<>();
+        ArrayList<String> prefix = new ArrayList<>();
+        ArrayList<String> uri = new ArrayList<>();
+        ArrayList<String> url = new ArrayList<>();
 
         for (int row = 1; row < this.propertiesGridLayout.getRows(); ++row) {
-            String txtSubject = ((TextField) this.propertiesGridLayout.getComponent(0, row)).getValue();
-            String txtProperty = (String)((ComboBox) this.propertiesGridLayout.getComponent(1, row)).getValue();
-            if (!txtSubject.isEmpty() && !txtProperty.isEmpty()) {
-                subject.add(row-1, txtSubject);
-                property.add(row-1, txtProperty);
+
+            String txtPrefix = ((TextField) this.propertiesGridLayout.getComponent(0, row)).getValue();
+            String txtUri = ((TextField) this.propertiesGridLayout.getComponent(1, row)).getValue();
+            String txtUrl = ((TextField) this.propertiesGridLayout.getComponent(2, row)).getValue();
+
+            if (!txtPrefix.isEmpty() && !txtUri.isEmpty() && !txtUrl.isEmpty()) {
+                prefix.add(row - 1, txtPrefix);
+                uri.add(row - 1, txtUri);
+                url.add(row - 1, txtUrl);
             }
         }
-        c.setSubject(subject);
-        c.setProperty(property);
+
+        c.setPrefix(prefix);
+        c.setUri(uri);
+        c.setUrl(url);
+
         return c;
     }
 
     @Override
     public void buildDialogLayout() {
+
         final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setWidth("100%");
         mainLayout.setHeight("-1px");
@@ -61,79 +72,118 @@ public class RDFUnitVaadinDialog extends AbstractDialog<RDFUnitConfig_V1> {
 
         FormLayout baseFormLayout = new FormLayout();
         baseFormLayout.setSizeUndefined();
-        this.propertiesGridLayout = new GridLayout(2, 2);
+        this.propertiesGridLayout = new GridLayout(3, 2);
         this.propertiesGridLayout.setWidth("100%");
         this.addColumnToPropertyMappingsHeading();
 
-        TextField txtSubject = new TextField();
-        this.propertiesGridLayout.addComponent(txtSubject);
-        txtSubject.setWidth("100%");
+        TextField txtPrefix = new TextField();
+        this.propertiesGridLayout.addComponent(txtPrefix);
+        txtPrefix.setWidth("100%");
 
-        this.properties = new ComboBox();
-        this.properties.setFilteringMode(FilteringMode.CONTAINS);
-        initComboBox();
-        this.properties.setNewItemsAllowed(true);
-        this.propertiesGridLayout.addComponent(properties);
-        this.properties.setWidth("100%");
+        TextField txtUri = new TextField();
+        this.propertiesGridLayout.addComponent(txtUri);
+        txtUri.setWidth("100%");
+
+        TextField txtUrl = new TextField();
+        this.propertiesGridLayout.addComponent(txtUrl);
+        txtUrl.setWidth("100%");
 
         mainLayout.addComponent(baseFormLayout);
         mainLayout.addComponent(propertiesGridLayout);
+
         Button btnAddRow = new Button(ctx.tr("RDFUnit.button.add"));
         btnAddRow.addClickListener(new Button.ClickListener() {
+
             private static final long serialVersionUID = -8609995802749728232L;
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
+
                 int lastRow = propertiesGridLayout.getRows() - 1;
                 if (lastRow > 0) {
-                    String txtSubject = ((TextField) propertiesGridLayout.getComponent(0, lastRow)).getValue();
-                    String txtProperty = (String) ((ComboBox) propertiesGridLayout.getComponent(1, lastRow)).getValue();
-                    if (txtSubject.isEmpty() || txtProperty == null) {
-                        if (txtSubject.isEmpty())
-                            ((TextField) propertiesGridLayout.getComponent(0, lastRow)).setComponentError(new UserError("All field must be filled"));
+
+                    String txtPrefix = ((TextField) propertiesGridLayout.getComponent(0, lastRow)).getValue();
+                    String txtUri = ((TextField) propertiesGridLayout.getComponent(1, lastRow)).getValue();
+                    String txtUrl = ((TextField) propertiesGridLayout.getComponent(2, lastRow)).getValue();
+
+                    if (txtPrefix.isEmpty() || txtUri.isEmpty() || txtUrl.isEmpty()) {
+
+                        if (txtPrefix.isEmpty())
+                            ((TextField) propertiesGridLayout
+                                    .getComponent(0, lastRow))
+                                    .setComponentError(new UserError(ctx.tr("RDFUnit.empty.field")));
                         else
-                            ((TextField) propertiesGridLayout.getComponent(0, lastRow)).setComponentError(null);
-                        if (txtProperty == null)
-                            ((ComboBox) propertiesGridLayout.getComponent(1, lastRow)).setComponentError(new UserError("All field must be filled"));
+                            ((TextField) propertiesGridLayout
+                                    .getComponent(0, lastRow))
+                                    .setComponentError(null);
+
+                        if (txtUri.isEmpty())
+                            ((TextField) propertiesGridLayout
+                                    .getComponent(1, lastRow))
+                                    .setComponentError(new UserError(ctx.tr("RDFUnit.empty.field")));
                         else
-                            ((ComboBox) propertiesGridLayout.getComponent(1, lastRow)).setComponentError(null);
+                            ((TextField) propertiesGridLayout
+                                    .getComponent(1, lastRow))
+                                    .setComponentError(null);
+
+                        if (txtUrl.isEmpty())
+                            ((TextField) propertiesGridLayout
+                                    .getComponent(2, lastRow))
+                                    .setComponentError(new UserError(ctx.tr("RDFUnit.empty.field")));
+                        else
+                            ((TextField) propertiesGridLayout
+                                    .getComponent(2, lastRow))
+                                    .setComponentError(null);
                     } else {
+
                         ((TextField) propertiesGridLayout.getComponent(0, lastRow)).setComponentError(null);
-                        ((ComboBox) propertiesGridLayout.getComponent(1, lastRow)).setComponentError(null);
-                        addColumnToPropertyMapping("", "");
+                        ((TextField) propertiesGridLayout.getComponent(1, lastRow)).setComponentError(null);
+                        ((TextField) propertiesGridLayout.getComponent(2, lastRow)).setComponentError(null);
+
+                        addColumnToPropertyMapping("", "", "");
                     }
                 } else {
-                    addColumnToPropertyMapping("", "");
+                    addColumnToPropertyMapping("", "", "");
                 }
             }
         });
 
         Button btnRemoveRow = new Button(ctx.tr("RDFUnit.button.remove"));
         btnRemoveRow.addClickListener(new Button.ClickListener() {
+
             private static final long serialVersionUID = -8609995802749728232L;
+
             @Override
             public void buttonClick(Button.ClickEvent event) {
+
                 int lastRow = propertiesGridLayout.getRows() - 1;
-                String txtSubject = "";
-                String txtProperty = null;
+
+                String txtPrefix = "";
+                String txtUri = "";
+                String txtUrl = "";
+
                 if (lastRow > 0) {
-                    txtSubject = ((TextField) propertiesGridLayout.getComponent(0, lastRow)).getValue();
-                    txtProperty = (String) ((ComboBox) propertiesGridLayout.getComponent(1, lastRow)).getValue();
+                    txtPrefix = ((TextField) propertiesGridLayout.getComponent(0, lastRow)).getValue();
+                    txtUri = ((TextField) propertiesGridLayout.getComponent(1, lastRow)).getValue();
+                    txtUrl = ((TextField) propertiesGridLayout.getComponent(2, lastRow)).getValue();
+
                     propertiesGridLayout.removeRow(lastRow);
-                    addColumnToPropertyMapping("", "");
+                    addColumnToPropertyMapping("", "", "");
                 }
-                if (lastRow > 1 && txtSubject.isEmpty() && txtProperty == null) {
+
+                if (lastRow > 1 && txtPrefix.isEmpty() && txtUri.isEmpty() && txtUrl.isEmpty()) {
                     propertiesGridLayout.removeRow(lastRow - 1);
                 }
             }
         });
+
         Button btnRemoveRows = new Button(ctx.tr("RDFUnit.button.remove.all"));
         btnRemoveRows.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = -8609995802749728232L;
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 removeAllColumnToPropertyMappings();
-                addColumnToPropertyMapping("", "");
+                addColumnToPropertyMapping("", "", "");
             }
         });
 
@@ -142,43 +192,38 @@ public class RDFUnitVaadinDialog extends AbstractDialog<RDFUnitConfig_V1> {
         baseFormLayoutSecond.addComponent(btnAddRow);
         baseFormLayoutSecond.addComponent(btnRemoveRow);
         baseFormLayoutSecond.addComponent(btnRemoveRows);
-        mainLayout.addComponent(baseFormLayoutSecond);
 
+        mainLayout.addComponent(baseFormLayoutSecond);
         setCompositionRoot(mainLayout);
     }
 
-    private void addColumnToPropertyMapping(String subject, String property) {
-        TextField txtSubject = new TextField();
-        this.propertiesGridLayout.addComponent(txtSubject);
-        txtSubject.setWidth("100%");
+    private void addColumnToPropertyMappingsHeading() {
+        this.propertiesGridLayout.addComponent(new Label(ctx.tr("RDFUnit.prefix")));
+        this.propertiesGridLayout.addComponent(new Label(ctx.tr("RDFUnit.uri")));
+        this.propertiesGridLayout.addComponent(new Label(ctx.tr("RDFUnit.url")));
+    }
 
-        ComboBox copy = new ComboBox();
-        copy.setContainerDataSource(this.properties);
-        copy.setNewItemsAllowed(true);
-        this.propertiesGridLayout.addComponent(copy);
-        copy.setWidth("100%");
-        if (subject != null) {
-            txtSubject.setValue(subject);
-        }
-        if (property != null && !property.isEmpty()) {
-            copy.addItem(property);
-            copy.setValue(property);
-        }
+    private void addColumnToPropertyMapping(String prefix, String uri, String url) {
+
+        TextField txtPrefix = new TextField();
+        this.propertiesGridLayout.addComponent(txtPrefix);
+        txtPrefix.setWidth("100%");
+
+        TextField txtUri = new TextField();
+        this.propertiesGridLayout.addComponent(txtUri);
+        txtUri.setWidth("100%");
+
+        TextField txtUrl = new TextField();
+        this.propertiesGridLayout.addComponent(txtUrl);
+        txtUrl.setWidth("100%");
+
+        if (prefix != null) txtPrefix.setValue(prefix);
+        if (uri != null) txtUri.setValue(uri);
+        if (url != null) txtUrl.setValue(url);
     }
 
     private void removeAllColumnToPropertyMappings() {
         this.propertiesGridLayout.removeAllComponents();
         this.addColumnToPropertyMappingsHeading();
-    }
-
-    private void addColumnToPropertyMappingsHeading() {
-        this.propertiesGridLayout.addComponent(new Label(ctx.tr("RDFUnit.resource.type")));
-        this.propertiesGridLayout.addComponent(new Label(ctx.tr("RDFUnit.property")));
-    }
-
-    private void initComboBox(){
-        RDFUnitConfig_V1 c = new RDFUnitConfig_V1();
-        for (int i = 0; i < c.getProperties().size(); ++i)
-            properties.addItem(c.getProperties().get(i));
     }
 }

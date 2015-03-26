@@ -25,12 +25,15 @@ public class RDFUnitValidation {
     private TestSuite testSuite;
     private UserExecContext ctx;
 
-    public RDFUnitValidation(String dataFolder, String datasetURI, UserExecContext _ctx) throws DPUException{
+    public RDFUnitValidation(String dataFolder, String datasetURI, String schema, UserExecContext _ctx) throws DPUException{
 
         ctx = _ctx;
 
-        // Fill Schemas from LOV
+        ContextUtils.sendShortInfo(ctx, "RDFUnit.test.schema");
+
+        // Fill Schemas from LOV and Local schema
         RDFUnitUtils.fillSchemaServiceFromLOV();
+        RDFUnitUtils.fillSchemaServiceFromFile(schema);
 
         // Set the source Dataset
         File file = new File(datasetURI);
@@ -74,6 +77,7 @@ public class RDFUnitValidation {
 
         ContextUtils.sendShortInfo(ctx, "RDFUnit.test.execute.test");
 
+        // Executing generated tests
         testExecutor.addTestExecutorMonitor(testExecutorMonitor);
         testExecutor.execute(testSource, testSuite);
 
