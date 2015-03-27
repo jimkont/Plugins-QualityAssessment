@@ -15,6 +15,7 @@ import org.aksw.rdfunit.tests.executors.TestExecutor;
 import org.aksw.rdfunit.tests.executors.TestExecutorFactory;
 import org.aksw.rdfunit.tests.executors.monitors.SimpleTestExecutorMonitor;
 import org.aksw.rdfunit.tests.generators.TestGeneratorExecutor;
+import org.aksw.rdfunit.tests.results.DatasetOverviewResults;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -23,6 +24,8 @@ public class RDFUnitValidation {
 
     private RDFUnitConfiguration configuration;
     private TestSuite testSuite;
+    private DatasetOverviewResults overviewResults;
+
     private UserExecContext ctx;
 
     public RDFUnitValidation(String dataFolder, String datasetURI, String schema, UserExecContext _ctx) throws DPUException{
@@ -31,7 +34,7 @@ public class RDFUnitValidation {
 
         ContextUtils.sendShortInfo(ctx, "RDFUnit.test.schema");
 
-        // Fill Schemas from LOV and Local schema
+        // Fill Schemas from LOV and local schema
         RDFUnitUtils.fillSchemaServiceFromLOV();
         RDFUnitUtils.fillSchemaServiceFromFile(schema);
 
@@ -51,7 +54,7 @@ public class RDFUnitValidation {
         try {
             rdfUnit.init();
         } catch (RDFReaderException e) {
-            throw new DPUException(ctx.tr("RDFUnit.error.init.failed"));
+            throw new DPUException(ctx.tr("RDFUnit.test.init.failed"));
         }
 
         // Generate TestExecutor
@@ -69,7 +72,7 @@ public class RDFUnitValidation {
                 rdfUnit.getAutoGenerators());
     }
 
-    public String validate() {
+    public String validate() throws DPUException {
 
         final SimpleTestExecutorMonitor testExecutorMonitor = new SimpleTestExecutorMonitor(false);
         final TestExecutor testExecutor = TestExecutorFactory.createTestExecutor(configuration.getTestCaseExecutionType());
@@ -81,13 +84,19 @@ public class RDFUnitValidation {
         testExecutor.addTestExecutorMonitor(testExecutorMonitor);
         testExecutor.execute(testSource, testSuite);
 
+        overviewResults = testExecutorMonitor.getOverviewResults();
+
         //OutputStream to get the results as string
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-            new RDFStreamWriter(os).write(testExecutorMonitor.getModel());
+            new RDFStreamWriter(os, "TURTLE").write(testExecutorMonitor.getModel());
             return os.toString();
         } catch (RDFWriterException e) {
-            return null;
+            throw new DPUException(ctx.tr("RDFUnit.test.create.string.failed"), e);
         }
+    }
+
+    public DatasetOverviewResults getOverviewResults() {
+        return overviewResults;
     }
 }
