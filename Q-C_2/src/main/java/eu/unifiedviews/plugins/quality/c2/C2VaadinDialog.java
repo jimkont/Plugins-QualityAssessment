@@ -31,10 +31,11 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
 
         baseFormLayout.setSizeUndefined();
 
-        propertiesGridLayout = new GridLayout(2, 2);
+        propertiesGridLayout = new GridLayout(3, 2);
         propertiesGridLayout.setWidth("100%");
-        propertiesGridLayout.setColumnExpandRatio(0, 1);
-        propertiesGridLayout.setColumnExpandRatio(1, 1);
+        propertiesGridLayout.setColumnExpandRatio(0, 3.0f);
+        propertiesGridLayout.setColumnExpandRatio(1, 3.0f);
+        propertiesGridLayout.setColumnExpandRatio(2, 1.0f);
 
         mainLayout.addComponent(baseFormLayout);
         mainLayout.addComponent(propertiesGridLayout);
@@ -127,6 +128,7 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
     private void addColumnToPropertyMappingsHeading() {
         propertiesGridLayout.addComponent(new Label(ctx.tr("C2.subject.uri")));
         propertiesGridLayout.addComponent(new Label(ctx.tr("C2.property.uri")));
+        propertiesGridLayout.addComponent(new Label(""));
     }
 
     private void addColumnToPropertyMapping(String subject, String property) {
@@ -143,9 +145,18 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
         txtProperty.setWidth("100%");
         txtProperty.addValidator(fieldValidator("property"));
 
+        final Button btnRemoveRow = new Button(ctx.tr("C2.button.remove"));
+        btnRemoveRow.addClickListener(new Button.ClickListener() {
+            private static final long serialVersionUID = -8609995802749728232L;
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                propertiesGridLayout.removeRow(propertiesGridLayout.getComponentArea(btnRemoveRow).getRow1());
+            }
+        });
+
         propertiesGridLayout.addComponent(txtSubject);
         propertiesGridLayout.addComponent(txtProperty);
-
+        propertiesGridLayout.addComponent(btnRemoveRow);
     }
 
     private Validator fieldValidator (final String field) {
