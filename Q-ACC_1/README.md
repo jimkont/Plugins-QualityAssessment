@@ -15,7 +15,7 @@
 ###Configuration parameters###
 
 
-|Parameter                        |Description                             |                                                        
+|Parameter                        |Description                             |
 |---------------------------------|----------------------------------------|
 |**Host:**		                  |Main domain where RDFAlerts runs.  	   |
 |**Port:**		                  |Port where RDFAlerts works.  	       |
@@ -36,7 +36,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|1.0.0              |RDFAlerts must be installed into Tomcat.        |                                
+|1.0.0              |RDFAlerts must be installed into Tomcat. The WAR file is available here: http://aidanhogan.com/misc/RDFAlerts.war. Just deploy and run it directly in Tomcat 5 or newer.    |
 
 ***
 
