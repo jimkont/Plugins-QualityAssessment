@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<project
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<modelVersion>4.0.0</modelVersion>
+<parent>
+    <groupId>eu.unifiedviews</groupId>
+    <artifactId>uv-pom-dpu</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+</parent>
+<artifactId>Q-ACC_1</artifactId>
+<name>Q-ACC_1</name>
+<version>1.0.0</version>
+<description>Detecting syntax errors. Check the correctness of the literals, detection of ill-typed literals which do not abide by the lexical syntax for their respective datatype that can occur if a value is (i) malformed or (ii) is a member of an incompatible datatype.</description>
+<packaging>bundle</packaging>
+
+<properties>
+    <dpu.package>eu.unifiedviews.plugins.quality.acc1</dpu.package>
+    <dpu.mainClass>ACC1</dpu.mainClass>
+    <uv.helpers.version>[2.0.0-SNAPSHOT,3.0.0)</uv.helpers.version>
+    <module-test.version>1.6.0-SNAPSHOT</module-test.version>
+</properties>
+
+<dependencies>
+    <!-- Provided by Core. -->
+    <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.4</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.googlecode.json-simple</groupId>
+        <artifactId>json-simple</artifactId>
+        <version>1.1</version>
+    </dependency>
+    <!-- UnifiedViews helpers. -->
+    <dependency>
+        <groupId>eu.unifiedviews</groupId>
+        <artifactId>uv-dataunit-helpers</artifactId>
+        <version>${uv.helpers.version}</version>
+        <scope>compile</scope>
+    </dependency>
+    <dependency>
+        <groupId>eu.unifiedviews</groupId>
+        <artifactId>uv-dpu-helpers</artifactId>
+        <version>${uv.helpers.version}</version>
+        <scope>compile</scope>
+    </dependency>
+    <!-- Project with ontology definition. -->
+    <dependency>
+        <groupId>eu.unifiedviews.plugins.quality.qualitygraph</groupId>
+        <artifactId>uv-q-qualityOntology</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <scope>compile</scope>
+    </dependency>
+    <!-- Testing. -->
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.11</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>cz.cuni.mff.xrg.odcs</groupId>
+        <artifactId>module-test</artifactId>
+        <version>${module-test.version}</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+</project>
