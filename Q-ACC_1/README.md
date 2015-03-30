@@ -36,10 +36,7 @@
 
 |Version            |Release notes                                   |
 |-------------------|------------------------------------------------|
-|1.0.0              |RDFAlerts must be installed into Tomcat. <br>
-                     The WAR file is available [here](http://aidanhogan.com/misc/RDFAlerts.war). <br>
-                     Just deploy and run it directly in Tomcat 5 or newer. <br>
-                     This DPU covers also the quality metrics required by the DPUs Q-ACC2 and Q-ACC7. <br>|
+|1.0.0              |RDFAlerts must be installed into Tomcat. The WAR file is available here: http://aidanhogan.com/misc/RDFAlerts.war. Just deploy and run it directly in Tomcat 5 or newer. This DPU covers also the quality metrics required by the DPUs Q-ACC2 and Q-ACC7.|
 
 ***
 
