@@ -2,6 +2,7 @@ package eu.unifiedviews.plugins.quality.c2;
 
 import java.util.ArrayList;
 
+import com.vaadin.data.Validator;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -35,16 +36,6 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
         propertiesGridLayout.setColumnExpandRatio(0, 1);
         propertiesGridLayout.setColumnExpandRatio(1, 1);
 
-        this.addColumnToPropertyMappingsHeading();
-
-        TextField txtSubject = new TextField();
-        propertiesGridLayout.addComponent(txtSubject);
-        txtSubject.setWidth("100%");
-
-        TextField txtProperty = new TextField();
-        propertiesGridLayout.addComponent(txtProperty);
-        txtProperty.setWidth("100%");
-
         mainLayout.addComponent(baseFormLayout);
         mainLayout.addComponent(propertiesGridLayout);
 
@@ -55,31 +46,35 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                int lastRow = propertiesGridLayout.getRows() - 1;
-                if (lastRow > 0) {
-                    String txtSubject = ((TextField) propertiesGridLayout.getComponent(0, lastRow)).getValue();
-                    String txtProperty = ((TextField) propertiesGridLayout.getComponent(1, lastRow)).getValue();
+
+                boolean empty = false;
+
+                for (int i = 1; i < propertiesGridLayout.getRows(); i++) {
+                    String txtSubject = ((TextField) propertiesGridLayout.getComponent(0, i)).getValue();
+                    String txtProperty = ((TextField) propertiesGridLayout.getComponent(1, i)).getValue();
                     if (txtSubject.isEmpty() || txtProperty.isEmpty()) {
+                        empty = true;
                         if (txtSubject.isEmpty())
-                            ((TextField) propertiesGridLayout.getComponent(0, lastRow)).setComponentError(new UserError("All field must be filled"));
+                            ((TextField) propertiesGridLayout.getComponent(0, i)).setComponentError(new UserError(ctx.tr("C2.error.subject.not.filled")));
                         else
-                            ((TextField) propertiesGridLayout.getComponent(0, lastRow)).setComponentError(null);
+                            ((TextField) propertiesGridLayout.getComponent(0, i)).setComponentError(null);
                         if (txtProperty.isEmpty())
-                            ((TextField) propertiesGridLayout.getComponent(1, lastRow)).setComponentError(new UserError("All field must be filled"));
+                            ((TextField) propertiesGridLayout.getComponent(1, i)).setComponentError(new UserError(ctx.tr("C2.error.property.not.filled")));
                         else
-                            ((TextField) propertiesGridLayout.getComponent(1, lastRow)).setComponentError(null);
+                            ((TextField) propertiesGridLayout.getComponent(1, i)).setComponentError(null);
                     } else {
-                        ((TextField) propertiesGridLayout.getComponent(0, lastRow)).setComponentError(null);
-                        ((TextField) propertiesGridLayout.getComponent(1, lastRow)).setComponentError(null);
-                        addColumnToPropertyMapping("", "");
+                        ((TextField) propertiesGridLayout.getComponent(0, i)).setComponentError(null);
+                        ((TextField) propertiesGridLayout.getComponent(1, i)).setComponentError(null);
                     }
-                } else {
-                    addColumnToPropertyMapping("", "");
+                }
+
+                if (!empty) {
+                    addColumnToPropertyMapping("http://", "http://");
                 }
             }
         });
 
-        Button btnRemoveRow = new Button(ctx.tr("C2.button.remove"));
+        /*Button btnRemoveRow = new Button(ctx.tr("C2.button.remove"));
         btnRemoveRow.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = -8609995802749728232L;
             @Override
@@ -88,26 +83,32 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
                 String txtSubject = "";
                 String txtProperty = "";
                 if (lastRow > 0) {
+
                     txtSubject = ((TextField) propertiesGridLayout.getComponent(0, lastRow)).getValue();
                     txtProperty = ((TextField) propertiesGridLayout.getComponent(1, lastRow)).getValue();
+
                     propertiesGridLayout.removeRow(lastRow);
-                    addColumnToPropertyMapping("", "");
+
+                    addColumnToPropertyMapping("http://", "http://");
                 }
                 if (lastRow > 1 && txtSubject.isEmpty() && txtProperty.isEmpty()) {
                     propertiesGridLayout.removeRow(lastRow - 1);
                 }
             }
-        });
+        });*/
 
-        Button btnRemoveRows = new Button(ctx.tr("C2.button.remove.all"));
+        /*Button btnRemoveRows = new Button(ctx.tr("C2.button.remove.all"));
         btnRemoveRows.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = -8609995802749728232L;
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                removeAllColumnToPropertyMappings();
-                addColumnToPropertyMapping("", "");
+
+                propertiesGridLayout.removeAllComponents();
+
+                addColumnToPropertyMappingsHeading();
+                addColumnToPropertyMapping("http://", "http://");
             }
-        });
+        });*/
 
         baseFormLayout = new FormLayout();
         baseFormLayout.setSizeUndefined();
@@ -115,43 +116,56 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
         HorizontalLayout baseFormLayoutSecond = new HorizontalLayout();
         baseFormLayoutSecond.setSpacing(true);
         baseFormLayoutSecond.addComponent(btnAddRow);
-        baseFormLayoutSecond.addComponent(btnRemoveRow);
-        baseFormLayoutSecond.addComponent(btnRemoveRows);
+        //baseFormLayoutSecond.addComponent(btnRemoveRow);
+        //baseFormLayoutSecond.addComponent(btnRemoveRows);
 
         mainLayout.addComponent(baseFormLayoutSecond);
 
         setCompositionRoot(mainLayout);
     }
 
-    private void addColumnToPropertyMapping(String subject, String property) {
-
-        TextField txtSubject = new TextField();
-        txtSubject.setRequired(true);
-        propertiesGridLayout.addComponent(txtSubject);
-        txtSubject.setWidth("100%");
-
-        TextField txtProperty = new TextField();
-        txtProperty.setRequired(true);
-        propertiesGridLayout.addComponent(txtProperty);
-        txtProperty.setWidth("100%");
-
-        if (subject != null) {
-            txtSubject.setValue(subject);
-        }
-
-        if (property != null) {
-            txtProperty.setValue(property);
-        }
-    }
-
-    private void removeAllColumnToPropertyMappings() {
-        propertiesGridLayout.removeAllComponents();
-        this.addColumnToPropertyMappingsHeading();
-    }
-
     private void addColumnToPropertyMappingsHeading() {
         propertiesGridLayout.addComponent(new Label(ctx.tr("C2.subject.uri")));
         propertiesGridLayout.addComponent(new Label(ctx.tr("C2.property.uri")));
+    }
+
+    private void addColumnToPropertyMapping(String subject, String property) {
+
+        TextField txtSubject = new TextField();
+        txtSubject.setValue(subject);
+        txtSubject.setRequired(true);
+        txtSubject.setWidth("100%");
+        txtSubject.addValidator(fieldValidator("subject"));
+
+        TextField txtProperty = new TextField();
+        txtProperty.setValue(property);
+        txtProperty.setRequired(true);
+        txtProperty.setWidth("100%");
+        txtProperty.addValidator(fieldValidator("property"));
+
+        propertiesGridLayout.addComponent(txtSubject);
+        propertiesGridLayout.addComponent(txtProperty);
+
+    }
+
+    private Validator fieldValidator (final String field) {
+        return new Validator() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void validate(Object value) throws InvalidValueException {
+
+                String myValue = value.toString().toLowerCase().trim();
+
+                if (myValue.isEmpty()) {
+                    throw new InvalidValueException("\n"+ ctx.tr("C2.error."+ field +".not.filled"));
+                } else if (!myValue.startsWith("http://")) {
+                    throw new InvalidValueException("\n"+ ctx.tr("C2.error."+ field +".not.http"));
+                } else if (myValue.contains(" ")) {
+                    throw new InvalidValueException("\n"+ ctx.tr("C2.error."+ field +".whitespace"));
+                }
+            }
+        };
     }
 
     @Override
@@ -160,13 +174,19 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
         ArrayList<String> subject = config.getSubject();
         ArrayList<String> property = config.getProperty();
 
-        this.removeAllColumnToPropertyMappings();
+        propertiesGridLayout.removeAllComponents();
 
-        for (int i = 0; i < subject.size(); i++) {
-            this.addColumnToPropertyMapping(subject.get(i), property.get(i));
+        this.addColumnToPropertyMappingsHeading();
+
+        if (subject.size() == 0) {
+            this.addColumnToPropertyMapping("http://", "http://");
+        } else {
+            for (int i = 0; i < subject.size(); i++) {
+                if (!subject.get(i).trim().equals("") && !property.get(i).trim().equals("")) {
+                    this.addColumnToPropertyMapping(subject.get(i), property.get(i));
+                }
+            }
         }
-
-        this.addColumnToPropertyMapping("", "");
     }
 
     @Override
@@ -177,15 +197,49 @@ public class C2VaadinDialog extends AbstractDialog<C2Config_V1> {
         ArrayList<String> subject = new ArrayList<>();
         ArrayList<String> property = new ArrayList<>();
 
-        for (int row = 1; row < this.propertiesGridLayout.getRows(); row++) {
+        String validation = "";
 
-            String txtSubject = ((TextField) this.propertiesGridLayout.getComponent(0, row)).getValue();
-            String txtProperty = ((TextField) this.propertiesGridLayout.getComponent(1, row)).getValue();
+        int row = 1;
+        while (row < propertiesGridLayout.getRows()) {
 
-            if (!txtSubject.isEmpty() && !txtProperty.isEmpty()) {
-                subject.add(row-1, txtSubject);
-                property.add(row-1, txtProperty);
+            TextField txtSubject = ((TextField) propertiesGridLayout.getComponent(0, row));
+            TextField txtProperty = ((TextField) propertiesGridLayout.getComponent(1, row));
+
+            String txtSubjectValue = txtSubject.getValue().trim();
+            String txtPropertyValue = txtProperty.getValue().trim();
+
+            if (txtSubjectValue.isEmpty()) {
+                validation = validation +"\n"+ ctx.tr("C2.error.subject.not.filled");
             }
+
+            if (txtPropertyValue.isEmpty()) {
+                validation = validation +"\n"+ ctx.tr("C2.error.property.not.filled");
+            }
+
+            if (!txtSubject.isValid()) {
+                try {
+                    txtSubject.validate();
+                } catch (Validator.InvalidValueException e) {
+                    validation = validation + e.getMessage();
+                }
+            }
+
+            if (!txtProperty.isValid()) {
+                try {
+                    txtProperty.validate();
+                } catch (Validator.InvalidValueException e) {
+                    validation = validation + e.getMessage();
+                }
+            }
+
+            if (validation.isEmpty()) {
+                subject.add(row-1, txtSubjectValue);
+                property.add(row-1, txtPropertyValue);
+            } else {
+                throw new DPUConfigException(validation);
+            }
+
+            row++;
         }
 
         config.setSubject(subject);
