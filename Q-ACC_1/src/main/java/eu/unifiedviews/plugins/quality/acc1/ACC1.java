@@ -377,7 +377,7 @@ public class ACC1 extends AbstractDpu<ACC1Config_V1> {
         }
 
         observationEntity
-                .property(DC.DATE, valueFactory.createLiteral(reportDate));
+                .property(DCTERMS.DATE, valueFactory.createLiteral(reportDate));
 
         return observationEntity;
     }
