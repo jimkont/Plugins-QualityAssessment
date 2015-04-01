@@ -13,7 +13,6 @@ import eu.unifiedviews.helpers.dpu.extension.rdf.simple.WritableSimpleRdf;
 import eu.unifiedviews.helpers.dpu.rdf.EntityBuilder;
 import org.aksw.rdfunit.tests.results.DatasetOverviewResults;
 import org.openrdf.model.*;
-import org.openrdf.model.vocabulary.DC;
 import org.openrdf.model.vocabulary.DCTERMS;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.query.*;
@@ -206,7 +205,7 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
                     .property(valueFactory.createURI(testSummary[3]), valueFactory.createLiteral((int) testOverviewResults.getErrorTests()))
                     .property(valueFactory.createURI(testSummary[4]), valueFactory.createLiteral((int) testOverviewResults.getFailedTests()))
                     .property(valueFactory.createURI(testSummary[5]), valueFactory.createLiteral((int) testOverviewResults.getIndividualErrors()))
-                    .property(DC.DATE, valueFactory.createLiteral(reportDate));
+                    .property(DCTERMS.DATE, valueFactory.createLiteral(reportDate));
 
             // Query to extract the errors subjects
             final String queryGetSubjects =
