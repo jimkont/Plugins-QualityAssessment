@@ -8,7 +8,6 @@ import java.util.Date;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
-import org.openrdf.model.vocabulary.DC;
 import org.openrdf.model.vocabulary.DCTERMS;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryConnection;
