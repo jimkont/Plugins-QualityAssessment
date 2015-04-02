@@ -1,0 +1,28 @@
+How to install RDFUnit DPU (and RDFUnit Tool):
+
+RDFUnit Tool:
+1) Clone this Github Repository: https://github.com/AKSW/RDFUnit.git
+2) On master branch, checkout last commit of 03/27/2015 ef754d8
+3) Go to RDFUnit Tool folder: /rdfunit-core/src/main/java/org/aksw/rdfunit/Utils/
+4) Open & Edit: RDFUnitUtils.java
+5) Replace Line 105 with this:
+
+	Source lov = new EndpointTestSource("lov", "http://lov.okfn.org", "http://lov.okfn.org/dataset/lov/sparql", Arrays.asList("http://lov.okfn.org/dataset/lov"), null);
+
+6) Save & Exit
+7) Go to the root folder of RDFUnit and run via command line: mvn install
+8) When the process is finished, RDFUnit Tool is installed. Version 0.7.4-SNAPSHOT
+
+RDFUnit DPU:
+1) Checkout feature/Q-RDFUnit in the QualityAssessment Repository
+2) Edit RDFUnitTest.java placed here: /Q-RDFUnit/src/test/java/eu/unifiedviews/plugins/quality/rdfunit/test/
+3) Uncomment Line 61
+4) Edit Line 56 with the name of dataset you want to test. Make sure it is in /Q-RDFUnit/src/test/resources/ folder
+5) Save & Exit
+5) Go to RDFUnit.java placed here: /Q-RDFUnit/src/main/java/eu/unifiedviews/plugins/quality/rdfunit/
+6) Uncomment Line 275..289
+7) Edit Line 277 with the path where you want to save output.
+8) Save & Exit (Check if all dependency are satisfied)
+9) Go to the root of RDFUnit DPU
+10) To Test it run via command line: mvn test (it will create output file)
+11) To Compile it run via command line: mvn install
