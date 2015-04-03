@@ -7,7 +7,7 @@ import java.util.Date;
 import eu.unifiedviews.helpers.dpu.context.ContextUtils;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
-import org.openrdf.model.vocabulary.DC;
+import org.openrdf.model.vocabulary.DCTERMS;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryConnection;
 import eu.unifiedviews.dataunit.DataUnit;
@@ -196,7 +196,7 @@ public class ACC4 extends AbstractDpu<ACC4Config_V1> {
         observationEntity
                 .property(RDF.TYPE, QualityOntology.QB_OBSERVATION)
                 .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(obs_bnode))
-                .property(DC.DATE, valueFactory.createLiteral(reportDate))
+                .property(DCTERMS.DATE, valueFactory.createLiteral(reportDate))
                 .property(QualityOntology.DAQ_VALUE, valueFactory.createLiteral(value));
 
         return observationEntity;
