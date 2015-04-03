@@ -13,7 +13,7 @@ import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
-import org.openrdf.model.vocabulary.DC;
+import org.openrdf.model.vocabulary.DCTERMS;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryConnection;
 import org.slf4j.Logger;
@@ -218,7 +218,7 @@ public class C5 extends AbstractDpu<C5Config_V1> {
         observationEntity
                 .property(RDF.TYPE, QualityOntology.QB_OBSERVATION)
                 .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(obsBNode))
-                .property(DC.DATE, valueFactory.createLiteral(reportDate))
+                .property(DCTERMS.DATE, valueFactory.createLiteral(reportDate))
                 .property(QualityOntology.DAQ_VALUE, valueFactory.createLiteral(value));
 
         return observationEntity;
