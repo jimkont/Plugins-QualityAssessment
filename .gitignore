@@ -2,6 +2,7 @@
 *.iml
 .idea
 target
+<<<<<<< HEAD
 DPU_Template/.classpath
 DPU_Template/.gitignore
 DPU_Template/.project
@@ -29,4 +30,6 @@ Q-ACC_1/.settings/org.eclipse.core.resources.prefs
 Q-ACC_1/.settings/org.eclipse.jdt.core.prefs
 Q-ACC_1/.settings/org.eclipse.m2e.core.prefs
 >>>>>>> feature/Q-ACC_1
+=======
+>>>>>>> feature/Q-ACC_6
 *.ipr
