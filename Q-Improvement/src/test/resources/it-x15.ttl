@@ -1,0 +1,219 @@
+
+<http://purl.org/ontology/places#Province> <http://www.w3.org/2000/01/rdf-schema#label> "col1" .
+
+<http://purl.org/acco/ns#Accommodation> <http://www.w3.org/2000/01/rdf-schema#label> "col2" .
+
+<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> <http://www.w3.org/2000/01/rdf-schema#label> "col3" .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> <http://www.w3.org/2000/01/rdf-schema#label> "col4" .
+
+<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> <http://www.w3.org/2000/01/rdf-schema#label> "col5" .
+
+<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> <http://www.w3.org/2000/01/rdf-schema#label> "col6" .
+
+<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> <http://www.w3.org/2000/01/rdf-schema#label> "col7" .
+
+<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> <http://www.w3.org/2000/01/rdf-schema#label> "col8" .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/1> <http://purl.org/ontology/places#Province> "﻿\"Provincia\""@it ;
+	<http://purl.org/acco/ns#Accommodation> "settore "@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "Arrivi -italiani"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "Presenze - italiani"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "Arrivi - stranieri"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "Presenze - stranieri"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "Arrivi - totale"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "Presenze - totale"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/2> <http://purl.org/ontology/places#Province> "ALESSANDRIA"@it ;
+	<http://purl.org/acco/ns#Accommodation> "alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "166716"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "377795"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "78266"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "151417"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "244982"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "529212"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "2"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC18> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/3> <http://purl.org/ontology/places#Province> "ASTI"@it ;
+	<http://purl.org/acco/ns#Accommodation> "alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "36282"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "68212"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "26683"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "65923"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "62965"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "134135"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "3"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC17> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/4> <http://purl.org/ontology/places#Province> "BIELLA"@it ;
+	<http://purl.org/acco/ns#Accommodation> "alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "37279"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "112992"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "14119"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "43420"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "51398"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "156412"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "4"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC13> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/5> <http://purl.org/ontology/places#Province> "CUNEO"@it ;
+	<http://purl.org/acco/ns#Accommodation> "alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "237064"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "612110"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "131864"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "342631"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "368928"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "954741"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "5"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC16> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/6> <http://purl.org/ontology/places#Province> "NOVARA"@it ;
+	<http://purl.org/acco/ns#Accommodation> "alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "177164"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "337245"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "124522"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "305034"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "301686"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "642279"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "6"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC15> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/7> <http://purl.org/ontology/places#Province> "TORINO"@it ;
+	<http://purl.org/acco/ns#Accommodation> "alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "1429317"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "3487169"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "213946"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "603776"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "1643263"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "4090945"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "7"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC11> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/8> <http://purl.org/ontology/places#Province> "VERBANO-CUSIO-OSSOLA"@it ;
+	<http://purl.org/acco/ns#Accommodation> "alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "144313"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "382426"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "327845"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "998483"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "472158"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "1380909"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "8"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC14> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/9> <http://purl.org/ontology/places#Province> "VERCELLI"@it ;
+	<http://purl.org/acco/ns#Accommodation> "alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "36817"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "105779"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "11264"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "31810"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "48081"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "137589"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "9"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC12> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/10> <http://purl.org/ontology/places#Province> "ALESSANDRIA"@it ;
+	<http://purl.org/acco/ns#Accommodation> "extra-alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "24720"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "119979"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "14001"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "48472"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "38721"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "168451"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "10"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC18> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/11> <http://purl.org/ontology/places#Province> "ASTI"@it ;
+	<http://purl.org/acco/ns#Accommodation> "extra-alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "20557"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "49544"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "17596"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "60579"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "38153"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "110123"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "11"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC17> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/12> <http://purl.org/ontology/places#Province> "BIELLA"@it ;
+	<http://purl.org/acco/ns#Accommodation> "extra-alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "25857"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "79154"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "5947"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "19722"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "31804"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "98876"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "12"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC13> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/13> <http://purl.org/ontology/places#Province> "CUNEO"@it ;
+	<http://purl.org/acco/ns#Accommodation> "extra-alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "93760"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "345806"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "60868"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "211610"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "154628"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "557416"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "13"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC16> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/14> <http://purl.org/ontology/places#Province> "NOVARA"@it ;
+	<http://purl.org/acco/ns#Accommodation> "extra-alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "42122"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "205925"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "26053"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "145695"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "68175"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "351620"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "14"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC15> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/15> <http://purl.org/ontology/places#Province> "TORINO"@it ;
+	<http://purl.org/acco/ns#Accommodation> "extra-alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "295448"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "1509659"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "29755"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "174708"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "325203"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "1684367"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "15"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC11> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/16> <http://purl.org/ontology/places#Province> "VERBANO-CUSIO-OSSOLA"@it ;
+	<http://purl.org/acco/ns#Accommodation> "extra-alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "51809"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "201548"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "150748"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "991011"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "202557"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "1192559"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "16"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC14> .
+
+<http://comsode.disco.unimib.it/resource/dataset/touristFlow/17> <http://purl.org/ontology/places#Province> "VERCELLI"@it ;
+	<http://purl.org/acco/ns#Accommodation> "extra-alberghiero"@it ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#itArrival> "26306"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/touristFlow/#itPrecence> "142560"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingArrival> "8504"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#ForeingPrecence> "32840"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#totalArrival> "34810"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://comsode.disco.unimib.it/resource/dataset/turistFlow/#TotalPrecence> "175400"^^<http://www.w3.org/2001/XMLSchema#long> ;
+	<http://linked.opendata.cz/ontology/odcs/tabular/row> "17"^^<http://www.w3.org/2001/XMLSchema#int> ;
+	a <http://unifiedviews.eu/ontology/t-tabular/Row> ;
+	<http://www.disco.unimib.it/provinceCode> <http://nuts.geovocab.org//id/ITC12> .
