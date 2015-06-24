@@ -1,15 +1,12 @@
 *.iws
 *.iml
+*.ipr
 .idea
 target
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 DPU_Template/.classpath
 DPU_Template/.gitignore
 DPU_Template/.project
 DPU_Template/.settings/org.eclipse.core.resources.prefs
-<<<<<<< HEAD
 Q-C_2/.classpath
 Q-C_2/.project
 Q-C_2/.settings/org.eclipse.core.resources.prefs
@@ -25,17 +22,23 @@ QualityOntology/.project
 QualityOntology/.settings/org.eclipse.core.resources.prefs
 QualityOntology/.settings/org.eclipse.jdt.core.prefs
 QualityOntology/.settings/org.eclipse.m2e.core.prefs
-=======
 Q-ACC_1/.classpath
 Q-ACC_1/.project
 Q-ACC_1/.settings/org.eclipse.core.resources.prefs
 Q-ACC_1/.settings/org.eclipse.jdt.core.prefs
 Q-ACC_1/.settings/org.eclipse.m2e.core.prefs
->>>>>>> feature/Q-ACC_1
-=======
->>>>>>> feature/Q-ACC_6
-=======
->>>>>>> feature/Q-ACC_4
-=======
->>>>>>> feature/Q-C_5
-*.ipr
+Q-ACC_6/.classpath
+Q-ACC_6/.project
+Q-ACC_6/.settings/org.eclipse.core.resources.prefs
+Q-ACC_6/.settings/org.eclipse.jdt.core.prefs
+Q-ACC_6/.settings/org.eclipse.m2e.core.prefs
+Q-ACC_4/.classpath
+Q-ACC_4/.project
+Q-ACC_4/.settings/org.eclipse.core.resources.prefs
+Q-ACC_4/.settings/org.eclipse.jdt.core.prefs
+Q-ACC_4/.settings/org.eclipse.m2e.core.prefs
+Q-C_5/.classpath
+Q-C_5/.project
+Q-C_5/.settings/org.eclipse.core.resources.prefs
+Q-C_5/.settings/org.eclipse.jdt.core.prefs
+Q-C_5/.settings/org.eclipse.m2e.core.prefs
