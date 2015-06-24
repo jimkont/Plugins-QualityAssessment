@@ -36,7 +36,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 
 @DPU.AsQuality
 public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
@@ -272,7 +271,7 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////
-        /*PrintStream out;
+        PrintStream out;
         try {
             out = new PrintStream(new FileOutputStream("/Users/AndreAga/Desktop/output.txt"));
             System.setOut(out);
@@ -286,7 +285,7 @@ public class RDFUnit extends AbstractDpu<RDFUnitConfig_V1> {
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }*/
+        }
         ////////////////////////////////////////////////////////////////////////////////////////////
     }
 
