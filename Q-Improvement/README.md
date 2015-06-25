@@ -44,4 +44,4 @@
 
 |Author            |Notes                 |
 |------------------|----------------------|
-|N/A               |N/A                   |
+|AndreAga          |This DPU needs an efficient pattern matching algorithm to find all URI occurrences in dataset. |
