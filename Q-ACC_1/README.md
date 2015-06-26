@@ -44,4 +44,5 @@
 
 |Author            |Notes                 |
 |------------------|----------------------|
-|N/A               |N/A                   |
+|AndreAga          |Limitations: RDFAlerts supports only N3 format as RDF format. So all other formats have to be converted to N3. The graph itself must be converted in N3. RDFAlerts works with POST request which is limited to 2Gb of content, so all dataset bigger than 2Gb will produce an error. |
+|AndreAga          |Problems: This dpu takes in input a graph so if the rdf file has problems, which don't allow to FilesToRDF DPU to work properly, they won't be found by RDFAlters, because they must be correct in order to produce the rdf graph. On the other hand if Q-ACC1 takes in input an rdf files and its content shows datatype errors, the conversion to N3 would skip all these errors by removing relative triples from the final N3 content. The result will be that RDFAlters will never find such errors because they aren't in the content passed to the tool.  |
