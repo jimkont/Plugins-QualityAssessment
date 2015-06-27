@@ -79,7 +79,7 @@ public class Improvement extends AbstractDpu<ImprovementConfig_V1> {
     @Override
     protected void innerExecute() throws DPUException {
 
-        ContextUtils.sendShortInfo(ctx, "RDFUnit.message");
+        ContextUtils.sendShortInfo(ctx, "Improvement.message");
 
         String dpuDir =  ctx.getExecMasterContext().getDpuContext().getDpuInstanceDirectory();
 
@@ -96,7 +96,7 @@ public class Improvement extends AbstractDpu<ImprovementConfig_V1> {
             if (file.getFileURIString().substring(0,5).equals("file:")) {
                 dataset = file.getFileURIString().substring(5);
             } else {
-               dataset = file.getFileURIString();
+                dataset = file.getFileURIString();
             }
 
         } catch (DataUnitException e) {
@@ -107,7 +107,11 @@ public class Improvement extends AbstractDpu<ImprovementConfig_V1> {
         File source = new File(dataset);
         String outputFile = dpuDir + source.getName();
         final File destination = new File(java.net.URI.create(outputFile));
-        if (destination.exists()) destination.delete();
+        if (destination.exists()) {
+            if (!destination.delete()) {
+                throw new DPUException(ctx.tr("Improvement.error.delete"));
+            }
+        }
         Path fileToValidate = Paths.get(source.getPath());
         String contentFile;
         try {
@@ -174,8 +178,6 @@ public class Improvement extends AbstractDpu<ImprovementConfig_V1> {
                 out.write(content);
                 out.flush();
                 out.close();
-            } else {
-                throw new DPUException(ctx.tr("Improvement.error.write"));
             }
         } catch (IOException e) {
             throw new DPUException(ctx.tr("Improvement.error.write" + e));
@@ -190,79 +192,4 @@ public class Improvement extends AbstractDpu<ImprovementConfig_V1> {
             }
         }, "Improvement.error.file.add");
     }
-
-/*
-    private String createCSVSchema(String directory, ArrayList<String> _prefix, ArrayList<String> _uri, ArrayList<String> _url) throws IOException {
-
-        // Create a new CSV file with custom ontology configuration
-        File schema = new File(directory +"schema.csv");
-        schema.getParentFile().mkdirs();
-        schema.createNewFile();
-
-        CSVWriter writer = new CSVWriter(new FileWriter(schema), ',', CSVWriter.NO_QUOTE_CHARACTER);
-
-        // Write all custom prefixes
-        for (int i = 0; i < _prefix.size(); i++) {
-            String[] prefix = {_prefix.get(i), _uri.get(i), _url.get(i)};
-            writer.writeNext(prefix);
-        }
-
-        writer.close();
-
-        return schema.getAbsolutePath();
-    }*/
-
-    /**
-     * Creates observation for entity.
-     *
-     * @param value
-     * @param observationIndex
-     * @return EntityBuilder
-     * @throws DPUException
-     */
-    /*private EntityBuilder createObservation(double value, int observationIndex) throws DPUException {
-        String obs = String.format(RDFUnitVocabulary.EX_OBSERVATIONS, observationIndex);
-        String obsBNode = obs + "/bnode_" + observationIndex;
-        final EntityBuilder observationEntity = new EntityBuilder(
-                valueFactory.createURI(obs), valueFactory);
-
-        // Prepare variables.
-        final SimpleDateFormat reportDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
-        final Date reportDate;
-        try {
-            reportDate = reportDateFormat.parse(reportDateFormat.format(new Date()));
-        } catch (ParseException ex) {
-            throw new DPUException(ctx.tr("RDFUnit.error.date.parse.failed"), ex);
-        }
-
-        // Set the observation.
-        observationEntity
-                .property(RDF.TYPE, QualityOntology.QB_OBSERVATION)
-                .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(obsBNode))
-                .property(DC.DATE, valueFactory.createLiteral(reportDate))
-                .property(QualityOntology.DAQ_VALUE, valueFactory.createLiteral(value));
-
-        return observationEntity;
-    }*/
-    /**
-     * Creates observation for entity.
-     *
-     * @param subject
-     * @param property
-     * @param observationIndex
-     * @return EntityBuilder
-     * @throws DPUException
-     */
-    /*private EntityBuilder createObservationBNode(String subject, String property, int observationIndex) throws DPUException {
-        String obs = String.format(RDFUnitVocabulary.EX_OBSERVATIONS, observationIndex) + "/bnode_" + observationIndex;
-        final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
-
-        // Set the observation.
-        observationEntity
-                .property(RDF.TYPE, RDF.STATEMENT)
-                .property(RDF.SUBJECT, valueFactory.createLiteral(subject))
-                .property(RDF.PROPERTY, valueFactory.createLiteral(property));
-        
-        return observationEntity;
-    }*/
 }
