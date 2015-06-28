@@ -70,7 +70,6 @@ public class MC extends AbstractDpu<MCConfig_V1> {
         // Get configuration parameters
         ArrayList<String> _subject = this.config.getSubject();
         ArrayList<String> _property = this.config.getProperty();
-        ArrayList<String> _lang = this.config.getLang();
 
         if ((_subject == null) || (_property == null)) {
             LOG.warn(ctx.tr("MC.error.nothing.specified"));
@@ -80,7 +79,6 @@ public class MC extends AbstractDpu<MCConfig_V1> {
             for (int i = 0; i < _subject.size(); ++i) {
                 String subject = _subject.get(i);
                 String property = _property.get(i);
-                String lang = _lang.get(i);
 
                 if (!subject.trim().isEmpty() && !property.trim().isEmpty()) {
 
@@ -89,17 +87,12 @@ public class MC extends AbstractDpu<MCConfig_V1> {
                                     "WHERE { " +
                                     "?s rdf:type <" + subject + "> . " +
                                     "}";
-                    String tmp =
+                    final String q2 =
                             "SELECT (COUNT(?s) AS ?conceptCount) " +
                                     "WHERE { " +
                                     "?s rdf:type <" + subject + "> . " +
-                                    "?s <" + property + "> ?label . ";
-                    if (lang != null && !lang.trim().isEmpty())
-                        tmp = tmp + "FILTER langMatches( lang(?label), \"" + lang + "\" )";
-
-                    tmp = tmp + "}";
-
-                    final String q2 = tmp;
+                                    "?s <" + property + "> ?label . " +
+                                    "}";
 
                     // Prepare SPARQL queries.
                     final SparqlUtils.SparqlSelectObject query1 = faultTolerance.execute(

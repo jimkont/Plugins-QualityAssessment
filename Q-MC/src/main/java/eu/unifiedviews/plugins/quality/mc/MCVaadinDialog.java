@@ -19,7 +19,6 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
 
     private GridLayout propertiesGridLayout;
     private ComboBox properties;
-    private ComboBox langs;
 
     public MCVaadinDialog() {
         super(MC.class);
@@ -29,18 +28,17 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
     public void setConfiguration(MCConfig_V1 c) throws DPUConfigException {
         ArrayList<String> subject = c.getSubject();
         ArrayList<String> property = c.getProperty();
-        ArrayList<String> lang = c.getLang();
 
         this.propertiesGridLayout.removeAllComponents();
         this.addColumnToPropertyMappingsHeading();
 
         for (int i = 0; i < subject.size(); ++i) {
             if (!subject.get(i).trim().equals("") && !property.get(i).trim().equals("")) {
-                this.addColumnToPropertyMapping(subject.get(i), property.get(i), lang.get(i));
+                this.addColumnToPropertyMapping(subject.get(i), property.get(i));
             }
         }
         if (subject.size() == 0)
-            this.addColumnToPropertyMapping("", "", "");
+            this.addColumnToPropertyMapping("", "");
 
     }
 
@@ -50,7 +48,6 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
 
         ArrayList<String> subject = new ArrayList<>();
         ArrayList<String> property = new ArrayList<>();
-        ArrayList<String> lang = new ArrayList<>();
 
         String error = fieldsValidation();
 
@@ -60,17 +57,14 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
             for (int row = 1; row < this.propertiesGridLayout.getRows(); ++row) {
                 String txtSubject = ((TextField) this.propertiesGridLayout.getComponent(0, row)).getValue();
                 String txtProperty = (String) ((ComboBox) this.propertiesGridLayout.getComponent(1, row)).getValue();
-                String txtLang = (String) ((ComboBox) this.propertiesGridLayout.getComponent(2, row)).getValue();
                 if (!txtSubject.isEmpty() && !txtProperty.isEmpty()) {
                     subject.add(row - 1, txtSubject);
                     property.add(row - 1, txtProperty);
-                    lang.add(row - 1, txtLang);
                 }
             }
         }
         c.setSubject(subject);
         c.setProperty(property);
-        c.setLang(lang);
         return c;
     }
 
@@ -84,7 +78,7 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
 
         FormLayout baseFormLayout = new FormLayout();
         baseFormLayout.setSizeUndefined();
-        this.propertiesGridLayout = new GridLayout(4, 2);
+        this.propertiesGridLayout = new GridLayout(3, 2);
         this.propertiesGridLayout.setWidth("100%");
         this.addColumnToPropertyMappingsHeading();
 
@@ -94,10 +88,7 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
         txtSubject.setWidth("100%");
 
         this.properties = new ComboBox();
-        this.langs = new ComboBox();
         properties.setFilteringMode(FilteringMode.CONTAINS);
-        langs.setFilteringMode(FilteringMode.CONTAINS);
-
 
         initComboBox();
 
@@ -105,10 +96,6 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
         this.properties.setRequired(true);
         this.properties.setWidth("100%");
         this.propertiesGridLayout.addComponent(properties);
-
-        this.langs.setNewItemsAllowed(true);
-        this.langs.setWidth("100%");
-        this.propertiesGridLayout.addComponent(langs);
 
         mainLayout.addComponent(baseFormLayout);
         mainLayout.addComponent(propertiesGridLayout);
@@ -119,7 +106,7 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                addColumnToPropertyMapping("", "", "");
+                addColumnToPropertyMapping("", "");
             }
         });
 
@@ -132,7 +119,7 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
         setCompositionRoot(mainLayout);
     }
 
-    private void addColumnToPropertyMapping(final String subject, final String property, final String lang) {
+    private void addColumnToPropertyMapping(final String subject, final String property) {
 
         final TextField txtSubject = new TextField();
         txtSubject.setValue(subject);
@@ -168,24 +155,6 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
         });
         this.propertiesGridLayout.addComponent(copy);
 
-        final ComboBox copy2 = new ComboBox();
-        copy2.setContainerDataSource(this.langs);
-        copy2.setNewItemsAllowed(true);
-        copy2.setWidth("100%");
-        copy2.setFilteringMode(FilteringMode.CONTAINS);
-        if (lang != null && !lang.isEmpty()) {
-            copy2.addItem(lang);
-            copy2.setValue(lang);
-        }
-        copy2.addBlurListener(new FieldEvents.BlurListener() {
-            @Override
-            public void blur(FieldEvents.BlurEvent blurEvent) {
-                int row = propertiesGridLayout.getComponentArea(copy2).getRow1();
-                fieldValidation(2, row);
-            }
-        });
-        this.propertiesGridLayout.addComponent(copy2);
-
         final Button btnRemoveRow = new Button(ctx.tr("MC.button.remove"));
         btnRemoveRow.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = -8609995802749728232L;
@@ -194,7 +163,7 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
             public void buttonClick(Button.ClickEvent event) {
                 propertiesGridLayout.removeRow(propertiesGridLayout.getComponentArea(btnRemoveRow).getRow1());
                 if (propertiesGridLayout.getRows() == 1) {
-                    addColumnToPropertyMapping("", "", "");
+                    addColumnToPropertyMapping("", "");
                 }
             }
         });
@@ -204,7 +173,6 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
     private void addColumnToPropertyMappingsHeading() {
         this.propertiesGridLayout.addComponent(new Label(ctx.tr("MC.resource.type")));
         this.propertiesGridLayout.addComponent(new Label(ctx.tr("MC.property")));
-        this.propertiesGridLayout.addComponent(new Label(ctx.tr("MC.lang.tag")));
         this.propertiesGridLayout.addComponent(new Label(""));
     }
 
@@ -212,8 +180,6 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
         MCConfig_V1 c = new MCConfig_V1();
         for (int i = 0; i < c.getProperties().size(); ++i)
             properties.addItem(c.getProperties().get(i));
-        for (int i = 0; i < c.getLangs().size(); ++i)
-            langs.addItem(c.getLangs().get(i));
     }
 
     public String fieldsValidation() {
@@ -223,7 +189,6 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
         for (int i = 1; i < propertiesGridLayout.getRows(); ++i) {
             errors = errors + fieldValidation(0, i);
             errors = errors + fieldValidation(1, i);
-            errors = errors + fieldValidation(2, i);
         }
         return errors;
     }
@@ -249,7 +214,7 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
             } else {
                 txt.setComponentError(null);
             }
-        } else if (column == 1) {
+        } else {
             ComboBox combo = (ComboBox)cmp;
             txtValue = ((String)(combo.getValue()));
 
@@ -262,20 +227,6 @@ public class MCVaadinDialog extends AbstractDialog<MCConfig_V1> {
             } else if (txtValue.toLowerCase().trim().contains(" ")) {
                 error = error + "\n" + ctx.tr("MC.error.property.whitespace") + " [Row: " + row + "]";
                 combo.setComponentError(new UserError(ctx.tr("MC.error.property.whitespace")));
-            } else {
-                combo.setComponentError(null);
-            }
-
-            if (!error.isEmpty())
-                combo.removeItem(txtValue);
-
-        } else {
-            ComboBox combo = (ComboBox)cmp;
-            txtValue = ((String)(combo.getValue()));
-
-            if (txtValue != null && txtValue.toLowerCase().trim().contains(" ")) {
-                error = error + "\n" + ctx.tr("MC.error.lang.whitespace") + " [Row: " + row + "]";
-                combo.setComponentError(new UserError(ctx.tr("MC.error.lang.whitespace")));
             } else {
                 combo.setComponentError(null);
             }

@@ -11,9 +11,7 @@ public class MCConfig_V1 {
 
     private ArrayList<String> subject = new ArrayList<>();
     private ArrayList<String> property = new ArrayList<>();
-    private ArrayList<String> lang = new ArrayList<>();
     private ArrayList<String> properties = new ArrayList<>();
-    private ArrayList<String> langs = new ArrayList<>();
 
     public MCConfig_V1() {
         properties.add("http://purl.org/dc/terms/creator");
@@ -27,12 +25,6 @@ public class MCConfig_V1 {
         properties.add("http://purl.org/dc/terms/identifier");
         properties.add("http://purl.org/dc/terms/valid");
         properties.add("http://purl.org/dc/terms/license");
-
-        langs.add("EN");
-        langs.add("ES");
-        langs.add("DE");
-        langs.add("IT");
-        langs.add("FR");
     }
 
     public ArrayList<String> getSubject() {
@@ -51,21 +43,8 @@ public class MCConfig_V1 {
         this.property = property;
     }
 
-    public ArrayList<String> getLang() {
-        return lang;
-    }
-
-    public void setLang(ArrayList<String> lang) {
-        this.lang = lang;
-    }
-
     public ArrayList<String> getProperties() {
         return properties;
     }
-
-    public ArrayList<String> getLangs() {
-        return langs;
-    }
-
 
 }

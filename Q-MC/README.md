@@ -19,7 +19,6 @@
 |------------------------------|------------------------------|
 |**Subject Type URI:** 	       |Type of resource.             |
 |**Property:**		             |Property to check.            |
-|**Lang tag:**                 |Language tag.                 |
 
 ***
 
