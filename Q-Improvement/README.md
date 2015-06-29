@@ -1,15 +1,15 @@
-# Q-RDFUnit #
+# Q-Improvement #
 ----------
 
 ###General###
 
 |                              |                                                                                    |
 |------------------------------|------------------------------------------------------------------------------------|
-|**Name:**                     |Q-RDFUnit 							                                                |
-|**Description:**              |Check the validity of a dataset.                                                    |
-|**DPU class name:**           |RDFUnit     						                                                |
-|**Configuration class name:** |RDFUnitConfig_V1                           		                                    |
-|**Dialogue class name:**      |RDFUnitVaadinDialog                                      					        |
+|**Name:**                     |Q-Improvement 							                                                |
+|**Description:**              |Improve the quality of dataset..                                                    |
+|**DPU class name:**           |Improvement     						                                                |
+|**Configuration class name:** |ImprovementConfig_V1                           		                                    |
+|**Dialogue class name:**      |ImprovementVaadinDialog                                      					        |
 
 
 ###Configuration parameters###
@@ -17,9 +17,7 @@
 
 |Parameter                     |Description                   |
 |------------------------------|------------------------------|
-|**Prefix:** 	               |Prefix of custom ontology used in the dataset.    |
-|**URI:**		               |URI of the ontology, expressed with the final '#'.|
-|**URL:**		               |URL to download the ontology file.                |
+|N/A 	                       |N/A    |
 
 ***
 
@@ -28,7 +26,7 @@
 |Name              |Type     |DataUnit                     |Description          |
 |------------------|---------|-----------------------------|---------------------|
 |input  	       |i 	     |FilesDataUnit 		       |RDF file.			 |
-|output 	       |o 	     |WritableRDFDataUnit 	       |RDF Quality graph.   |
+|output 	       |o 	     |WritableFilesDataUnit 	   |RDF improved file.   |
 
 ***
 
@@ -36,7 +34,7 @@
 
 |Version            |Release notes        |
 |-------------------|---------------------|
-|1.0.0              |RDFUnit tool must be installed in order to compile this DPU. |
+|1.0.0              |  |
 
 ***
 
