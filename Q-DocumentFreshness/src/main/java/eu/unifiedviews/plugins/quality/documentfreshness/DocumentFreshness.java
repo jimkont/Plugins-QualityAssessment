@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.quality.cu1;
+package eu.unifiedviews.plugins.quality.documentfreshness;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,7 +28,7 @@ import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
 
 @DPU.AsQuality
-public class CU1 extends AbstractDpu<CU1Config_V1> {
+public class DocumentFreshness extends AbstractDpu<CU1Config_V1> {
 
     @DataUnit.AsInput(name = "input")
     public RDFDataUnit inRdfData;
@@ -48,7 +48,7 @@ public class CU1 extends AbstractDpu<CU1Config_V1> {
 
     private static final String QUERY = "SELECT ?s ?o WHERE { ?s <http://purl.org/dc/terms/modified> ?o }";
 
-    public CU1() {
+    public DocumentFreshness() {
         super(CU1VaadinDialog.class, ConfigHistory.noHistory(CU1Config_V1.class));
     }
 

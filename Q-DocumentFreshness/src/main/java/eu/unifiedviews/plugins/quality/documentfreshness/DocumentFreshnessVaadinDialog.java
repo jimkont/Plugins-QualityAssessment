@@ -1,14 +1,14 @@
-package eu.unifiedviews.plugins.quality.cu1;
+package eu.unifiedviews.plugins.quality.documentfreshness;
 
 import com.vaadin.ui.*;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.vaadin.dialog.AbstractDialog;
 
-public class CU1VaadinDialog extends AbstractDialog<CU1Config_V1> {
+public class DocumentFreshnessVaadinDialog extends AbstractDialog<DocumentFreshnessConfig_V1> {
 
-    public CU1VaadinDialog() {
-        super(CU1.class);
+    public DocumentFreshnessVaadinDialog() {
+        super(DocumentFreshness.class);
     }
 
     @Override
@@ -23,13 +23,13 @@ public class CU1VaadinDialog extends AbstractDialog<CU1Config_V1> {
     }
 
     @Override
-    protected void setConfiguration(CU1Config_V1 config) throws DPUConfigException {
+    protected void setConfiguration(DocumentFreshnessConfig_V1 config) throws DPUConfigException {
 
     }
 
     @Override
-    protected CU1Config_V1 getConfiguration() throws DPUConfigException {
-        CU1Config_V1 config = new CU1Config_V1();
+    protected DocumentFreshnessConfig_V1 getConfiguration() throws DPUConfigException {
+        DocumentFreshnessConfig_V1 config = new DocumentFreshnessConfig_V1();
         return config;
     }
 }

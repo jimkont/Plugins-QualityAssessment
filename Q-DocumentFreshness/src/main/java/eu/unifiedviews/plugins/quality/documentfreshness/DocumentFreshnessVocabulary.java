@@ -1,11 +1,11 @@
-package eu.unifiedviews.plugins.quality.cu1;
+package eu.unifiedviews.plugins.quality.documentfreshness;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
 
-public class CU1Vocabulary {
+public class DocumentFreshnessVocabulary {
 
     public static final String EX_OBSERVATIONS = QualityOntology.EX + "obs%d";
 
