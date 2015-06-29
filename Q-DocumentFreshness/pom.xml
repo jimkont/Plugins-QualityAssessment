@@ -13,7 +13,7 @@
     <artifactId>uv-q-documentFreshness</artifactId>
     <description>Out-of-date data.</description>
     <packaging>bundle</packaging>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Q-DocumentFreshness</name>
 
     <properties>
