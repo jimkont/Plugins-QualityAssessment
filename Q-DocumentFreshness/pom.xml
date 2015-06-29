@@ -1,66 +1,46 @@
-<?xml version="1.0"?>
-<project
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>eu.unifiedviews</groupId>
         <artifactId>uv-pom-dpu</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>2.1.0-SNAPSHOT</version>
+        <relativePath />
     </parent>
-    <artifactId>Q-CU1</artifactId>
-    <name>Q-CU1</name>
+
+    <groupId>eu.unifiedviews.plugins.quality</groupId>
+    <artifactId>uv-q-documentFreshness</artifactId>
     <description>Out-of-date data.</description>
-    <version>1.0.0</version>
     <packaging>bundle</packaging>
+    <version>2.1.0-SNAPSHOT</version>
+    <name>Q-DocumentFreshness</name>
 
     <properties>
-        <dpu.package>eu.unifiedviews.plugins.quality.cu1</dpu.package>
-        <dpu.mainClass>CU1</dpu.mainClass>
-        <uv.helpers.version>[2.0.0-SNAPSHOT,3.0.0)</uv.helpers.version>
-        <module-test.version>1.6.0-SNAPSHOT</module-test.version>
+        <dpu.package>eu.unifiedviews.plugins.quality.documentfreshness</dpu.package>
+        <dpu.mainClass>DocumentFreshness</dpu.mainClass>
     </properties>
 
     <dependencies>
-        <!-- Provided by Core. -->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-            <scope>provided</scope>
-        </dependency>
         <!-- UnifiedViews helpers. -->
         <dependency>
             <groupId>eu.unifiedviews</groupId>
             <artifactId>uv-dataunit-helpers</artifactId>
-            <version>${uv.helpers.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>eu.unifiedviews</groupId>
             <artifactId>uv-dpu-helpers</artifactId>
-            <version>${uv.helpers.version}</version>
             <scope>compile</scope>
-        </dependency>
-        <!-- Project with ontology definition. -->
-        <dependency>
-            <groupId>eu.unifiedviews.plugins.quality.qualitygraph</groupId>
-            <artifactId>uv-q-qualityOntology</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Testing. -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>cz.cuni.mff.xrg.odcs</groupId>
-            <artifactId>module-test</artifactId>
-            <version>${module-test.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>maven.eea.sk</id>
+            <name>maven.eea.sk-public</name>
+            <url>http://maven.eea.sk/artifactory/public/</url>
+        </repository>
+    </repositories>
+
 </project>

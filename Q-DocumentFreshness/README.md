@@ -1,15 +1,15 @@
-# Q-CU_1 #
+# Q-DocumentFreshness #
 ----------
 
 ###General###
 
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
-|**Name:**                     |CU_1 							                               |
+|**Name:**                     |DocumentFreshness 							                               |
 |**Description:**              |Checks out-of-date data.                                       |
-|**DPU class name:**           |CU1     						                               |
-|**Configuration class name:** |CU1Config_V1                           		                   |
-|**Dialogue class name:**      |CU1VaadinDialog 					                           |
+|**DPU class name:**           |DocumentFreshness     						                               |
+|**Configuration class name:** |DocumentFreshnessConfig_V1                           		                   |
+|**Dialogue class name:**      |DocumentFreshnessVaadinDialog 					                           |
 
 
 ###Configuration parameters###

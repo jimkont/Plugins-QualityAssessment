@@ -28,7 +28,7 @@ import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
 
 @DPU.AsQuality
-public class DocumentFreshness extends AbstractDpu<CU1Config_V1> {
+public class DocumentFreshness extends AbstractDpu<DocumentFreshnessConfig_V1> {
 
     @DataUnit.AsInput(name = "input")
     public RDFDataUnit inRdfData;
@@ -49,7 +49,7 @@ public class DocumentFreshness extends AbstractDpu<CU1Config_V1> {
     private static final String QUERY = "SELECT ?s ?o WHERE { ?s <http://purl.org/dc/terms/modified> ?o }";
 
     public DocumentFreshness() {
-        super(CU1VaadinDialog.class, ConfigHistory.noHistory(CU1Config_V1.class));
+        super(DocumentFreshnessVaadinDialog.class, ConfigHistory.noHistory(DocumentFreshnessConfig_V1.class));
     }
 
     @Override
@@ -121,7 +121,7 @@ public class DocumentFreshness extends AbstractDpu<CU1Config_V1> {
                 .property(RDF.TYPE, QualityOntology.DAQ_METRIC);
 
         // EX_DPU_NAME entity.
-        final EntityBuilder reportEntity = new EntityBuilder(CU1Vocabulary.EX_DPU_NAME, valueFactory);
+        final EntityBuilder reportEntity = new EntityBuilder(DocumentFreshnessVocabulary.EX_DPU_NAME, valueFactory);
         reportEntity
                 .property(RDF.TYPE, QualityOntology.DAQ_DIMENSION)
                 .property(QualityOntology.DAQ_HAS_METRIC, dpuEntity);
@@ -149,7 +149,7 @@ public class DocumentFreshness extends AbstractDpu<CU1Config_V1> {
     private EntityBuilder createObservation(Value subject, double value, int observationIndex) throws DPUException {
 
         final EntityBuilder observationEntity = new EntityBuilder(
-                valueFactory.createURI(String.format(CU1Vocabulary.EX_OBSERVATIONS, observationIndex)),
+                valueFactory.createURI(String.format(DocumentFreshnessVocabulary.EX_OBSERVATIONS, observationIndex)),
                 valueFactory);
 
         // Prepare variables.

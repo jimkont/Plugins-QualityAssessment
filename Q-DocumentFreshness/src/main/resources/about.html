@@ -1,6 +1,6 @@
-<p><strong>Q-CU_1 DPU</strong> measures the age of a document, where the age of a document is computed as the difference between the current time (the observation time) and the time when the document was last modified.&nbsp;Thus, given an RDF document as input, this DPU processes the temporal information stating when the dataset was last modified which is retrieved from the public catalogue.&nbsp;</p>
+<p><strong>Q-DocumentFreshness DPU</strong> measures the age of a document, where the age of a document is computed as the difference between the current time (the observation time) and the time when the document was last modified.&nbsp;Thus, given an RDF document as input, this DPU processes the temporal information stating when the dataset was last modified which is retrieved from the public catalogue.&nbsp;</p>
 
 <ul>
-	<li><strong>Input:</strong> RDF metadata graph from CKAN which contains the last modification date. To extract such information you may use (E-HttpDownload-&gt;T-UnZipper-&gt;T-FilesFilter-&gt;T-FilesToRDF-&gt;Q_CU1)</li>
+	<li><strong>Input:</strong> RDF metadata graph from CKAN which contains the last modification date. To extract such information you may use (E-HttpDownload-&gt;T-UnZipper-&gt;T-FilesFilter-&gt;T-FilesToRDF-&gt;Q_DocumentFreshness)</li>
 	<li><strong>Output:</strong> the quality output is an RDF named graph based on DaQ vocabulary which in turn is given as input to the T-RdfToFiles DPU</li>
 </ul>
