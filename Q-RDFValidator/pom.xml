@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -10,15 +10,15 @@
     </parent>
 
     <groupId>eu.unifiedviews.plugins.quality</groupId>
-    <artifactId>uv-q-resourceUnderstandability</artifactId>
-    <description>Understandability of a resource is measured as the presence of human readable labels and descriptions of resources.</description>
+    <artifactId>uv-q-RDFValidator</artifactId>
+    <description>Detecting syntax errors. Check the correctness of the literals, detection of ill-typed literals which do not abide by the lexical syntax for their respective datatype that can occur if a value is (i) malformed or (ii) is a member of an incompatible datatype.</description>
     <packaging>bundle</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>Q-ResourceUnderstandability</name>
+    <name>Q-RDFValidator</name>
 
     <properties>
-        <dpu.package>eu.unifiedviews.plugins.quality.resourceunderstandability</dpu.package>
-        <dpu.mainClass>ResourceUnderstandability</dpu.mainClass>
+        <dpu.package>eu.unifiedviews.plugins.quality.rdfvalidator</dpu.package>
+        <dpu.mainClass>RDFValidator</dpu.mainClass>
     </properties>
 
     <dependencies>
@@ -38,6 +38,11 @@
             <artifactId>uv-q-qualityOntology</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1</version>
         </dependency>
     </dependencies>
 

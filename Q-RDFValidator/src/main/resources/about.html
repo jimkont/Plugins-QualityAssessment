@@ -1,0 +1,6 @@
+<p><strong>Q-RDFValidator DPU</strong> detects syntax errors. It checks the correctness of the literals, detects ill-typed literals which do not abide by the lexical syntax for their respective datatype that can occur if a value is (i) malformed or (ii) is a member of an incompatible datatype.</p>
+
+<ul>
+	<li><strong>Input:</strong> RDF graph. To extract such information you may use (E-HttpDownload-&gt;T-UnZipper-&gt;T-FilesFilter-&gt;T-FilesToRDF-&gt;Q-RDFValidator)</li>
+	<li><strong>Output:</strong> the quality output is an RDF named graph based on DaQ vocabulary which in turn is given as input to the T-RdfToFiles DPU</li>
+</ul>
