@@ -1,15 +1,15 @@
-# Q-DocumentFreshness #
+# Q-RdfDocumentFreshness #
 ----------
 
 ###General###
 
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
-|**Name:**                     |DocumentFreshness 							                               |
+|**Name:**                     |Q-RdfDocumentFreshness 							                   |
 |**Description:**              |Checks out-of-date data.                                       |
-|**DPU class name:**           |DocumentFreshness     						                               |
-|**Configuration class name:** |DocumentFreshnessConfig_V1                           		                   |
-|**Dialogue class name:**      |DocumentFreshnessVaadinDialog 					                           |
+|**DPU class name:**           |DocumentFreshness     						                   |
+|**Configuration class name:** |DocumentFreshnessConfig_V1                           		   |
+|**Dialogue class name:**      |DocumentFreshnessVaadinDialog 					               |
 
 
 ###Configuration parameters###
@@ -42,4 +42,4 @@
 
 |Author            |Notes                 |
 |------------------|----------------------|
-|N/A               |N/A                   | 
+|AndreAga          |QualityOntology library is required.                  | 

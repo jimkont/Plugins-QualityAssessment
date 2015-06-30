@@ -10,11 +10,11 @@
     </parent>
 
     <groupId>eu.unifiedviews.plugins.quality</groupId>
-    <artifactId>uv-q-documentFreshness</artifactId>
+    <artifactId>uv-q-rdfDocumentFreshness</artifactId>
     <description>(Comsode ID: Q-CU1) Out-of-date data.</description>
     <packaging>bundle</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>Q-DocumentFreshness</name>
+    <name>Q-RdfDocumentFreshness</name>
 
     <properties>
         <dpu.package>eu.unifiedviews.plugins.quality.documentfreshness</dpu.package>
