@@ -11,7 +11,7 @@
 
     <groupId>eu.unifiedviews.plugins.quality</groupId>
     <artifactId>uv-q-numericalRangeChecker</artifactId>
-    <description>Incorrect with respect to the specified range.</description>
+    <description>(Comsode ID: Q-ACC4) Incorrect with respect to the specified range.</description>
     <packaging>bundle</packaging>
     <version>1.0.0-SNAPSHOT</version>
     <name>Q-NumericalRangeChecker</name>
