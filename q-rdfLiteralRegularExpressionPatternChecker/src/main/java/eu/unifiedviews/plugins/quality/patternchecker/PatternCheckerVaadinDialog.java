@@ -114,7 +114,7 @@ public class PatternCheckerVaadinDialog extends AbstractDialog<PatternCheckerCon
             ComboBox combo = (ComboBox)cmp;
             txtValue = ((String)(combo.getValue()));
 
-            ACC6Config_V1 c = new ACC6Config_V1();
+            PatternCheckerConfig_V1 c = new PatternCheckerConfig_V1();
             Map<String, String> filters = c.getFilters();
 
             if (txtValue == null || txtValue.toLowerCase().trim().isEmpty()) {
