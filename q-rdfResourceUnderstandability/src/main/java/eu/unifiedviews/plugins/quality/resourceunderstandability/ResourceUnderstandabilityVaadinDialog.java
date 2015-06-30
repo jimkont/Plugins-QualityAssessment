@@ -1,5 +1,6 @@
 package eu.unifiedviews.plugins.quality.resourceunderstandability;
 
+import com.vaadin.event.FieldEvents;
 import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
@@ -24,13 +25,18 @@ public class ResourceUnderstandabilityVaadinDialog extends AbstractDialog<Resour
         ArrayList<String> subject = c.getSubject();
         ArrayList<String> property = c.getProperty();
         ArrayList<String> lang = c.getLang();
-        if (subject.size() > 0) {
-            this.removeAllColumnToPropertyMappings();
-            for (int i = 0; i < subject.size(); ++i) {
+
+        propertiesGridLayout.removeAllComponents();
+        this.addColumnToPropertyMappingsHeading();
+
+        for (int i = 0; i < subject.size(); ++i) {
+            if (!subject.get(i).trim().equals("") && !property.get(i).trim().equals("")) {
                 this.addColumnToPropertyMapping(subject.get(i), property.get(i), lang.get(i));
             }
-            this.addColumnToPropertyMapping("", "", "");
         }
+        if (subject.size() == 0)
+            this.addColumnToPropertyMapping("", "", "");
+
     }
 
     @Override
@@ -41,20 +47,97 @@ public class ResourceUnderstandabilityVaadinDialog extends AbstractDialog<Resour
         ArrayList<String> property = new ArrayList<>();
         ArrayList<String> lang = new ArrayList<>();
 
-        for (int row = 1; row < this.propertiesGridLayout.getRows(); ++row) {
-            String txtSubject = ((TextField) this.propertiesGridLayout.getComponent(0, row)).getValue();
-            String txtProperty = (String)((ComboBox) this.propertiesGridLayout.getComponent(1, row)).getValue();
-            String txtLang = (String)((ComboBox) this.propertiesGridLayout.getComponent(2, row)).getValue();
-            if (!txtSubject.isEmpty() && !txtProperty.isEmpty()) {
-                subject.add(row-1, txtSubject);
-                property.add(row-1, txtProperty);
-                lang.add(row-1, txtLang);
+        String error = fieldsValidation();
+
+        if (!error.isEmpty()) {
+            throw new DPUConfigException(error);
+        } else {
+            for (int row = 1; row < this.propertiesGridLayout.getRows(); ++row) {
+                String txtSubject = ((TextField) this.propertiesGridLayout.getComponent(0, row)).getValue();
+                String txtProperty = (String) ((ComboBox) this.propertiesGridLayout.getComponent(1, row)).getValue();
+                String txtLang = (String) ((ComboBox) this.propertiesGridLayout.getComponent(2, row)).getValue();
+                if (!txtSubject.isEmpty() && !txtProperty.isEmpty()) {
+                    subject.add(row - 1, txtSubject);
+                    property.add(row - 1, txtProperty);
+                    lang.add(row - 1, txtLang);
+                }
             }
         }
+
         c.setSubject(subject);
         c.setProperty(property);
         c.setLang(lang);
+
         return c;
+    }
+
+    public String fieldValidation(int column, int row) {
+        String txtValue;
+        String error = "";
+
+        Component cmp = propertiesGridLayout.getComponent(column, row);
+
+        if (column == 0) {
+            TextField txt = (TextField)cmp;
+            txtValue = txt.getValue().toLowerCase().trim();
+            if (txtValue.isEmpty()) {
+                error = error + "\n" + ctx.tr("C5.error.subject.not.filled") + " [Row: " + row + "]";
+                txt.setComponentError(new UserError(ctx.tr("C5.error.subject.not.filled")));
+            } else if (!txtValue.startsWith("http://")) {
+                error = error + "\n" + ctx.tr("C5.error.subject.not.http") + " [Row: " + row + "]";
+                txt.setComponentError(new UserError(ctx.tr("C5.error.subject.not.http")));
+            } else if (txtValue.contains(" ")) {
+                error = error + "\n" + ctx.tr("C5.error.subject.whitespace") + " [Row: " + row + "]";
+                txt.setComponentError(new UserError(ctx.tr("C5.error.subject.whitespace")));
+            } else {
+                txt.setComponentError(null);
+            }
+        } else if (column == 1) {
+            ComboBox combo = (ComboBox)cmp;
+            txtValue = ((String)(combo.getValue()));
+
+            if (txtValue == null || txtValue.toLowerCase().trim().isEmpty()) {
+                error = error + "\n" + ctx.tr("C5.error.property.not.filled") + " [Row: " + row + "]";
+                combo.setComponentError(new UserError(ctx.tr("C5.error.property.not.filled")));
+            } else if (!txtValue.toLowerCase().trim().startsWith("http://")) {
+                error = error + "\n" + ctx.tr("C5.error.property.not.http") + " [Row: " + row + "]";
+                combo.setComponentError(new UserError(ctx.tr("C5.error.property.not.http")));
+            } else if (txtValue.toLowerCase().trim().contains(" ")) {
+                error = error + "\n" + ctx.tr("C5.error.property.whitespace") + " [Row: " + row + "]";
+                combo.setComponentError(new UserError(ctx.tr("C5.error.property.whitespace")));
+            } else {
+                combo.setComponentError(null);
+            }
+
+            if (!error.isEmpty())
+                combo.removeItem(txtValue);
+        } else {
+            ComboBox combo = (ComboBox)cmp;
+            txtValue = ((String)(combo.getValue()));
+
+            if (txtValue != null && txtValue.toLowerCase().trim().contains(" ")) {
+                error = error + "\n" + ctx.tr("C5.error.lang.whitespace") + " [Row: " + row + "]";
+                combo.setComponentError(new UserError(ctx.tr("C5.error.lang.whitespace")));
+            } else {
+                combo.setComponentError(null);
+            }
+
+            if (!error.isEmpty())
+                combo.removeItem(txtValue);
+        }
+        return error;
+    }
+
+    public String fieldsValidation () {
+
+        String errors = "";
+
+        for (int i = 1; i < propertiesGridLayout.getRows(); ++i) {
+            errors = errors + fieldValidation(0, i);
+            errors = errors + fieldValidation(1, i);
+            errors = errors + fieldValidation(2, i);
+        }
+        return errors;
     }
 
     @Override
@@ -67,7 +150,7 @@ public class ResourceUnderstandabilityVaadinDialog extends AbstractDialog<Resour
 
         FormLayout baseFormLayout = new FormLayout();
         baseFormLayout.setSizeUndefined();
-        this.propertiesGridLayout = new GridLayout(3, 2);
+        this.propertiesGridLayout = new GridLayout(4, 2);
         this.propertiesGridLayout.setWidth("100%");
         this.addColumnToPropertyMappingsHeading();
 
@@ -77,77 +160,32 @@ public class ResourceUnderstandabilityVaadinDialog extends AbstractDialog<Resour
         txtSubject.setWidth("100%");
 
         this.properties = new ComboBox();
-        this.properties.setFilteringMode(FilteringMode.CONTAINS);
         this.langs = new ComboBox();
-        this.langs.setFilteringMode(FilteringMode.CONTAINS);
+        properties.setFilteringMode(FilteringMode.CONTAINS);
+        langs.setFilteringMode(FilteringMode.CONTAINS);
+
+
         initComboBox();
+
         this.properties.setNewItemsAllowed(true);
         this.properties.setRequired(true);
-        this.propertiesGridLayout.addComponent(properties);
         this.properties.setWidth("100%");
+        this.propertiesGridLayout.addComponent(properties);
+
         this.langs.setNewItemsAllowed(true);
-        this.propertiesGridLayout.addComponent(langs);
         this.langs.setWidth("100%");
+        this.propertiesGridLayout.addComponent(langs);
 
         mainLayout.addComponent(baseFormLayout);
         mainLayout.addComponent(propertiesGridLayout);
+
         Button btnAddRow = new Button(ctx.tr("C5.button.add"));
         btnAddRow.addClickListener(new Button.ClickListener() {
+
             private static final long serialVersionUID = -8609995802749728232L;
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                int lastRow = propertiesGridLayout.getRows() - 1;
-                if (lastRow > 0) {
-                    String txtSubject = ((TextField) propertiesGridLayout.getComponent(0, lastRow)).getValue();
-                    String txtProperty = (String) ((ComboBox) propertiesGridLayout.getComponent(1, lastRow)).getValue();
-                    if (txtSubject.isEmpty() || txtProperty == null) {
-                        if (txtSubject.isEmpty())
-                            ((TextField) propertiesGridLayout.getComponent(0, lastRow)).setComponentError(new UserError(ctx.tr("C5.input.empty")));
-                        else
-                            ((TextField) propertiesGridLayout.getComponent(0, lastRow)).setComponentError(null);
-                        if (txtProperty == null)
-                            ((ComboBox) propertiesGridLayout.getComponent(1, lastRow)).setComponentError(new UserError(ctx.tr("C5.input.empty")));
-                        else
-                            ((ComboBox) propertiesGridLayout.getComponent(1, lastRow)).setComponentError(null);
-                    } else {
-                        ((TextField) propertiesGridLayout.getComponent(0, lastRow)).setComponentError(null);
-                        ((ComboBox) propertiesGridLayout.getComponent(1, lastRow)).setComponentError(null);
-                        addColumnToPropertyMapping("", "", "");
-                    }
-                } else {
-                    addColumnToPropertyMapping("", "", "");
-                }
-            }
-        });
-
-        Button btnRemoveRow = new Button(ctx.tr("C5.button.remove"));
-        btnRemoveRow.addClickListener(new Button.ClickListener() {
-            private static final long serialVersionUID = -8609995802749728232L;
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                int lastRow = propertiesGridLayout.getRows() - 1;
-                String txtSubject = "";
-                String txtProperty = null;
-                String txtLang = null;
-                if (lastRow > 0) {
-                    txtSubject = ((TextField) propertiesGridLayout.getComponent(0, lastRow)).getValue();
-                    txtProperty = (String) ((ComboBox) propertiesGridLayout.getComponent(1, lastRow)).getValue();
-                    txtLang = (String) ((ComboBox) propertiesGridLayout.getComponent(2, lastRow)).getValue();
-                    propertiesGridLayout.removeRow(lastRow);
-                    addColumnToPropertyMapping("", "", "");
-                }
-                if (lastRow > 1 && txtSubject.isEmpty() && txtProperty == null && txtLang == null) {
-                    propertiesGridLayout.removeRow(lastRow - 1);
-                }
-            }
-        });
-        Button btnRemoveRows = new Button(ctx.tr("C5.button.remove.all"));
-        btnRemoveRows.addClickListener(new Button.ClickListener() {
-            private static final long serialVersionUID = -8609995802749728232L;
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                removeAllColumnToPropertyMappings();
                 addColumnToPropertyMapping("", "", "");
             }
         });
@@ -155,56 +193,87 @@ public class ResourceUnderstandabilityVaadinDialog extends AbstractDialog<Resour
         HorizontalLayout baseFormLayoutSecond = new HorizontalLayout();
         baseFormLayoutSecond.setSpacing(true);
         baseFormLayoutSecond.addComponent(btnAddRow);
-        baseFormLayoutSecond.addComponent(btnRemoveRow);
-        baseFormLayoutSecond.addComponent(btnRemoveRows);
         mainLayout.addComponent(baseFormLayoutSecond);
 
         setCompositionRoot(mainLayout);
     }
 
     private void addColumnToPropertyMapping(String subject, String property, String lang) {
-        TextField txtSubject = new TextField();
+        final TextField txtSubject = new TextField();
+        txtSubject.setValue(subject);
         txtSubject.setRequired(true);
-        this.propertiesGridLayout.addComponent(txtSubject);
         txtSubject.setWidth("100%");
+        txtSubject.setInputPrompt("http://");
+        txtSubject.addBlurListener(new FieldEvents.BlurListener() {
+            @Override
+            public void blur(FieldEvents.BlurEvent blurEvent) {
+                int row = propertiesGridLayout.getComponentArea(txtSubject).getRow1();
+                fieldValidation(0, row);
+            }
+        });
+        this.propertiesGridLayout.addComponent(txtSubject);
 
-        ComboBox copy = new ComboBox();
+        final ComboBox copy = new ComboBox();
         copy.setContainerDataSource(this.properties);
         copy.setNewItemsAllowed(true);
         copy.setRequired(true);
-        this.propertiesGridLayout.addComponent(copy);
         copy.setWidth("100%");
+        copy.setFilteringMode(FilteringMode.CONTAINS);
 
-        ComboBox copy2 = new ComboBox();
-        copy2.setContainerDataSource(this.langs);
-        copy2.setNewItemsAllowed(true);
-        this.propertiesGridLayout.addComponent(copy2);
-        copy2.setWidth("100%");
-        if (subject != null) {
-            txtSubject.setValue(subject);
-        }
         if (property != null && !property.isEmpty()) {
             copy.addItem(property);
             copy.setValue(property);
         }
+        copy.addBlurListener(new FieldEvents.BlurListener() {
+            @Override
+            public void blur(FieldEvents.BlurEvent blurEvent) {
+                int row = propertiesGridLayout.getComponentArea(copy).getRow1();
+                fieldValidation(1, row);
+            }
+        });
+        this.propertiesGridLayout.addComponent(copy);
+
+        final ComboBox copy2 = new ComboBox();
+        copy2.setContainerDataSource(this.langs);
+        copy2.setNewItemsAllowed(true);
+        copy2.setWidth("100%");
+        copy2.setFilteringMode(FilteringMode.CONTAINS);
         if (lang != null && !lang.isEmpty()) {
             copy2.addItem(lang);
             copy2.setValue(lang);
         }
-    }
+        copy2.addBlurListener(new FieldEvents.BlurListener() {
+            @Override
+            public void blur(FieldEvents.BlurEvent blurEvent) {
+                int row = propertiesGridLayout.getComponentArea(copy2).getRow1();
+                fieldValidation(2, row);
+            }
+        });
+        this.propertiesGridLayout.addComponent(copy2);
 
-    private void removeAllColumnToPropertyMappings() {
-        this.propertiesGridLayout.removeAllComponents();
-        this.addColumnToPropertyMappingsHeading();
+        final Button btnRemoveRow = new Button(ctx.tr("C5.button.remove"));
+        btnRemoveRow.addClickListener(new Button.ClickListener() {
+            private static final long serialVersionUID = -8609995802749728232L;
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                propertiesGridLayout.removeRow(propertiesGridLayout.getComponentArea(btnRemoveRow).getRow1());
+                if (propertiesGridLayout.getRows() == 1) {
+                    addColumnToPropertyMapping("", "", "");
+                }
+            }
+        });
+        propertiesGridLayout.addComponent(btnRemoveRow);
     }
 
     private void addColumnToPropertyMappingsHeading() {
         this.propertiesGridLayout.addComponent(new Label(ctx.tr("C5.resource.type")));
         this.propertiesGridLayout.addComponent(new Label(ctx.tr("C5.property")));
         this.propertiesGridLayout.addComponent(new Label(ctx.tr("C5.lang.tag")));
+        this.propertiesGridLayout.addComponent(new Label(""));
     }
 
-    private void initComboBox(){
+    private void initComboBox() {
         ResourceUnderstandabilityConfig_V1 c = new ResourceUnderstandabilityConfig_V1();
         for (int i = 0; i < c.getProperties().size(); ++i)
             properties.addItem(c.getProperties().get(i));
