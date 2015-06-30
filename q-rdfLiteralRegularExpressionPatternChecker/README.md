@@ -44,4 +44,4 @@
 
 |Author            |Notes                 |
 |------------------|----------------------|
-|AndreAga          |QualityOntology library is required. |
+|AndreAga          |QualityOntology library is required. (https://github.com/UnifiedViews/Plugins-QualityAssessment/tree/develop/q-qualityOntology) | 
