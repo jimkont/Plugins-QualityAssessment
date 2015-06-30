@@ -1,15 +1,15 @@
-# Q-PatternChecker #
+# Q-RdfResourceUnderstandability #
 ----------
 
 ###General###
 
 |                              |                                                                                               |
 |------------------------------|-----------------------------------------------------------------------------------------------|
-|**Name:**                     |Q-PatternChecker 							                                                               |
-|**Description:**              |Use of patterns to identify incorrect values such as the postal address, the phone number, etc.|
-|**DPU class name:**           |PatternChecker     						                                                               |
-|**Configuration class name:** |PatternCheckerConfig_V1                           		                                               |
-|**Dialogue class name:**      |PatternCheckerVaadinDialog                                      					                       |
+|**Name:**                     |Q-RdfResourceUnderstandability 							                                                               |
+|**Description:**              |Understandability of a resource is measured as the presence of human readable labels and descriptions of resources.|
+|**DPU class name:**           |ResourceUnderstandability     						                                                               |
+|**Configuration class name:** |ResourceUnderstandabilityConfig_V1                           		                                               |
+|**Dialogue class name:**      |ResourceUnderstandabilityVaadinDialog                                      					                       |
 
 
 ###Configuration parameters###
@@ -19,7 +19,6 @@
 |------------------------------|------------------------------|
 |**Resource:** 	               |Type of resource.             |
 |**Property:**		           |Property to check.            |
-|**RegularExpression:**		   |Regular expression to check.  |
 
 ***
 
@@ -44,4 +43,4 @@
 
 |Author            |Notes                 |
 |------------------|----------------------|
-|N/A               |N/A                   | 
+|AndreAga          |QualityOntology library is required. |

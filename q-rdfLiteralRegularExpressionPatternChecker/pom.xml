@@ -10,15 +10,15 @@
     </parent>
 
     <groupId>eu.unifiedviews.plugins.quality</groupId>
-    <artifactId>uv-q-resourceUnderstandability</artifactId>
-    <description>(Comsode ID: Q-C5) Understandability of a resource is measured as the presence of human readable labels and descriptions of resources.</description>
+    <artifactId>uv-q-rdfLiteralRegularPatternChecker</artifactId>
+    <description>(Comsode ID: Q-ACC6) Use of patterns to identify incorrect values such as the postal address, the phone number, etc.</description>
     <packaging>bundle</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>Q-ResourceUnderstandability</name>
+    <name>Q-RdfLiteralRegularPatternChecker</name>
 
     <properties>
-        <dpu.package>eu.unifiedviews.plugins.quality.resourceunderstandability</dpu.package>
-        <dpu.mainClass>ResourceUnderstandability</dpu.mainClass>
+        <dpu.package>eu.unifiedviews.plugins.quality.patternchecker</dpu.package>
+        <dpu.mainClass>PatternChecker</dpu.mainClass>
     </properties>
 
     <dependencies>

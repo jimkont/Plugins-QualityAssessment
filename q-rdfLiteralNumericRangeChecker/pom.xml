@@ -10,15 +10,15 @@
     </parent>
 
     <groupId>eu.unifiedviews.plugins.quality</groupId>
-    <artifactId>uv-q-completenessChecker</artifactId>
-    <description>(Comsode ID: Q-C2) Check the missing elements from a specified list of subject/property.</description>
+    <artifactId>uv-q-rdfLiteralNumericRangeChecker</artifactId>
+    <description>(Comsode ID: Q-ACC4) Incorrect with respect to the specified range.</description>
     <packaging>bundle</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>Q-CompletenessChecker</name>
+    <name>Q-RdfLiteralNumericRangeChecker</name>
 
     <properties>
-        <dpu.package>eu.unifiedviews.plugins.quality.completenesschecker</dpu.package>
-        <dpu.mainClass>CompletenessChecker</dpu.mainClass>
+        <dpu.package>eu.unifiedviews.plugins.quality.numericalrangechecker</dpu.package>
+        <dpu.mainClass>NumericalRangeChecker</dpu.mainClass>
     </properties>
 
     <dependencies>

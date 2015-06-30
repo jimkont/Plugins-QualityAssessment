@@ -1,15 +1,15 @@
-# Q-NumericalRangeChecker #
+# Q-RdfCompletenessChecker #
 ----------
 
 ###General###
 
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
-|**Name:**                     |Q-NumericalRangeChecker 							                               |
-|**Description:**              |Incorrect with respect to the specified range.                 |
-|**DPU class name:**           |NumericalRangeChecker     						                               |
-|**Configuration class name:** |NumericalRangeCheckerConfig_V1                           		               |
-|**Dialogue class name:**      |NumericalRangeCheckerVaadinDialog 					                           |
+|**Name:**                     |Q-RdfCompletenessChecker 							                               |
+|**Description:**              |Check the missing elements from a specified list of subject/property. |
+|**DPU class name:**           |CompletenessChecker     						                                   |
+|**Configuration class name:** |CompletenessCheckerConfig_V1                           		                   |
+|**Dialogue class name:**      |CompletenessCheckerVaadinDialog 					                               |
 
 
 ###Configuration parameters###
@@ -17,10 +17,8 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|**ClassURI:** 	                  |ClassURI linked to the property.        |
-|**PropertyURI:**		          |Property to check.           	       |
-|**LowerBound:**                  |Upper bound to evaluate.                |
-|**UpperBound:**                  |Lower bound to evaluate.                |
+|**Subject:** 	                  |Subject linked to the property.         |
+|**Property:**		              |Property to check.           	       |
 
 ***
 
@@ -29,7 +27,7 @@
 |Name                |Type       |DataUnit                         |Description                          |
 |--------------------|-----------|---------------------------------|-------------------------------------|
 |input  	         |i 	     |RDFDataUnit    		           |RDF graph.			                 |
-|output 	         |o 	     |WritableRDFDataUnit              |RDF Quality graph.                   |
+|output 	         |o 	     |WritableFilesDataUnit            |RDF quality graph containing the level of completeness for each property. |
 
 ***
 
@@ -45,4 +43,4 @@
 
 |Author            |Notes                 |
 |------------------|----------------------|
-|N/A               |N/A                   | 
+|AndreAga          |QualityOntology library is required. | 
