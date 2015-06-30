@@ -6,7 +6,7 @@
 |                              |                                                                                               |
 |------------------------------|-----------------------------------------------------------------------------------------------|
 |**Name:**                     |Q-RdfResourceUnderstandability 							                                                               |
-|**Description:**              |Understandability of a resource is measured as the presence of human readable labels and descriptions of resources.|
+|**Description:**              |Check the understandability of resources as the presence of human readable labels and descriptions of resources. A user should specify the RDF class, the RDF property either by selecting it from a default list or by inserting a new property and the language tag which in turn can be selected by a default list or can be inserted by the user. The output is an RDF graph based on DaQ vocabulary and provides several normalised score in a range 0-1 (low= a few values do not have the language tag, high = most of the values do not have the language tag) each for every selected pair (RDF class and RDF property).|
 |**DPU class name:**           |ResourceUnderstandability     						                                                               |
 |**Configuration class name:** |ResourceUnderstandabilityConfig_V1                           		                                               |
 |**Dialogue class name:**      |ResourceUnderstandabilityVaadinDialog                                      					                       |

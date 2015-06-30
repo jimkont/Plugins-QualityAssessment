@@ -11,7 +11,7 @@
 
     <groupId>eu.unifiedviews.plugins.quality</groupId>
     <artifactId>uv-q-rdfResourceUnderstandability</artifactId>
-    <description>(Comsode ID: Q-C5) Understandability of a resource is measured as the presence of human readable labels and descriptions of resources.</description>
+    <description>(Comsode ID: Q-C5) Check the understandability of resources as the presence of human readable labels and descriptions of resources. A user should specify the RDF class, the RDF property either by selecting it from a default list or by inserting a new property and the language tag which in turn can be selected by a default list or can be inserted by the user. The output is an RDF graph based on DaQ vocabulary and provides several normalised score in a range 0-1 (low= a few values do not have the language tag, high = most of the values do not have the language tag) each for every selected pair (RDF class and RDF property).</description>
     <packaging>bundle</packaging>
     <version>1.0.0-SNAPSHOT</version>
     <name>Q-RdfResourceUnderstandability</name>

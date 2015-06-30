@@ -6,7 +6,7 @@
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |Q-RdfSyntacticValidator 		                     					       |
-|**Description:**              |Detecting syntax errors. Check the correctness of the literals, detection of ill-typed literals which do not abide by the lexical syntax for their respective datatype that can occur if a value is (i) malformed or (ii) is a member of an incompatible datatype. |
+|**Description:**              |Validate an RDF document by identifying undefined classes/properties with respect to the underlying vocabularies, the usage of incorrect literals with respect to their datatype and the usage of incorrect instances in case where a property is of owl:DatatypeProperty/owl:ObjectProperty.|
 |**DPU class name:**           |RDFValidator     						                               |
 |**Configuration class name:** |RDFValidatorConfig_V1                           		               |
 |**Dialogue class name:**      |RDFValidatorVaadinDialog 					                           |

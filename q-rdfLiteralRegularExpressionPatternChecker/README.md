@@ -6,7 +6,7 @@
 |                              |                                                                                               |
 |------------------------------|-----------------------------------------------------------------------------------------------|
 |**Name:**                     |Q-RdfLiteralRegularPatternChecker						                                                               |
-|**Description:**              |Use of patterns to identify incorrect values such as the postal address, the phone number, etc.|
+|**Description:**              |Check the literal correctness through regular expression such as the postal address, the phone number, etc. A user should specify the RDF class, the RDF property for which he would like to verify the literal correctness through a regular expression that can be either selected from a default list or can be inserted directly by the user. The output is an RDF graph based on DaQ vocabulary and provides a normalised score in the range 0-1 (low= a few values do not satisfy the regular expression, high = most of the values do not satisfy the regular expression)|
 |**DPU class name:**           |PatternChecker     						                                                               |
 |**Configuration class name:** |PatternCheckerConfig_V1                           		                                               |
 |**Dialogue class name:**      |PatternCheckerVaadinDialog                                      					                       |

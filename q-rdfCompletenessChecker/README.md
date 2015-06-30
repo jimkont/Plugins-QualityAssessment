@@ -6,7 +6,7 @@
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |Q-RdfCompletenessChecker 							                               |
-|**Description:**              |Check the missing elements from a specified list of subject/property. |
+|**Description:**              |Check the missing elements from a specified list of subject/property. A user should specify the RDF class and the RDF predicate, then the DPU checks for each pair whether instances of the RDF class contain the specified RDF predicate. At the end, DPU computes completeness score for each class and predicate normalised in a range 0-1. |
 |**DPU class name:**           |CompletenessChecker     						                                   |
 |**Configuration class name:** |CompletenessCheckerConfig_V1                           		                   |
 |**Dialogue class name:**      |CompletenessCheckerVaadinDialog 					                               |

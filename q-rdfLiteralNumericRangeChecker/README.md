@@ -6,7 +6,7 @@
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |Q-RdfLiteralNumericRangeChecker 							                               |
-|**Description:**              |Incorrect with respect to the specified range.                 |
+|**Description:**              |Check the incorrectness with respect to the specified range. A user should specify the RDF class, the RDF property for which he would like to verify if the values are in the specified range determined by the user. The range is specified by the user by indicating the lower and the upper bound of the value. The output is an RDF graph based on DaQ vocabulary and provides a normalised score in the range 0-1 (low= a few values are not in the specified range, high = most of the values are not in the specified range)                 |
 |**DPU class name:**           |NumericalRangeChecker     						                               |
 |**Configuration class name:** |NumericalRangeCheckerConfig_V1                           		               |
 |**Dialogue class name:**      |NumericalRangeCheckerVaadinDialog 					                           |
