@@ -10,7 +10,7 @@
     <!-- list of core modules -->
     <modules>
        
-       <module>QualityOntology</module>
+       <module>qualityOntology</module>
         <module>q-rdfCompletenessChecker</module>
         <module>q-rdfLiteralNumericRangeChecker</module>
         <module>q-rdfLiteralRegularExpressionPatternChecker</module>
