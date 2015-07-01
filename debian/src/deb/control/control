@@ -1,0 +1,8 @@
+Package: odn-uv-plugins
+Version: [[debian-package-version]]
+Section: java
+Priority: extra
+Architecture: all
+Maintainer: jmc@eea.sk
+Depends: unifiedviews-plugins
+Description: OpenDataNode UnifiedViews Plugins (DPUs).

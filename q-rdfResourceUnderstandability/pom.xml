@@ -7,9 +7,10 @@
         <groupId>eu.unifiedviews</groupId>
         <artifactId>uv-pom-dpu</artifactId>
         <version>2.1.0-SNAPSHOT</version>
-    </parent>
+		<relativePath></relativePath>
+	</parent>
 
-    <groupId>eu.unifiedviews.plugins.quality</groupId>
+    <groupId>eu.unifiedviews.plugins.qa</groupId>
     <artifactId>uv-q-rdfResourceUnderstandability</artifactId>
     <description>(Comsode ID: Q-C5) Check the understandability of resources as the presence of human readable labels and descriptions of resources. A user should specify the RDF class, the RDF property either by selecting it from a default list or by inserting a new property and the language tag which in turn can be selected by a default list or can be inserted by the user. The output is an RDF graph based on DaQ vocabulary and provides several normalised score in a range 0-1 (low= a few values do not have the language tag, high = most of the values do not have the language tag) each for every selected pair (RDF class and RDF property).</description>
     <packaging>bundle</packaging>
@@ -34,7 +35,7 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>eu.unifiedviews.plugins.quality.qualitygraph</groupId>
+            <groupId>eu.unifiedviews</groupId>
             <artifactId>uv-q-qualityOntology</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>

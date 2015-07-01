@@ -6,10 +6,11 @@
     <parent>
         <groupId>eu.unifiedviews</groupId>
         <artifactId>uv-pom-dpu</artifactId>
-        <version>2.1.0-SNAPSHOT</version>
+		<version>2.1.0-SNAPSHOT</version>
+		<relativePath></relativePath>
     </parent>
 
-    <groupId>eu.unifiedviews.plugins.quality</groupId>
+    <groupId>eu.unifiedviews.plugins.qa</groupId>
     <artifactId>uv-q-rdfCompletenessChecker</artifactId>
     <description>(Comsode ID: Q-C2) Check the missing elements from a specified list of subject/property. A user should specify the RDF class and the RDF predicate, then the DPU checks for each pair whether instances of the RDF class contain the specified RDF predicate. At the end, DPU computes completeness score for each class and predicate normalised in a range 0-1.</description>
     <packaging>bundle</packaging>
@@ -34,7 +35,7 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>eu.unifiedviews.plugins.quality.qualitygraph</groupId>
+			<groupId>eu.unifiedviews</groupId>
             <artifactId>uv-q-qualityOntology</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
