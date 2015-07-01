@@ -41,13 +41,13 @@ public class QualityOntology {
     public static final URI EX_ACCURACY_DIMENSION;
 
     public static final URI EX_CONSISTENCY_DIMENSION;
-    
+
     public static final URI EX_ACCURACY_NOTE;
 
     public static final URI EX_ACCURACY_WARNING;
-    
+
     public static final URI EX_ACCURACY_ERROR;
-    
+
     static {
         final ValueFactory factory = ValueFactoryImpl.getInstance();
 

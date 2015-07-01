@@ -1,37 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>eu.unifiedviews.plugins.qa</groupId>
-    <artifactId>qualityassessment-plugins</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <groupId>eu.unifiedviews.plugins.quality</groupId>
+    <artifactId>uv-plugin-quality-dpus</artifactId>
+    <version>2.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <description>Maven parent project for ODN-plugins implementations.</description>
+    <description>Maven aggregation project for quality assessment DPU implementations.</description>
 
     <!-- list of core modules -->
     <modules>
-		<!-- LOADERS to CKAN -->
-
- 		<module>q-qualityOntology</module>
-  		<module>q-rdfCompletenessChecker</module>
-   		<module>q-rdfLiteralNumericRangeChecker</module>
-    	<module>q-rdfLiteralRegularExpressionPatternChecker</module>
-	 	<module>q-rdfResourceUnderstandability</module>
-	  	<module>q-rdfSyntacticValidator</module>
+       
+       <module>QualityOntology</module>
+        <module>q-rdfCompletenessChecker</module>
+        <module>q-rdfLiteralNumericRangeChecker</module>
+        <module>q-rdfLiteralRegularExpressionPatternChecker</module>
+        <module>q-rdfResourceUnderstandability</module>
+        <module>q-rdfSyntacticValidator</module>
+        
     </modules>
 
-    <profiles>
-        <profile>
-            <id>debian</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <modules>
-                <module>debian</module>
-            </modules>
-        </profile>
 
-    </profiles>
-
+	<profiles>
+		<profile>
+			<id>debian</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<modules>
+				<module>debian</module>
+			</modules>
+		</profile>
+	</profiles>
 
     <repositories>
         <repository>
@@ -57,8 +56,8 @@
                 <version>1.0-m4.3</version>
                 <configuration>
                     <flowInitContext>
-                        <releaseBranchPrefix>release/ODN_v</releaseBranchPrefix>
-                        <versionTagPrefix>ODN_v</versionTagPrefix>
+                        <releaseBranchPrefix>UV_v</releaseBranchPrefix>
+                        <versionTagPrefix>UV_v</versionTagPrefix>
                     </flowInitContext>
                     <allowSnapshots>true</allowSnapshots>
                     <noDeploy>true</noDeploy>

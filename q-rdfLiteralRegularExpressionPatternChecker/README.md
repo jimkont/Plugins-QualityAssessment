@@ -6,7 +6,7 @@
 |                              |                                                                                               |
 |------------------------------|-----------------------------------------------------------------------------------------------|
 |**Name:**                     |Q-RdfLiteralRegularPatternChecker						                                                               |
-|**Description:**              |Check the literal correctness through regular expression such as the postal address, the phone number, etc. A user should specify the RDF class, the RDF property for which he would like to verify the literal correctness through a regular expression that can be either selected from a default list or can be inserted directly by the user. The output is an RDF graph based on DaQ vocabulary and provides a normalised score in the range 0-1 (low= a few values do not satisfy the regular expression, high = most of the values do not satisfy the regular expression)|
+|**Description:**              |Checks that literal value for the given predicate and given class of subjects respects certain regular expression such as the postal address, the phone number, etc. A user specifies the RDF class, the RDF property for which he would like to verify the literal correctness through a regular expression that can be either selected from a default list or can be inserted directly by the user. The output is the RDF quality report providing a normalised score in the range 0-1 (low= a few values do not satisfy the regular expression, high = most of the values do not satisfy the regular expression) (Comsode DPU ID: Q-ACC6) |
 |**DPU class name:**           |PatternChecker     						                                                               |
 |**Configuration class name:** |PatternCheckerConfig_V1                           		                                               |
 |**Dialogue class name:**      |PatternCheckerVaadinDialog                                      					                       |
@@ -17,9 +17,9 @@
 
 |Parameter                     |Description                   |
 |------------------------------|------------------------------|
-|**Resource:** 	               |Type of resource.             |
-|**Property:**		           |Property to check.            |
-|**RegularExpression:**		   |Regular expression to check.  |
+|**Subject Class URI:** 	                  |Class of subjects for which property value is checked.       |
+|**Property URI:**		          |Property to be checked.           	       |
+|**RegularExpression:**		   |Regular expression to be checked.  |
 
 ***
 
@@ -28,7 +28,7 @@
 |Name              |Type     |DataUnit                     |Description          |
 |------------------|---------|-----------------------------|---------------------|
 |input  	       |i 	     |RDFDataUnit 		           |RDF graph.			 |
-|output 	       |o 	     |WritableRDFDataUnit 	       |RDF Quality graph.   |
+|output 	       |o 	     |WritableRDFDataUnit 	       |RDF quality graph.   |
 
 ***
 
@@ -44,4 +44,4 @@
 
 |Author            |Notes                 |
 |------------------|----------------------|
-|AndreAga          |QualityOntology library is required. (https://github.com/UnifiedViews/Plugins-QualityAssessment/tree/develop/q-qualityOntology) | 
+|AndreAga          |QualityOntology library is required. (https://github.com/UnifiedViews/Plugins-QualityAssessment/tree/master/qualityOntology) | 
