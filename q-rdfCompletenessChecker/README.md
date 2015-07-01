@@ -6,7 +6,7 @@
 |                              |                                                               |
 |------------------------------|---------------------------------------------------------------|
 |**Name:**                     |Q-RdfCompletenessChecker 							                               |
-|**Description:**              |Check the missing elements from a specified list of subject/property. A user should specify the RDF class and the RDF predicate, then the DPU checks for each pair whether instances of the RDF class contain the specified RDF predicate. At the end, DPU computes completeness score for each class and predicate normalised in a range 0-1. |
+|**Description:**              |Checks the missing object values for the given predicate and given class of subjects. A user specifies the RDF class and the RDF predicate, then the DPU checks for each pair whether instances of the given RDF class contain the specified RDF predicate. At the end, DPU computes completeness score for each class and predicate normalised to a range 0-1 and produces report. (Comsode DPU ID: Q-C2)|
 |**DPU class name:**           |CompletenessChecker     						                                   |
 |**Configuration class name:** |CompletenessCheckerConfig_V1                           		                   |
 |**Dialogue class name:**      |CompletenessCheckerVaadinDialog 					                               |
@@ -17,8 +17,8 @@
 
 |Parameter                        |Description                             |                                                        
 |---------------------------------|----------------------------------------|
-|**Subject:** 	                  |Subject linked to the property.         |
-|**Property:**		              |Property to check.           	       |
+|**Subject Class URI:** 	                  |Class of subjects for which property value is checked.         |
+|**Property URI:**		              |Property to be checked.           	       |
 
 ***
 
@@ -43,4 +43,4 @@
 
 |Author            |Notes                 |
 |------------------|----------------------|
-|AndreAga          |QualityOntology library is required. (https://github.com/UnifiedViews/Plugins-QualityAssessment/tree/develop/q-qualityOntology) | 
+|AndreAga          |QualityOntology library is required. (https://github.com/UnifiedViews/Plugins-QualityAssessment/tree/master/qualityOntology) | 
