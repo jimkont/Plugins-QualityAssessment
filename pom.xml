@@ -56,7 +56,7 @@
                 <version>1.0-m4.3</version>
                 <configuration>
                     <flowInitContext>
-                        <releaseBranchPrefix>UV_v</releaseBranchPrefix>
+						<releaseBranchPrefix>release/UV_v</releaseBranchPrefix>
                         <versionTagPrefix>UV_v</versionTagPrefix>
                     </flowInitContext>
                     <allowSnapshots>true</allowSnapshots>
