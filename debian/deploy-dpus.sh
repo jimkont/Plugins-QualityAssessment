@@ -24,7 +24,8 @@ install_dpu() {
     echo $outcontents
 }
 
-install_dpu "/usr/share/unifiedviews/dist/odn_plugins/uv-l-filesToCkan-*.jar"            
-install_dpu "/usr/share/unifiedviews/dist/odn_plugins/uv-l-rdfToCkan-*.jar"              
-install_dpu "/usr/share/unifiedviews/dist/odn_plugins/uv-l-relationalToCkan-*.jar"       
-install_dpu "/usr/share/unifiedviews/dist/odn_plugins/uv-l-relationaldiffToCkan-*.jar"   
+install_dpu "/usr/share/unifiedviews/dist/qa_plugins/uv-q-rdfCompletenessChecker-*.jar"
+install_dpu "/usr/share/unifiedviews/dist/qa_plugins/uv-q-rdfLiteralNumericRangeChecker-*.jar"
+install_dpu "/usr/share/unifiedviews/dist/qa_plugins/uv-q-rdfLiteralRegularPatternChecker-*.jar"
+install_dpu "/usr/share/unifiedviews/dist/qa_plugins/uv-q-rdfResourceUnderstandability-*.jar"
+install_dpu "/usr/share/unifiedviews/dist/qa_plugins/uv-q-rdfSyntacticValidator-*.jar"
