@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>eu.unifiedviews</groupId>
+        <artifactId>uv-pom-dpu</artifactId>
+		<version>2.1.0</version>
+		<relativePath></relativePath>
+    </parent>
+
+    <groupId>eu.unifiedviews.plugins.qa</groupId>
+    <artifactId>uv-q-rdfCompletenessChecker</artifactId>
+    <description>Checks the missing object values for the given predicate and given class of subjects. A user specifies the RDF class and the RDF predicate, then the DPU checks for each pair whether instances of the given RDF class contain the specified RDF predicate. At the end, DPU computes completeness score for each class and predicate normalised to a range 0-1 and produces report. (Comsode DPU ID: Q-C2)</description>
+    <packaging>bundle</packaging>
+    <version>1.0.0</version>
+    <name>Q-RdfCompletenessChecker</name>
+
+    <properties>
+        <dpu.package>eu.unifiedviews.plugins.quality.completenesschecker</dpu.package>
+        <dpu.mainClass>CompletenessChecker</dpu.mainClass>
+    </properties>
+
+    <dependencies>
+        <!-- UnifiedViews helpers. -->
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dataunit-helpers</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dpu-helpers</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.unifiedviews.plugins.quality.qualitygraph</groupId>
+            <artifactId>quality-ontology</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>maven.eea.sk</id>
+            <name>maven.eea.sk-public</name>
+            <url>http://maven.eea.sk/artifactory/public/</url>
+        </repository>
+    </repositories>
+
+</project>

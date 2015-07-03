@@ -1,0 +1,8 @@
+Package: qa-uv-plugins
+Version: [[debian-package-version]]
+Section: java
+Priority: extra
+Architecture: all
+Maintainer: jmc@eea.sk
+Depends: unifiedviews-plugins
+Description: QualityAssurance UnifiedViews Plugins (DPUs).

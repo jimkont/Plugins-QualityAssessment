@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>eu.unifiedviews</groupId>
+        <artifactId>uv-pom-dpu</artifactId>
+        <version>2.1.0</version>
+		<relativePath></relativePath>
+	</parent>
+
+    <groupId>eu.unifiedviews.plugins.qa</groupId>
+    <artifactId>uv-q-rdfResourceUnderstandability</artifactId>
+    <description>Checks the understandability of a resource by checking for the given class of subjects the presence of the given predicate (e.g., human readable labels or descriptions of resources). A user should specify the RDF class, the RDF property either by selecting it from a default list or by inserting a new property and the language tag. The output is the RDF quality report providing normalised scores in a ranges 0-1 (low= a few values do not have the language tag, high = most of the values do not have the language tag)  for every pair of RDF class and RDF property.(Comsode DPU ID: Q-C5)</description>
+    <packaging>bundle</packaging>
+    <version>1.0.0</version>
+    <name>Q-RdfResourceUnderstandability</name>
+
+    <properties>
+        <dpu.package>eu.unifiedviews.plugins.quality.resourceunderstandability</dpu.package>
+        <dpu.mainClass>ResourceUnderstandability</dpu.mainClass>
+    </properties>
+
+    <dependencies>
+        <!-- UnifiedViews helpers. -->
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dataunit-helpers</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dpu-helpers</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.unifiedviews.plugins.quality.qualitygraph</groupId>
+            <artifactId>quality-ontology</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>maven.eea.sk</id>
+            <name>maven.eea.sk-public</name>
+            <url>http://maven.eea.sk/artifactory/public/</url>
+        </repository>
+    </repositories>
+
+</project>

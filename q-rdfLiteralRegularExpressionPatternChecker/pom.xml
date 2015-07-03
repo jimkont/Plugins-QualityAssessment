@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>eu.unifiedviews</groupId>
+        <artifactId>uv-pom-dpu</artifactId>
+        <version>2.1.0</version>
+		<relativePath></relativePath>
+	</parent>
+
+    <groupId>eu.unifiedviews.plugins.qa</groupId>
+    <artifactId>uv-q-rdfLiteralRegularPatternChecker</artifactId>
+    <description>Checks that literal value for the given predicate and given class of subjects respects certain regular expression such as the postal address, the phone number, etc. A user specifies the RDF class, the RDF property for which he would like to verify the literal correctness through a regular expression that can be either selected from a default list or can be inserted directly by the user. The output is the RDF quality report providing a normalised score in the range 0-1 (low= a few values do not satisfy the regular expression, high = most of the values do not satisfy the regular expression) (Comsode DPU ID: Q-ACC6) </description>
+    <packaging>bundle</packaging>
+    <version>1.0.0</version>
+    <name>Q-RdfLiteralRegularPatternChecker</name>
+
+    <properties>
+        <dpu.package>eu.unifiedviews.plugins.quality.patternchecker</dpu.package>
+        <dpu.mainClass>PatternChecker</dpu.mainClass>
+    </properties>
+
+    <dependencies>
+        <!-- UnifiedViews helpers. -->
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dataunit-helpers</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dpu-helpers</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.unifiedviews.plugins.quality.qualitygraph</groupId>
+            <artifactId>quality-ontology</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>maven.eea.sk</id>
+            <name>maven.eea.sk-public</name>
+            <url>http://maven.eea.sk/artifactory/public/</url>
+        </repository>
+    </repositories>
+
+</project>
