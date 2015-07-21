@@ -62,7 +62,7 @@ public class CompletenessImprovementTest {
             connection_target.add(inputStream_target, "", RDFFormat.NTRIPLES);
             connection_silk.add(inputStream_silk, "", RDFFormat.NTRIPLES);
 
-            env.run(dpu);
+            //env.run(dpu);
 
         } finally {
 
