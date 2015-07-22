@@ -125,12 +125,17 @@ public class CompletenessImprovement extends AbstractDpu<CompletenessImprovement
 
                             Value sourceObject = sourceObjects.get(z).get("o");
 
-                            /////
                             // Check the Accuracy and choose which value, between source and target, put in the final graph
-                            /////
+                            // We choose always the uri of target resource rather than the literal of the source resource
+                            Value betterValue = sourceValue;
+
+                            if (sourceObject.toString().startsWith("\"")) { //it's a literal
+                                if (!(targetObject.toString().startsWith("\""))) //it's the resource's uri
+                                    betterValue = targetObject;
+                            }
 
                             // Insert correct value
-                            insertTriple(sourceValue, sourcePropertyMapped.get(index), sourceObject);
+                            insertTriple(sourceValue, sourcePropertyMapped.get(index), betterValue);
                         }
 
                     } else {

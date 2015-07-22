@@ -76,7 +76,7 @@ public class CompletenessImprovementVaadinDialog extends AbstractDialog<Complete
         if (column == 0) {
             if (txtValue.isEmpty()) {
                 error = error + "\n" + ctx.tr("C3.error.property_source.not.filled") + " [Row: " + row + "]";
-                txt.setComponentError(new UserError(ctx.tr("C5.error.subject.not.filled")));
+                txt.setComponentError(new UserError(ctx.tr("C3.error.subject.not.filled")));
             } else if (!txtValue.startsWith("http://")) {
                 error = error + "\n" + ctx.tr("C3.error.property_source.not.http") + " [Row: " + row + "]";
                 txt.setComponentError(new UserError(ctx.tr("C3.error.property_source.not.http")));
