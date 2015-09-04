@@ -1,11 +1,17 @@
-package eu.unifiedviews.plugins.quality.mc;
+package eu.unifiedviews.plugins.quality.metadatacompletenesschecker;
 
 import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
 
-public class MCVocabulary {
+
+/**
+ * Define vocabulary used by this DPU.
+ *
+ * @author Vincenzo Cutrona
+ */
+public class MetadataCompletenessCheckerVocabulary {
 
     public static final String EX_OBSERVATIONS = QualityOntology.EX + "obs%d";
 

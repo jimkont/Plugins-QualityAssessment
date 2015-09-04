@@ -1,4 +1,4 @@
-package eu.unifiedviews.plugins.quality.mc;
+package eu.unifiedviews.plugins.quality.metadatacompletenesschecker;
 
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
@@ -11,7 +11,6 @@ import eu.unifiedviews.helpers.dpu.extension.rdf.simple.WritableSimpleRdf;
 import eu.unifiedviews.helpers.dpu.rdf.EntityBuilder;
 import eu.unifiedviews.helpers.dpu.rdf.sparql.SparqlUtils;
 import eu.unifiedviews.plugins.quality.qualitygraph.QualityOntology.QualityOntology;
-import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.DCTERMS;
 import org.openrdf.model.vocabulary.RDF;
@@ -36,9 +35,9 @@ import java.util.Date;
  * @author Vincenzo Cutrona
  */
 @DPU.AsQuality
-public class MC extends AbstractDpu<MCConfig_V1> {
+public class MetadataCompletenessChecker extends AbstractDpu<MetadataCompletenessCheckerConfig_V1> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MC.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MetadataCompletenessChecker.class);
 
     public static final String COMPLETENESS_GRAPH_SYMBOLIC_NAME = "completenessQualityGraph";
 
@@ -56,41 +55,32 @@ public class MC extends AbstractDpu<MCConfig_V1> {
 
     private static ValueFactory valueFactory;
 
-    public MC() {
-        super(MCVaadinDialog.class, ConfigHistory.noHistory(MCConfig_V1.class));
+    public MetadataCompletenessChecker() {
+        super(MetadataCompletenessCheckerVaadinDialog.class, ConfigHistory.noHistory(MetadataCompletenessCheckerConfig_V1.class));
     }
 
     @Override
     protected void innerExecute() throws DPUException {
 
-        ContextUtils.sendShortInfo(ctx, "MC.message");
+        ContextUtils.sendShortInfo(ctx, "MetadataCompletenessChecker.message");
 
         valueFactory = report.getValueFactory();
 
         // Get configuration parameters
-        ArrayList<String> _subject = this.config.getSubject();
         ArrayList<String> _property = this.config.getProperty();
 
-        if ((_subject == null) || (_property == null)) {
-            LOG.warn(ctx.tr("MC.error.nothing.specified"));
+        if (_property == null) {
+            LOG.warn(ctx.tr("MetadataCompletenessChecker.error.nothing.specified"));
         } else {
-            Double[] results = new Double[_subject.size()];
+            double result = 0;
             // It evaluates the completeness, for every subject specified in the DPU Configuration
-            for (int i = 0; i < _subject.size(); ++i) {
-                String subject = _subject.get(i);
+            for (int i = 0; i < _property.size(); ++i) {
                 String property = _property.get(i);
 
-                if (!subject.trim().isEmpty() && !property.trim().isEmpty()) {
-
+                if (!property.trim().isEmpty()) {
                     final String q1 =
-                            "SELECT (COUNT(?s) AS ?conceptCount) " +
+                            "SELECT (COUNT(?s) AS ?propertyCount) " +
                                     "WHERE { " +
-                                    "?s rdf:type <" + subject + "> . " +
-                                    "}";
-                    final String q2 =
-                            "SELECT (COUNT(?s) AS ?conceptCount) " +
-                                    "WHERE { " +
-                                    "?s rdf:type <" + subject + "> . " +
                                     "?s <" + property + "> ?label . " +
                                     "}";
 
@@ -100,14 +90,6 @@ public class MC extends AbstractDpu<MCConfig_V1> {
                                 @Override
                                 public SparqlUtils.SparqlSelectObject action() throws Exception {
                                     return SparqlUtils.createSelect(q1,
-                                            DataUnitUtils.getEntries(inRdfData, RDFDataUnit.Entry.class));
-                                }
-                            });
-                    final SparqlUtils.SparqlSelectObject query2 = faultTolerance.execute(
-                            new FaultTolerance.ActionReturn<SparqlUtils.SparqlSelectObject>() {
-                                @Override
-                                public SparqlUtils.SparqlSelectObject action() throws Exception {
-                                    return SparqlUtils.createSelect(q2,
                                             DataUnitUtils.getEntries(inRdfData, RDFDataUnit.Entry.class));
                                 }
                             });
@@ -121,28 +103,20 @@ public class MC extends AbstractDpu<MCConfig_V1> {
                             SparqlUtils.execute(connection, ctx, query1, result1);
                         }
                     });
-                    final SparqlUtils.QueryResultCollector result2 = new SparqlUtils.QueryResultCollector();
-                    faultTolerance.execute(inRdfData, new FaultTolerance.ConnectionAction() {
-                        @Override
-                        public void action(RepositoryConnection connection) throws Exception {
-                            result2.prepare();
-                            SparqlUtils.execute(connection, ctx, query2, result2);
-                        }
-                    });
 
                     // Check result size.
-                    if (result1.getResults().isEmpty() || result2.getResults().isEmpty()) {
-                        throw new DPUException(ctx.tr("MC.error.empty.result"));
+                    if (result1.getResults().isEmpty()) {
+                        throw new DPUException(ctx.tr("MetadataCompletenessChecker.error.empty.result"));
                     }
 
                     // Prepare variables.
-                    Value denom = result1.getResults().get(0).get("conceptCount");
-                    Value num = result2.getResults().get(0).get("conceptCount");
-                    results[i] = 0.0;
-                    if (Double.parseDouble(denom.stringValue()) != 0)
-                        results[i] = Double.parseDouble(num.stringValue()) / Double.parseDouble(denom.stringValue());
+                    int count = Integer.parseInt(result1.getResults().get(0).get("propertyCount").stringValue());
+
+                    result += (count > 0) ? 1 : 0;
                 }
             }
+
+            result = result / _property.size();
 
             // Set output.
             final RDFDataUnit.Entry output = faultTolerance.execute(new FaultTolerance.ActionReturn<RDFDataUnit.Entry>() {
@@ -160,34 +134,21 @@ public class MC extends AbstractDpu<MCConfig_V1> {
 
             // EX_DPU_NAME entity.
             final EntityBuilder reportEntity = new EntityBuilder(
-                    MCVocabulary.EX_DPU_NAME, valueFactory);
+                    MetadataCompletenessCheckerVocabulary.EX_DPU_NAME, valueFactory);
             reportEntity.property(RDF.TYPE, QualityOntology.DAQ_DIMENSION)
                     .property(QualityOntology.DAQ_HAS_METRIC, dpuEntity);
 
             // EX_OBSERVATIONS entity.
-            EntityBuilder[] ent = new EntityBuilder[results.length];
-            EntityBuilder[] bNode = new EntityBuilder[results.length];
-            for (int i = 0; i < results.length; ++i) {
-                final EntityBuilder observationEntity = createObservation(results[i], (i+1));
-                final EntityBuilder observationEntityBNode = createObservationBNode(_subject.get(i), _property.get(i), (i+1));
+            final EntityBuilder observationEntity = createObservation(result, 1);
 
-                // Add binding from EX_COMPLETENESS_DIMENSION
-                dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity);
-                ent[i] = observationEntity;
-                bNode[i] = observationEntityBNode;
-            }
+            // Add binding from EX_COMPLETENESS_DIMENSION
+            dpuEntity.property(QualityOntology.DAQ_HAS_OBSERVATION, observationEntity);
 
             // Add entities to output graph.
             report.add(reportEntity.asStatements());
             report.add(dpuEntity.asStatements());
-            for (int i = 0; i < ent.length; ++i) {
-                report.add(ent[i].asStatements());
-            }
-            for (int i = 0; i < bNode.length; ++i) {
-                report.add(bNode[i].asStatements());
-            }
+            report.add(observationEntity.asStatements());
         }
-
     }
 
     /**
@@ -199,8 +160,7 @@ public class MC extends AbstractDpu<MCConfig_V1> {
      * @throws DPUException
      */
     private EntityBuilder createObservation(double value, int observationIndex) throws DPUException {
-        String obs = String.format(MCVocabulary.EX_OBSERVATIONS, observationIndex);
-        String obsBNode = obs + "/bnode_" + observationIndex;
+        String obs = String.format(MetadataCompletenessCheckerVocabulary.EX_OBSERVATIONS, observationIndex);
         final EntityBuilder observationEntity = new EntityBuilder(
                 valueFactory.createURI(obs), valueFactory);
 
@@ -210,36 +170,14 @@ public class MC extends AbstractDpu<MCConfig_V1> {
         try {
             reportDate = reportDateFormat.parse(reportDateFormat.format(new Date()));
         } catch (ParseException ex) {
-            throw new DPUException(ctx.tr("MC.error.date.parse.failed"), ex);
+            throw new DPUException(ctx.tr("MetadataCompletenessChecker.error.date.parse.failed"), ex);
         }
 
         // Set the observation.
         observationEntity
                 .property(RDF.TYPE, QualityOntology.QB_OBSERVATION)
-                .property(QualityOntology.DAQ_COMPUTED_ON, valueFactory.createURI(obsBNode))
                 .property(DCTERMS.DATE, valueFactory.createLiteral(reportDate))
                 .property(QualityOntology.DAQ_VALUE, valueFactory.createLiteral(value));
-
-        return observationEntity;
-    }
-    /**
-     * Creates observation for entity.
-     *
-     * @param subject
-     * @param property
-     * @param observationIndex
-     * @return EntityBuilder
-     * @throws DPUException
-     */
-    private EntityBuilder createObservationBNode(String subject, String property, int observationIndex) throws DPUException {
-        String obs = String.format(MCVocabulary.EX_OBSERVATIONS, observationIndex) + "/bnode_" + observationIndex;
-        final EntityBuilder observationEntity = new EntityBuilder(valueFactory.createURI(obs), valueFactory);
-
-        // Set the observation.
-        observationEntity
-                .property(RDF.TYPE, RDF.STATEMENT)
-                .property(RDF.SUBJECT, valueFactory.createLiteral(subject))
-                .property(RDF.PROPERTY, valueFactory.createLiteral(property));
 
         return observationEntity;
     }
