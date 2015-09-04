@@ -1,4 +1,4 @@
-MetadataCompletenessChecker
+Q-RdfMetadataCompletenessChecker
 ----------
 
 ### Documentation
@@ -7,7 +7,7 @@ MetadataCompletenessChecker
 
 ### Technical notes
 
-* May be used instead of DPU X, it also replaces DPY Y.
+* QualityOntology library is required. (https://github.com/UnifiedViews/Plugins-QualityAssessment/tree/master/qualityOntology)
 
 ### Version history
 

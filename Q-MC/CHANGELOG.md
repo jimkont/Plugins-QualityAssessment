@@ -1,4 +1,4 @@
-MetadataCompletenessChecker
+Q-RdfMetadataCompletenessChecker
 ----------
 
 v1.0.0-SNAPSHOT
