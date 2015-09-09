@@ -13,7 +13,7 @@
     <artifactId>uv-q-rdfCompletenessChecker</artifactId>
     <description>Checks the missing object values for the given predicate and given class of subjects. A user specifies the RDF class and the RDF predicate, then the DPU checks for each pair whether instances of the given RDF class contain the specified RDF predicate. At the end, DPU computes completeness score for each class and predicate normalised to a range 0-1 and produces report. (Comsode DPU ID: Q-C2)</description>
     <packaging>bundle</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Q-RdfCompletenessChecker</name>
 
     <properties>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>eu.unifiedviews.plugins.quality.qualitygraph</groupId>
             <artifactId>quality-ontology</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
