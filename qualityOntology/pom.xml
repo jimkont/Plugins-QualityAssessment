@@ -9,7 +9,7 @@
     <groupId>eu.unifiedviews.plugins.quality.qualitygraph</groupId>
     <artifactId>quality-ontology</artifactId>
     <name>Quality Ontology</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
