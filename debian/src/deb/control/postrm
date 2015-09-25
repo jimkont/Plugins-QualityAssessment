@@ -30,8 +30,8 @@ case "$1" in
  
     purge)
     # logs
-    if [ -d /var/log/unifiedviews/dist/plugins ] ; then 
-	    rm -rf /var/log/unifiedviews/dist/plugins
+    if [ -d /var/log/unifiedviews/dist/qa_plugins ] ; then 
+	    rm -rf /var/log/unifiedviews/dist/qa_plugins
 	fi
   
     ;;

@@ -8,7 +8,7 @@ Validates an RDF document by identifying undefined classes/properties with respe
 |:----|:----|
 |**RDFAlerts' host**		                  |Host where RDFAlerts runs.  	   |
 |**RDFAlerts' port**		                  |Port where RDFAlerts works.  	       |
-|**RDFAlerts' path**			              |Path where RDFAlerts is installed withing the application server.      |
+|**RDFAlerts' path**			              |Path where RDFAlerts is installed within the application server.      |
 
 ### Inputs and outputs
 

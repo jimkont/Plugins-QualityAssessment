@@ -6,40 +6,40 @@
 	<groupId>eu.unifiedviews.packages</groupId>
 	<artifactId>odn-qualityassessment-plugins-deb</artifactId>
 	<name>odn-qualityassessment-plugins-deb</name>
-	<version>2.1.0</version>
+	<version>2.2.0</version>
 	<description>Open Data Node UnifiedViews Plugins debian package</description>
 
 	<properties>
 		<plugins.groupid>eu.unifiedviews.plugins.qa</plugins.groupid>
-		<debian-package-version>2.1.0~ALFA</debian-package-version>
-		<debian-package-name>${project.build.directory}/odn-qualityassessment-plugins_${debian-package-version}_all.deb</debian-package-name>
+		<debian-package-version>2.2.0</debian-package-version>
+		<debian-package-name>${project.build.directory}/unifiedviews-qa-plugins_${debian-package-version}_all.deb</debian-package-name>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>${plugins.groupid}</groupId>
 			<artifactId>uv-q-rdfCompletenessChecker</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>${plugins.groupid}</groupId>
 			<artifactId>uv-q-rdfLiteralNumericRangeChecker</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>${plugins.groupid}</groupId>
 			<artifactId>uv-q-rdfLiteralRegularPatternChecker</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>${plugins.groupid}</groupId>
 			<artifactId>uv-q-rdfResourceUnderstandability</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>${plugins.groupid}</groupId>
 			<artifactId>uv-q-rdfSyntacticValidator</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
 
