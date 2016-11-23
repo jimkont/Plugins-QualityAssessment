@@ -4,5 +4,5 @@ Section: java
 Priority: extra
 Architecture: all
 Maintainer: jmc@eea.sk
-Depends: unifiedviews-plugins
+Depends: curl, unifiedviews-webapp (>> 2.1), unifiedviews-webapp (<< 3)
 Description: QualityAssurance UnifiedViews Plugins (DPUs).
