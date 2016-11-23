@@ -2,6 +2,8 @@
 *.iml
 *.ipr
 .idea
+.project
+.settings/
 target
 DPU_Template/.classpath
 DPU_Template/.gitignore
